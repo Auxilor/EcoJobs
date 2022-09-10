@@ -1,13 +1,13 @@
 <h1 align="center">
   <br>
-  <img src="https://i.imgur.com/FHqL960.png" alt="EcoJobs logo" width="256">
+  <img src="https://i.imgur.com/Qd617BL.png" alt="EcoJobs logo" width="256">
   <br>
 </h1>
 
 <h4 align="center">Source code for EcoJobs, a premium spigot plugin.</h4>
 
 <p align="center">
-    <a href="https://polymart.org/resource/ecojobs.1351">
+    <a href="https://polymart.org/resource/ecojobs.2857">
         <img alt="spigot" src="https://img.shields.io/badge/polymart-EcoJobs-964B00?style=for-the-badge"/>
     </a>
     <a href="https://bstats.org/plugin/bukkit/EcoJobs" alt="bstats servers">
@@ -21,7 +21,7 @@
     </a>
 </p>
 
-[![Docs](https://i.imgur.com/4JciYrQ.png)](https://discord.gg/ZcwpSsE/)
+[![Docs](https://i.imgur.com/7Ac2KTg.png)](https://discord.gg/ZcwpSsE/)
 
 ## License
 *Click here to read [the entire license](https://github.com/Auxilor/EcoJobs/blob/master/LICENSE.md).*
