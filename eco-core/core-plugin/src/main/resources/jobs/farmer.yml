@@ -1,0 +1,119 @@
+name: "&eFarmer"
+description: "&8&oLevel up by farming crops"
+
+unlocked-by-default: true
+
+level-xp-requirements:
+  - 100
+  - 120
+  - 150
+  - 180
+  - 210
+  - 250
+  - 300
+  - 360
+  - 430
+  - 520
+  - 620
+  - 740
+  - 890
+  - 1000
+  - 1300
+  - 1500
+  - 1900
+  - 2200
+  - 2700
+  - 3200
+  - 3800
+  - 4600
+  - 5500
+  - 6600
+  - 7900
+  - 9500
+  - 11500
+  - 14000
+  - 17000
+  - 19000
+  - 24000
+  - 29000
+  - 34000
+  - 41000
+  - 50000
+  - 60000
+  - 70000
+  - 85000
+  - 100000
+  - 120000
+  - 150000
+  - 180000
+  - 210000
+  - 250000
+  - 300000
+  - 360000
+  - 440000
+  - 580000
+  - 750000
+
+xp-gain-methods:
+  - trigger: mine_block
+    multiplier: 0.5
+    conditions: [ ]
+    filters:
+      blocks:
+        - "wheat"
+        - "potatoes"
+        - "beetroots"
+        - "carrots"
+        - "melon"
+        - "pumpkin"
+        - "cactus"
+        - "sugar_cane"
+        - "cocoa"
+        - "nether_wart"
+        - "bamboo"
+        - "sweet_berries"
+        - "glow_berries"
+
+level-placeholders:
+  - id: "money"
+    value: "%level% * 0.25"
+
+effects-description:
+  1:
+    - "&8» &8Earn &a$%money%&8 for each crop you farm"
+
+rewards-description:
+  1:
+    - "&8» &8Earn &a$%money%&8 for each crop you farm"
+
+level-up-messages:
+  1:
+    - "&8» &8Earn &a$%money%&8 for each crop you farm"
+
+level-commands: [ ]
+
+effects:
+  - id: give_money
+    args:
+      amount: "%level% * 0.25"
+    filters:
+      blocks:
+        - "wheat"
+        - "potatoes"
+        - "beetroots"
+        - "carrots"
+        - "melon"
+        - "pumpkin"
+        - "cactus"
+        - "sugar_cane"
+        - "cocoa"
+        - "nether_wart"
+        - "bamboo"
+        - "sweet_berries"
+        - "glow_berries"
+    triggers:
+      - mine_block
+
+conditions: [ ]
+
+icon: player_head texture:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODMzNmUzMTVlMWFlOTk1NzJkYzljNzJhNjJhMTRiODU3Nzc0MWRjMzQ3MmM3NDEzZDdlYWE2NjdhMzA3YTNkNyJ9fX0=
