@@ -83,7 +83,7 @@ level-commands: [ ]
 effects:
   - id: give_money
     args:
-      value: "%v% * %level% * 0.1"
+      amount: "%v% * %level% * 0.1"
     triggers:
       - kill
 
