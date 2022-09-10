@@ -41,7 +41,7 @@ class CommandReset(plugin: EcoPlugin) : Subcommand(plugin, "reset", "ecojobs.com
         }
 
         if (!player.hasJob(job)) {
-            sender.sendMessage(plugin.langYml.getMessage("doesnt-job-job"))
+            sender.sendMessage(plugin.langYml.getMessage("doesnt-have-job"))
             return
         }
 
@@ -49,7 +49,7 @@ class CommandReset(plugin: EcoPlugin) : Subcommand(plugin, "reset", "ecojobs.com
             player.activeJob = null
         }
         player.setJobXP(job, 0.0)
-        player.setJobLevel(job, 0)
+        player.setJobLevel(job, 1)
 
         sender.sendMessage(
             plugin.langYml.getMessage("reset-xp", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
