@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender
 class CommandEcojobs(plugin: EcoPlugin) : PluginCommand(plugin, "ecojobs", "ecojobs.command.ecojobs", false) {
     init {
         this.addSubcommand(CommandReload(plugin))
-            .addSubcommand(CommandGive(plugin))
+            .addSubcommand(CommandUnlock(plugin))
             .addSubcommand(CommandGiveXP(plugin))
             .addSubcommand(CommandReset(plugin))
     }

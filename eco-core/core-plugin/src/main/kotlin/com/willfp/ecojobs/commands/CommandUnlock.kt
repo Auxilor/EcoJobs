@@ -11,7 +11,7 @@ import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.util.StringUtil
 
-class CommandGive(plugin: EcoPlugin) : Subcommand(plugin, "give", "ecojobs.command.give", false) {
+class CommandUnlock(plugin: EcoPlugin) : Subcommand(plugin, "unlock", "ecojobs.command.unlock", false) {
     override fun onExecute(sender: CommandSender, args: List<String>) {
         if (args.isEmpty()) {
             sender.sendMessage(plugin.langYml.getMessage("needs-player"))
@@ -47,7 +47,7 @@ class CommandGive(plugin: EcoPlugin) : Subcommand(plugin, "give", "ecojobs.comma
 
         player.setJobLevel(job, 1)
         sender.sendMessage(
-            plugin.langYml.getMessage("gave-job", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
+            plugin.langYml.getMessage("unlocked-job", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
                 .replace("%player%", player.savedDisplayName)
                 .replace("%job%", job.name)
         )

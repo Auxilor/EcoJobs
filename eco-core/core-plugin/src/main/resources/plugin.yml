@@ -47,7 +47,7 @@ permissions:
       ecojobs.command.ecojobs: true
       ecojobs.command.reload: true
       ecojobs.command.jobs: true
-      ecojobs.command.give: true
+      ecojobs.command.unlock: true
       ecojobs.command.givexp: true
       ecojobs.command.reset: true
 
@@ -60,8 +60,8 @@ permissions:
   ecojobs.command.jobs:
     description: Allows the use of /jobs.
     default: true
-  ecojobs.command.give:
-    description: Allows the use of /ecojobs give.
+  ecojobs.command.unlock:
+    description: Allows the use of /ecojobs unlock.
     default: op
   ecojobs.command.givexp:
     description: Allows the use of /ecojobs givexp.
