@@ -1,5 +1,5 @@
-name: "&6Miner"
-description: "&8&oLevel up by mining blocks"
+name: "&#964B00Builder"
+description: "&8&oLevel up by placing blocks"
 
 unlocked-by-default: true
 
@@ -55,43 +55,35 @@ level-xp-requirements:
   - 750000
 
 xp-gain-methods:
-  - trigger: mine_block
-    multiplier: 0.5
+  - trigger: place_block
+    multiplier: 1.2
     conditions: [ ]
-    filters:
-      items:
-        - "*wooden_pickaxe"
-        - "*stone_pickaxe"
-        - "*iron_pickaxe"
-        - "*golden_pickaxe"
-        - "*diamond_pickaxe"
-        - "*netherite_pickaxe"
 
 level-placeholders:
   - id: "money"
-    value: "%level% * 0.4"
+    value: "%level% * 1.2"
   - id: "blocks"
-    value: "ceil(10 - %level% / 10)"
+    value: "ceil(12 - %level% / 8)"
 
 effects-description:
   1:
-    - "&8» &8Earn &a$%money%&8 for each &a%blocks%&8 blocks mined"
+    - "&8» &8Earn &a$%money%&8 for each &a%blocks%&8 blocks placed"
 
 rewards-description:
   1:
-    - "&8» &8Earn &a$%money%&8 for each &a%blocks%&8 blocks mined"
+    - "&8» &8Earn &a$%money%&8 for each &a%blocks%&8 blocks placed"
 
 level-up-messages:
   1:
-    - "&8» &8Earn &a$%money%&8 for each &a%blocks%&8 blocks mined"
+    - "&8» &8Earn &a$%money%&8 for each &a%blocks%&8 blocks placed"
 
 level-commands: [ ]
 
 effects:
   - id: give_money
     args:
-      every: "ceil(10 - %level% / 10)"
-      amount: "0.4 * %level%"
+      every: "ceil(12 - %level% / 8)"
+      amount: "1.2 * %level%"
     filters:
       items:
         - "*wooden_pickaxe"
@@ -101,8 +93,8 @@ effects:
         - "*diamond_pickaxe"
         - "*netherite_pickaxe"
     triggers:
-      - mine_block
+      - place_block
 
 conditions: [ ]
 
-icon: player_head texture:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODU3MDVjZjg2NGRmMmMxODJlMzJjNDg2YjcxNDdjYmY3ODJhMGFhM2RmOGE2ZDYxNDUzOTM5MGJmODRmYjE1ZCJ9fX0=
+icon: player_head texture:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmM4ZWJhZDcyYjc3ZGYzOTkwZTA3YmM4NjlhOTlhOGY4OTYyZDNjMTljNzZlMzlkOTk1NTNjYWU0MTMxY2M4In19fQ==

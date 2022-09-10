@@ -15,55 +15,55 @@ unlocked-by-default: true
 
 # The xp requirements for each job level - add new levels by adding more to this list
 level-xp-requirements:
-  - 50
-  - 125
-  - 200
+  - 100
+  - 120
+  - 150
+  - 180
+  - 210
+  - 250
   - 300
-  - 500
-  - 750
+  - 360
+  - 430
+  - 520
+  - 620
+  - 740
+  - 890
   - 1000
+  - 1300
   - 1500
-  - 2000
-  - 3500
-  - 5000
-  - 7500
-  - 10000
-  - 15000
-  - 20000
-  - 30000
+  - 1900
+  - 2200
+  - 2700
+  - 3200
+  - 3800
+  - 4600
+  - 5500
+  - 6600
+  - 7900
+  - 9500
+  - 11500
+  - 14000
+  - 17000
+  - 19000
+  - 24000
+  - 29000
+  - 34000
+  - 41000
   - 50000
-  - 75000
+  - 60000
+  - 70000
+  - 85000
   - 100000
-  - 200000
+  - 120000
+  - 150000
+  - 180000
+  - 210000
+  - 250000
   - 300000
-  - 400000
-  - 500000
-  - 600000
-  - 700000
-  - 800000
-  - 900000
-  - 1000000
-  - 1100000
-  - 1200000
-  - 1300000
-  - 1400000
-  - 1500000
-  - 1600000
-  - 1700000
-  - 1800000
-  - 1900000
-  - 2000000
-  - 2100000
-  - 2200000
-  - 2300000
-  - 2400000
-  - 2500000
-  - 2600000
-  - 2750000
-  - 2900000
-  - 3100000
-  - 3400000
-  - 3700000
+  - 360000
+  - 440000
+  - 580000
+  - 750000
 
 # An XP Gain method takes a trigger, a multiplier, conditions, and filters.
 # The multiplier takes the value produced by the trigger and multiplies it
@@ -71,32 +71,41 @@ level-xp-requirements:
 xp-gain-methods:
   - trigger: mine_block
     multiplier: 0.5
-    conditions: [ ] # You can add a list of conditions that must be met on xp gain
-    # filters: You can add filters that must be met by the trigger
+    conditions: [ ]
+    filters:
+      items:
+        - "*wooden_pickaxe"
+        - "*stone_pickaxe"
+        - "*iron_pickaxe"
+        - "*golden_pickaxe"
+        - "*diamond_pickaxe"
+        - "*netherite_pickaxe"
 
 # Custom placeholders to be used in descriptions,
 # Don't add % to the IDs, this is done automatically
 # The value takes a %level% placeholder and is a mathematical expression
 level-placeholders:
   - id: "money"
-    value: "%level% * 0.01"
+    value: "%level% * 0.4"
+  - id: "blocks"
+    value: "ceil(10 - %level% / 10)"
 
 # The text shown with the %effects% placeholder
 # The number dictates the minimum level for this text to show for
 # Adding new levels will override this text on those levels or above
 effects-description:
   1:
-    - "&8» &8Earn &a$%money%&8 for each block mined"
+    - "&8» &8Earn &a$%money%&8 for each &a%blocks%&8 blocks mined"
 
 # Same as above, but for %rewards%
 rewards-description:
   1:
-    - "&8» &8Earn &a$%money%&8 for each block mined"
+    - "&8» &8Earn &a$%money%&8 for each &a%blocks%&8 blocks mined"
 
 # Same as above, but for %level_up_messages%
 level-up-messages:
   1:
-    - "&8» &8Earn &a$%money%&8 for each block mined"
+    - "&8» &8Earn &a$%money%&8 for each &a%blocks%&8 blocks mined"
 
 # Commands to be sent on levelup, can be formatted two ways:
 # level:command (e.g. 10:eco give %player% 1000), which would execute that command for level 10
@@ -107,8 +116,16 @@ level-commands: [ ]
 effects:
   - id: give_money
     args:
-      amount: "0.01 * %level%"
-      multiplier: "%level% * 0.01 + 1"
+      every: "ceil(10 - %level% / 10)"
+      amount: "0.4 * %level%"
+    filters:
+      items:
+        - "*wooden_pickaxe"
+        - "*stone_pickaxe"
+        - "*iron_pickaxe"
+        - "*golden_pickaxe"
+        - "*diamond_pickaxe"
+        - "*netherite_pickaxe"
     triggers:
       - mine_block
 
