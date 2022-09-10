@@ -11,10 +11,10 @@
         <img alt="spigot" src="https://img.shields.io/badge/polymart-EcoJobs-964B00?style=for-the-badge"/>
     </a>
     <a href="https://bstats.org/plugin/bukkit/EcoJobs" alt="bstats servers">
-        <img src="https://img.shields.io/bstats/servers/15502?color=964B00&style=for-the-badge"/>
+        <img src="https://img.shields.io/bstats/servers/16394?color=964B00&style=for-the-badge"/>
     </a>
     <a href="https://bstats.org/plugin/bukkit/EcoJobs" alt="bstats players">
-        <img src="https://img.shields.io/bstats/players/15502?color=964B00&style=for-the-badge"/>
+        <img src="https://img.shields.io/bstats/players/16394?color=964B00&style=for-the-badge"/>
     </a>
     <a href="https://discord.gg/ZcwpSsE/" alt="Discord">
         <img src="https://img.shields.io/discord/452518336627081236?label=discord&style=for-the-badge&color=964B00"/>
