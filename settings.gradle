@@ -1,0 +1,5 @@
+rootProject.name = 'EcoJobs'
+
+// Core
+include ':eco-core'
+include ':eco-core:core-plugin'

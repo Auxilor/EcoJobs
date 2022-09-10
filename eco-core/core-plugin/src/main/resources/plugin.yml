@@ -1,0 +1,84 @@
+name: EcoJobs
+version: ${projectVersion}
+main: com.willfp.ecojobs.EcoJobsPlugin
+api-version: 1.17
+authors: [ Auxilor ]
+website: willfp.com
+load: STARTUP
+depend:
+  - eco
+  - ProtocolLib
+  - PlaceholderAPI
+softdepend:
+  - AureliumSkills
+  - Vault
+  - mcMMO
+  - Jobs
+  - TMMobcoins
+  - EcoEnchants
+  - EcoBosses
+  - Talismans
+  - EcoArmor
+  - EcoItems
+  - Boosters
+  - EcoSkills
+  - Reforges
+commands:
+  ecojobs:
+    description: Base Command
+    permission: ecojobs.command.ecojobs
+  jobs:
+    aliases:
+      - job
+    description: Open the jobs menu
+    permission: ecojobs.command.jobs
+    default: true
+
+permissions:
+  ecojobs.*:
+    description: All EcoJobs permissions
+    default: op
+    children:
+      ecojobs.command.*: true
+  ecojobs.command.*:
+    description: All commands
+    default: op
+    children:
+      ecojobs.command.ecojobs: true
+      ecojobs.command.reload: true
+      ecojobs.command.jobs: true
+      ecojobs.command.give: true
+      ecojobs.command.givexp: true
+      ecojobs.command.reset: true
+
+  ecojobs.command.reload:
+    description: Allows reloading the config
+    default: op
+  ecojobs.command.ecojobs:
+    description: Allows the use of /ecojobs.
+    default: true
+  ecojobs.command.jobs:
+    description: Allows the use of /jobs.
+    default: true
+  ecojobs.command.give:
+    description: Allows the use of /ecojobs give.
+    default: op
+  ecojobs.command.givexp:
+    description: Allows the use of /ecojobs givexp.
+    default: op
+  ecojobs.command.reset:
+    description: Allows the use of /ecojobs reset.
+    default: op
+
+  ecojobs.xpmultiplier.50percent:
+    description: Gives the player 50% more job experience
+    default: false
+  ecojobs.xpmultiplier.double:
+    description: Gives the player 2x job experience
+    default: false
+  ecojobs.xpmultiplier.triple:
+    description: Gives the player 3x job experience
+    default: false
+  ecojobs.xpmultiplier.quadruple:
+    description: Gives the player 4x job experience
+    default: false
