@@ -4,7 +4,9 @@ description: "&8&oLevel up by killing mobs"
 unlocked-by-default: true
 
 reset-on-quit: false
+
 join-price: 0
+leave-price: 0
 
 level-xp-requirements:
   - 100

@@ -42,6 +42,7 @@ class Job(
     val isUnlockedByDefault = config.getBool("unlocked-by-default")
     val resetsOnQuit = config.getBool("reset-on-quit")
     val joinPrice = config.getDouble("join-price")
+    val leavePrice = config.getDouble("leave-price")
 
     val levelKey: PersistentDataKey<Int> = PersistentDataKey(
         EcoJobsPlugin.instance.namespacedKeyFactory.create("${id}_level"),
@@ -255,7 +256,8 @@ class Job(
                     .replace("%description%", this.description)
                     .replace("%job%", this.name)
                     .replace("%level%", (forceLevel ?: player.getJobLevel(this)).toString())
-                    .replace("%cost%", NumberUtils.format(this.joinPrice))
+                    .replace("%join_price%", NumberUtils.format(this.joinPrice))
+                    .replace("%leave_price%", NumberUtils.format(this.leavePrice))
             }
             .toMutableList()
 

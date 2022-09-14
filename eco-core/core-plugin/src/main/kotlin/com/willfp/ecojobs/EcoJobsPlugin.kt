@@ -7,7 +7,7 @@ import com.willfp.ecojobs.commands.CommandEcojobs
 import com.willfp.ecojobs.commands.CommandJobs
 import com.willfp.ecojobs.jobs.JobLevelListener
 import com.willfp.ecojobs.jobs.JobTriggerXPGainListener
-import com.willfp.ecojobs.jobs.JoinPriceHandler
+import com.willfp.ecojobs.jobs.PriceHandler
 import com.willfp.ecojobs.jobs.ResetOnQuitListener
 import com.willfp.ecojobs.jobs.activeJob
 import com.willfp.ecojobs.jobs.activeJobLevel
@@ -46,7 +46,7 @@ class EcoJobsPlugin : LibReforgePlugin() {
             JobLevelListener(this),
             JobTriggerXPGainListener,
             ResetOnQuitListener,
-            JoinPriceHandler
+            PriceHandler
         )
     }
 
