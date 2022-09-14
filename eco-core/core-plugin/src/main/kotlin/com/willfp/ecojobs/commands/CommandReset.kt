@@ -7,6 +7,7 @@ import com.willfp.eco.util.savedDisplayName
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.jobs.activeJob
 import com.willfp.ecojobs.jobs.hasJob
+import com.willfp.ecojobs.jobs.resetJob
 import com.willfp.ecojobs.jobs.setJobLevel
 import com.willfp.ecojobs.jobs.setJobXP
 import org.bukkit.Bukkit
@@ -48,8 +49,7 @@ class CommandReset(plugin: EcoPlugin) : Subcommand(plugin, "reset", "ecojobs.com
         if (player.activeJob == job) {
             player.activeJob = null
         }
-        player.setJobXP(job, 0.0)
-        player.setJobLevel(job, 1)
+        player.resetJob(job)
 
         sender.sendMessage(
             plugin.langYml.getMessage("reset-xp", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)

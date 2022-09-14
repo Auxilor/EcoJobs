@@ -40,6 +40,8 @@ class Job(
     val name = config.getFormattedString("name")
     val description = config.getFormattedString("description")
     val isUnlockedByDefault = config.getBool("unlocked-by-default")
+    val resetsOnQuit = config.getBool("reset-on-quit")
+    val joinPrice = config.getDouble("join-price")
 
     val levelKey: PersistentDataKey<Int> = PersistentDataKey(
         EcoJobsPlugin.instance.namespacedKeyFactory.create("${id}_level"),
@@ -253,6 +255,7 @@ class Job(
                     .replace("%description%", this.description)
                     .replace("%job%", this.name)
                     .replace("%level%", (forceLevel ?: player.getJobLevel(this)).toString())
+                    .replace("%cost%", NumberUtils.format(this.joinPrice))
             }
             .toMutableList()
 
@@ -406,6 +409,11 @@ fun OfflinePlayer.getJobLevel(job: Job): Int =
 
 fun OfflinePlayer.setJobLevel(job: Job, level: Int) =
     this.profile.write(job.levelKey, level)
+
+fun OfflinePlayer.resetJob(job: Job) {
+    this.setJobLevel(job, 1)
+    this.setJobXP(job, 0.0)
+}
 
 fun OfflinePlayer.getJobProgress(job: Job): Double {
     val currentXP = this.getJobXP(job)

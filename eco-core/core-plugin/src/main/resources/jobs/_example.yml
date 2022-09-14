@@ -13,6 +13,12 @@ description: "&8&oLevel up by mining blocks"
 # If the job should be unlocked by default
 unlocked-by-default: true
 
+# If job progress should be reset when quitting
+reset-on-quit: false
+
+# The price to join this job (set to 0 to disable)
+join-price: 0
+
 # The xp requirements for each job level - add new levels by adding more to this list
 level-xp-requirements:
   - 100

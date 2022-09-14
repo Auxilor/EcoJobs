@@ -53,7 +53,7 @@ gui:
       lore:
         - "%description%"
         - "&f"
-        - "&fEffects:"
+        - "&fJob Rewards:"
         - "%effects%"
         - ""
         - "&fProgress:"
@@ -67,7 +67,7 @@ gui:
     lore:
       - "%description%"
       - "&f"
-      - "&fEffects:"
+      - "&fJob Rewards:"
       - "%effects%"
       - ""
       - "&fProgress:"
@@ -78,7 +78,7 @@ gui:
       - ""
       - "&cThis job is already active!"
 
-    not-active-lore:
+    not-active-lore: # If using join cost, you can use %cost% as a placeholder.
       - ""
       - "&eClick to activate this job!"
 
