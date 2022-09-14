@@ -378,7 +378,7 @@ var OfflinePlayer.activeJob: Job?
         if (oldJob != job) {
             // Have to check for oldJob too to have null safety
             if (job == null && oldJob != null) {
-                val event = PlayerJobLeaveEvent(player, oldJob)
+                val event = PlayerJobLeaveEvent(this, oldJob)
                 Bukkit.getPluginManager().callEvent(event)
 
                 if (event.isCancelled) {
@@ -388,7 +388,7 @@ var OfflinePlayer.activeJob: Job?
 
             // Not using else because null safety as well
             if (job != null) {
-                val event = PlayerJobJoinEvent(player, job, oldJob)
+                val event = PlayerJobJoinEvent(this, job, oldJob)
                 Bukkit.getPluginManager().callEvent(event)
 
                 if (event.isCancelled) {
