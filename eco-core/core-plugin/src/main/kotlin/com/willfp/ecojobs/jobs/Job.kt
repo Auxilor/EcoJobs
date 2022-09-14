@@ -15,6 +15,8 @@ import com.willfp.eco.util.formatEco
 import com.willfp.eco.util.toNiceString
 import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
+import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
+import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
 import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
 import com.willfp.libreforge.conditions.Conditions
 import com.willfp.libreforge.conditions.ConfiguredCondition
@@ -365,7 +367,33 @@ private val activeJobKey: PersistentDataKey<String> = PersistentDataKey(
 
 var OfflinePlayer.activeJob: Job?
     get() = Jobs.getByID(this.profile.read(activeJobKey))
-    set(value) = this.profile.write(activeJobKey, value?.id ?: "")
+    set(job) {
+        val oldJob = this.activeJob
+
+        if (oldJob != job) {
+            // Have to check for oldJob too to have null safety
+            if (job == null && oldJob != null) {
+                val event = PlayerJobLeaveEvent(player, oldJob)
+                Bukkit.getPluginManager().callEvent(event)
+
+                if (event.isCancelled) {
+                    return
+                }
+            }
+
+            // Not using else because null safety as well
+            if (job != null) {
+                val event = PlayerJobJoinEvent(player, job, oldJob)
+                Bukkit.getPluginManager().callEvent(event)
+
+                if (event.isCancelled) {
+                    return
+                }
+            }
+        }
+
+        this.profile.write(activeJobKey, job?.id ?: "")
+    }
 
 val OfflinePlayer.activeJobLevel: JobLevel?
     get() {
