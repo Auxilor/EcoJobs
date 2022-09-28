@@ -49,6 +49,8 @@ permissions:
       ecojobs.command.jobs: true
       ecojobs.command.unlock: true
       ecojobs.command.givexp: true
+      ecojobs.command.join: true
+      ecojobs.command.leave: true
       ecojobs.command.reset: true
 
   ecojobs.command.reload:
@@ -69,6 +71,12 @@ permissions:
   ecojobs.command.reset:
     description: Allows the use of /ecojobs reset.
     default: op
+  ecojobs.command.join:
+    description: Allows the use of /jobs join.
+    default: true
+  ecojobs.command.leave:
+    description: Allows the use of /jobs leave.
+    default: true
 
   ecojobs.xpmultiplier.50percent:
     description: Gives the player 50% more job experience

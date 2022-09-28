@@ -20,6 +20,10 @@ messages:
   unlocked-job: "&fSuccessfully unlocked the %job%&f job for %player%!"
   cannot-spawn-job: "&cYou already have this job unlocked!"
   invalid-amount: "&cInvalid amount!"
+  no-job: "&cYou don't have a job!"
+  joined-job: "&fYou have joined the %job%&f job!"
+  left-job: "&fYou have left the %job%&f job!"
+  job-already-joined: "&cYou already have this job!"
 
 menu:
   title: "Jobs"
