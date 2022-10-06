@@ -1,0 +1,111 @@
+name: "&#FD9113Beekeeper"
+description: "&8&oLevelling up by breeding bees, but don't drink any honey!"
+
+unlocked-by-default: true
+
+reset-on-quit: false
+
+join-price: 0
+leave-price: 0
+
+level-xp-requirements:
+  - 100
+  - 120
+  - 150
+  - 180
+  - 210
+  - 250
+  - 300
+  - 360
+  - 430
+  - 520
+  - 620
+  - 740
+  - 890
+  - 1000
+  - 1300
+  - 1500
+  - 1900
+  - 2200
+  - 2700
+  - 3200
+  - 3800
+  - 4600
+  - 5500
+  - 6600
+  - 7900
+  - 9500
+  - 11500
+  - 14000
+  - 17000
+  - 19000
+  - 24000
+  - 29000
+  - 34000
+  - 41000
+  - 50000
+  - 60000
+  - 70000
+  - 85000
+  - 100000
+  - 120000
+  - 150000
+  - 180000
+  - 210000
+  - 250000
+  - 300000
+  - 360000
+  - 440000
+  - 580000
+  - 750000
+
+xp-gain-methods:
+  - trigger: breed
+    multiplier: 20.0
+    filters:
+      entities: 
+       - bee
+    conditions: [ ]
+
+level-placeholders:
+  - id: "money"
+    value: "%level% * 5"
+
+effects-description:
+  1:
+    - "&8» &8Earn &a$%money%&8 for each bee you breed"
+
+rewards-description:
+  1:
+    - "&8» &8Earn &a$%money%&8 for each bee you breed"
+
+level-up-messages:
+  1:
+    - "&8» &8Earn &a$%money%&8 for each bee you breed"
+
+level-commands: [ ]
+
+effects:
+  - id: give_money
+    args:
+      amount: "%v% * %level% * 2.0"
+    triggers:
+      - breed
+    filters:
+      entites:
+       - bee
+
+  - id: take_money
+    args: 
+      amount: "%v% * %level% * 5.0"
+    triggers:
+      - consume 
+    filters:
+      imems: 
+        - honey_bottle
+
+      
+
+conditions: [ ]
+
+icon: player_head texture:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjY0MjgyZWQxOTc4NzQ4YjM5OTUwOTkxNDAwZjBiN2U0YTM5ZjJlN2Q5ZWNlNjA3NmFmNWQxMzUxYzExNzc3ZiJ9fX0=

@@ -1,0 +1,190 @@
+# The ID of the job is the name of the .yml file,
+# for example miner.yml has the ID of miner
+# You can place jobs anywhere in this folder,
+# including in subfolders if you want to organize your job configs
+# _example.yml is not loaded.
+
+# The display name of the job
+name: "&#0047b3Toolsmith"
+
+# The description of the job
+description: "&8&oLevel up by crafting tools"
+
+# If the job should be unlocked by default
+unlocked-by-default: true
+
+# If job progress should be reset when quitting
+reset-on-quit: false
+
+# The price to join or leave this job (set to 0 to disable)
+join-price: 0
+leave-price: 0
+
+# The xp requirements for each job level - add new levels by adding more to this list
+level-xp-requirements:
+  - 100
+  - 120
+  - 150
+  - 180
+  - 210
+  - 250
+  - 300
+  - 360
+  - 430
+  - 520
+  - 620
+  - 740
+  - 890
+  - 1000
+  - 1300
+  - 1500
+  - 1900
+  - 2200
+  - 2700
+  - 3200
+  - 3800
+  - 4600
+  - 5500
+  - 6600
+  - 7900
+  - 9500
+  - 11500
+  - 14000
+  - 17000
+  - 19000
+  - 24000
+  - 29000
+  - 34000
+  - 41000
+  - 50000
+  - 60000
+  - 70000
+  - 85000
+  - 100000
+  - 120000
+  - 150000
+  - 180000
+  - 210000
+  - 250000
+  - 300000
+  - 360000
+  - 440000
+  - 580000
+  - 750000
+
+# An XP Gain method takes a trigger, a multiplier, conditions, and filters.
+# The multiplier takes the value produced by the trigger and multiplies it
+# by some value to calculate the experience that should be given
+xp-gain-methods:
+  - trigger: craft
+    multiplier: 2
+    conditions: [ ]
+    filters:
+      items:
+        - "*wooden_pickaxe"
+        - "*stone_pickaxe"
+        - "*iron_pickaxe"
+        - "*golden_pickaxe"
+        - "*diamond_pickaxe"
+        - "*netherite_pickaxe"
+        - "*wooden_axe"
+        - "*stone_axe"
+        - "*iron_axe"
+        - "*golden_axe"
+        - "*diamond_axe"
+        - "*netherite_axe"
+        - "*wooden_shovel"
+        - "*stone_shovel"
+        - "*iron_shovel"
+        - "*golden_shovel"
+        - "*diamond_shovel"
+        - "*netherite_shovel"
+        - "*wooden_hoe"
+        - "*stone_hoe"
+        - "*iron_hoe"
+        - "*golden_hoe"
+        - "*diamond_hoe"
+        - "*netherite_hoe"
+        - "*fishing_rod"
+        - "*flint_and_steel"
+        - "*clock"
+        - "*compass"
+        - "*lead"
+        - "*shears"
+        - "*spyglass"
+
+# Custom placeholders to be used in descriptions,
+# Don't add % to the IDs, this is done automatically
+# The value takes a %level% placeholder and is a mathematical expression
+level-placeholders:
+  - id: "money"
+    value: "%level% * 2"
+
+# The text shown with the %effects% placeholder
+# The number dictates the minimum level for this text to show for
+# Adding new levels will override this text on those levels or above
+effects-description:
+  1:
+    - "&8» &8Earn &a$%money%&8 for each tool crafted"
+
+# Same as above, but for %rewards%
+rewards-description:
+  1:
+    - "&8» &8Earn &a$%money%&8 for each tool crafted"
+
+# Same as above, but for %level_up_messages%
+level-up-messages:
+  1:
+    - "&8» &8Earn &a$%money%&8 for each tool crafted"
+
+# Commands to be sent on levelup, can be formatted two ways:
+# level:command (e.g. 10:eco give %player% 1000), which would execute that command for level 10
+# command (e.g. eco give %player% 5000), which would execute that command for all levels
+level-commands: [ ]
+
+# The effects for the job, has %level% as a placeholder
+effects:
+  - id: give_money
+    args:
+      amount: "2 * %level%"
+    filters:
+      items:
+        - "*wooden_pickaxe"
+        - "*stone_pickaxe"
+        - "*iron_pickaxe"
+        - "*golden_pickaxe"
+        - "*diamond_pickaxe"
+        - "*netherite_pickaxe"
+        - "*wooden_axe"
+        - "*stone_axe"
+        - "*iron_axe"
+        - "*golden_axe"
+        - "*diamond_axe"
+        - "*netherite_axe"
+        - "*wooden_shovel"
+        - "*stone_shovel"
+        - "*iron_shovel"
+        - "*golden_shovel"
+        - "*diamond_shovel"
+        - "*netherite_shovel"
+        - "*wooden_hoe"
+        - "*stone_hoe"
+        - "*iron_hoe"
+        - "*golden_hoe"
+        - "*diamond_hoe"
+        - "*netherite_hoe"
+        - "*fishing_rod"
+        - "*flint_and_steel"
+        - "*clock"
+        - "*compass"
+        - "*lead"
+        - "*shears"
+        - "*spyglass"
+    triggers:
+      - craft
+
+# The conditions for the job, also has %level% as a placeholder
+conditions: [ ]
+
+# The icon in GUIs
+icon: player_head texture:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODk2ZDRjODM4YTE2MDZhYzc1Nzc1NDIzMjA4NjE0OTcwOGI3OWFiYTAxYmU5NTNjNjUzOTkxMDFlODk0M2RhZiJ9fX0=

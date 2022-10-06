@@ -85,15 +85,15 @@ level-placeholders:
 
 effects-description:
   1:
-    - "&8» &8Earn &a$%money%&8 for each crop you farm"
+    - "&8» &8Earn &a$%money%&8 for each crop farmed"
 
 rewards-description:
   1:
-    - "&8» &8Earn &a$%money%&8 for each crop you farm"
+    - "&8» &8Earn &a$%money%&8 for each crop farmed"
 
 level-up-messages:
   1:
-    - "&8» &8Earn &a$%money%&8 for each crop you farm"
+    - "&8» &8Earn &a$%money%&8 for each crop farmed"
 
 level-commands: [ ]
 
