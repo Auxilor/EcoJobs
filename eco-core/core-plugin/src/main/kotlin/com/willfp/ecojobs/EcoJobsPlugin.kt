@@ -30,6 +30,11 @@ class EcoJobsPlugin : LibReforgePlugin() {
 
         PlayerPlaceholder(
             this,
+            "job_level"
+        ) { it.activeJobLevel?.level.toString() ?: "" }.register()
+
+        PlayerPlaceholder(
+            this,
             "job_id"
         ) { it.activeJob?.id ?: "" }.register()
     }
