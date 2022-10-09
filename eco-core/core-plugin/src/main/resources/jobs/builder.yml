@@ -89,14 +89,6 @@ effects:
     args:
       every: "ceil(12 - %level% / 8)"
       amount: "1.2 * %level%"
-    filters:
-      items:
-        - "*wooden_pickaxe"
-        - "*stone_pickaxe"
-        - "*iron_pickaxe"
-        - "*golden_pickaxe"
-        - "*diamond_pickaxe"
-        - "*netherite_pickaxe"
     triggers:
       - place_block
 
