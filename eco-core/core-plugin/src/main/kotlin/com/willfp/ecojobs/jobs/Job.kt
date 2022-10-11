@@ -18,6 +18,7 @@ import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
 import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
 import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
 import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
+import com.willfp.ecojobs.jobs.Jobs.unlockedJobs
 import com.willfp.libreforge.conditions.Conditions
 import com.willfp.libreforge.conditions.ConfiguredCondition
 import com.willfp.libreforge.effects.ConfiguredEffect
@@ -166,10 +167,17 @@ class Job(
         }.register()
 
         PlayerPlaceholder(
-            plugin,
-            "${id}_level"
+                plugin,
+        "${id}_level"
         ) {
             it.getJobLevel(this).toString()
+        }.register()
+
+        PlayerPlaceholder(
+            plugin,
+            "total_jobs_level"
+        ) {
+            it.getTotalJobsLevel().toString()
         }.register()
     }
 
@@ -408,6 +416,15 @@ val OfflinePlayer.activeJobLevel: JobLevel?
 
 fun OfflinePlayer.getJobLevel(job: Job): Int =
     this.profile.read(job.levelKey)
+
+fun OfflinePlayer.getTotalJobsLevel(): Int {
+    //Get each job level and add them together
+    var total = 0;
+    for (job in Jobs.values()){
+        total += this.profile.read(job.levelKey);
+    }
+    return total;
+}
 
 fun OfflinePlayer.setJobLevel(job: Job, level: Int) =
     this.profile.write(job.levelKey, level)
