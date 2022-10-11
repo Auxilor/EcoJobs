@@ -1,0 +1,94 @@
+name: "&#4B4736Smelter"
+description: "&7&oLevel up by smelting items"
+
+unlocked-by-default: true
+
+reset-on-quit: false
+
+join-price: 0
+leave-price: 0
+
+level-xp-requirements:
+  - 100
+  - 120
+  - 150
+  - 180
+  - 210
+  - 250
+  - 300
+  - 360
+  - 430
+  - 520
+  - 620
+  - 740
+  - 890
+  - 1000
+  - 1300
+  - 1500
+  - 1900
+  - 2200
+  - 2700
+  - 3200
+  - 3800
+  - 4600
+  - 5500
+  - 6600
+  - 7900
+  - 9500
+  - 11500
+  - 14000
+  - 17000
+  - 19000
+  - 24000
+  - 29000
+  - 34000
+  - 41000
+  - 50000
+  - 60000
+  - 70000
+  - 85000
+  - 100000
+  - 120000
+  - 150000
+  - 180000
+  - 210000
+  - 250000
+  - 300000
+  - 360000
+  - 440000
+  - 580000
+  - 750000
+
+xp-gain-methods:
+  - trigger: smelt
+    multiplier: 0.5
+    conditions: [ ]
+
+level-placeholders:
+  - id: "money"
+    value: "%level% * 0.25"
+
+effects-description:
+  1:
+    - "&8» &8Earn &a$%money%&8 for each smelted item"
+
+rewards-description:
+  1:
+    - "&8» &8Earn &a$%money%&8 for each smelted item"
+
+level-up-messages:
+  1:
+    - "&8» &8Earn &a$%money%&8 for each smelted item"
+
+level-commands: [ ]
+
+effects:
+  - id: give_money
+    args:
+      amount: "%level% * 0.25"
+    triggers:
+      - smelt
+
+conditions: [ ]
+
+icon: player_head texture:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdjMDc0ODM2MmU5YTYzZTA3YWEyYjA4YjVmN2QxMDFlNTM5NWFhMjE1MzJhNDc2NzIyZGJkZDk4YzJmMiJ9fX0=
