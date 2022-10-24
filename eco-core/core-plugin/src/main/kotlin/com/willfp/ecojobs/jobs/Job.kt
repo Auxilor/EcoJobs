@@ -172,13 +172,6 @@ class Job(
         ) {
             it.getJobLevel(this).toString()
         }.register()
-
-        PlayerPlaceholder(
-            plugin,
-            "total_jobs_level"
-        ) {
-            it.getTotalJobsLevel().toString()
-        }.register()
     }
 
     fun getLevel(level: Int): JobLevel = levels.get(level) {
@@ -416,15 +409,6 @@ val OfflinePlayer.activeJobLevel: JobLevel?
 
 fun OfflinePlayer.getJobLevel(job: Job): Int =
     this.profile.read(job.levelKey)
-
-fun OfflinePlayer.getTotalJobsLevel(): Int {
-    //Get each job level and add them together
-    var total = 0;
-    for (job in Jobs.values()){
-        total += this.profile.read(job.levelKey);
-    }
-    return total;
-}
 
 fun OfflinePlayer.setJobLevel(job: Job, level: Int) =
     this.profile.write(job.levelKey, level)

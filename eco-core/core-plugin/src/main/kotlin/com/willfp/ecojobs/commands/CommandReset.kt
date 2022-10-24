@@ -8,8 +8,6 @@ import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.jobs.activeJob
 import com.willfp.ecojobs.jobs.hasJob
 import com.willfp.ecojobs.jobs.resetJob
-import com.willfp.ecojobs.jobs.setJobLevel
-import com.willfp.ecojobs.jobs.setJobXP
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 

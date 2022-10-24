@@ -56,14 +56,11 @@ object JobsGUI {
         val jobInfoItemBuilder = { player: Player, _: Menu ->
             val job = player.activeJob
 
-            if (job == null) {
-                ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.job-info.no-active.item")))
+            job?.getJobInfoIcon(player)
+                ?: ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.job-info.no-active.item")))
                     .setDisplayName(plugin.configYml.getFormattedString("gui.job-info.no-active.name"))
                     .addLoreLines(plugin.configYml.getFormattedStrings("gui.job-info.no-active.lore"))
                     .build()
-            } else {
-                job.getJobInfoIcon(player)
-            }
         }
 
         val jobIconBuilder = { player: Player, menu: Menu, index: Int ->
@@ -78,7 +75,7 @@ object JobsGUI {
         }
 
         return menu(plugin.configYml.getInt("gui.rows")) {
-            setTitle(plugin.langYml.getString("menu.title"))
+            title = plugin.langYml.getString("menu.title")
 
             setMask(
                 FillerMask(
@@ -145,7 +142,7 @@ object JobsGUI {
 
                         val newPage = max(1, page - 1)
 
-                        menu.addState(player, pageKey, newPage)
+                        menu.setState(player, pageKey, newPage)
                     }
                 }
             )
@@ -169,7 +166,7 @@ object JobsGUI {
 
                         val newPage = min(pages, page + 1)
 
-                        menu.addState(player, pageKey, newPage)
+                        menu.setState(player, pageKey, newPage)
                     }
                 }
             )

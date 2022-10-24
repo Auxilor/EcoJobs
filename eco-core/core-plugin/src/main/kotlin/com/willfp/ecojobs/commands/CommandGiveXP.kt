@@ -7,7 +7,6 @@ import com.willfp.eco.util.savedDisplayName
 import com.willfp.eco.util.toNiceString
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.jobs.giveExactJobExperience
-import com.willfp.ecojobs.jobs.giveJobExperience
 import com.willfp.ecojobs.jobs.hasJob
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
