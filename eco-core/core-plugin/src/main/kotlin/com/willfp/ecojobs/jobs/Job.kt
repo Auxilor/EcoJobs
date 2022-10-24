@@ -171,6 +171,28 @@ class Job(
         ) {
             it.getJobLevel(this).toString()
         }.register()
+
+        PlayerPlaceholder(
+            plugin,
+            "${id}_total_players"
+        ) {
+            getTotalPlayers(this).toNiceString()
+        }.register()
+    }
+
+    private fun getTotalPlayers(job: Job): Int {
+        val offlinePlayers = Bukkit.getServer().offlinePlayers
+        val onlinePlayers = Bukkit.getServer().onlinePlayers
+
+        val allPlayers = offlinePlayers + onlinePlayers
+        var countPlayerWithJob = 0
+
+        for (player in allPlayers.distinct()) {
+            if (player.activeJob?.id == job.id)
+                countPlayerWithJob += 1
+        }
+
+        return countPlayerWithJob
     }
 
     fun getLevel(level: Int): JobLevel = levels.get(level) {
