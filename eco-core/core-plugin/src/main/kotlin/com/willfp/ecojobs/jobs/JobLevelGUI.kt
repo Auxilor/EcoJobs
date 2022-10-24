@@ -66,7 +66,7 @@ class JobLevelGUI(
         pages = ceil(job.maxLevel.toDouble() / levelsPerPage).toInt()
 
         menu = menu(plugin.configYml.getInt("level-gui.rows")) {
-            setTitle(job.name)
+            title = job.name
             setMask(
                 FillerMask(
                     maskItems,
@@ -142,7 +142,7 @@ class JobLevelGUI(
                         if (newPage == 0) {
                             JobsGUI.open(player)
                         } else {
-                            menu.addState(player, pageKey, newPage)
+                            menu.setState(player, pageKey, newPage)
                         }
                     }
                 }
@@ -162,7 +162,7 @@ class JobLevelGUI(
 
                         val newPage = min(pages, page + 1)
 
-                        menu.addState(player, pageKey, newPage)
+                        menu.setState(player, pageKey, newPage)
                     }
                 }
             )
@@ -191,5 +191,7 @@ class JobLevelGUI(
         }
     }
 
-    fun open(player: Player) = menu.open(player)
+    fun open(player: Player) {
+        menu.open(player)
+    }
 }

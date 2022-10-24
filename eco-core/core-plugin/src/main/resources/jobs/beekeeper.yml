@@ -92,7 +92,7 @@ effects:
     triggers:
       - breed
     filters:
-      entites:
+      entities:
        - bee
 
   - id: take_money
@@ -101,7 +101,7 @@ effects:
     triggers:
       - consume 
     filters:
-      imems: 
+      items:
         - honey_bottle
 
       

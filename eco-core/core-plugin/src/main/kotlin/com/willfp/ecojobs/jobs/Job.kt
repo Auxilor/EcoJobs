@@ -18,6 +18,7 @@ import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
 import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
 import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
 import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
+import com.willfp.ecojobs.jobs.Jobs.unlockedJobs
 import com.willfp.libreforge.conditions.Conditions
 import com.willfp.libreforge.conditions.ConfiguredCondition
 import com.willfp.libreforge.effects.ConfiguredEffect
@@ -166,8 +167,8 @@ class Job(
         }.register()
 
         PlayerPlaceholder(
-            plugin,
-            "${id}_level"
+                plugin,
+        "${id}_level"
         ) {
             it.getJobLevel(this).toString()
         }.register()
