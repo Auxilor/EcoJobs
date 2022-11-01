@@ -53,7 +53,7 @@ class CommandJoin(plugin: EcoPlugin) : Subcommand(plugin, "join", "ecojobs.comma
 
         if (args.size == 1) {
             StringUtil.copyPartialMatches(
-                args[1],
+                args[0],
                 Jobs.values().filter { sender.hasJob(it) }.map { it.id },
                 completions
             )
