@@ -3,6 +3,7 @@ package com.willfp.ecojobs.jobs
 import com.willfp.eco.core.config.updating.ConfigUpdater
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
+import com.willfp.eco.core.gui.onLeftClick
 import com.willfp.eco.core.gui.slot
 import com.willfp.eco.core.gui.slot.ConfigSlot
 import com.willfp.eco.core.gui.slot.FillerMask
@@ -99,10 +100,6 @@ object JobsGUI {
                 val (row, column) = pair
 
                 setSlot(row, column, slot({ p, m -> jobIconBuilder(p, m, index) }) {
-                    setUpdater { p, m, _ ->
-                        jobIconBuilder(p, m, index)
-                    }
-
                     onLeftClick { event, _, _ ->
                         val player = event.whoClicked as Player
 
@@ -114,8 +111,10 @@ object JobsGUI {
 
                         val job = unlockedJobs.getOrNull(pagedIndex) ?: return@onLeftClick
 
-                        if (player.activeJob != job) {
+                        if (player.activeJob == null) {
                             player.activeJob = job
+                        } else {
+                            player.sendMessage(plugin.langYml.getMessage("leave-current-job"))
                         }
 
                         player.playSound(
@@ -189,9 +188,8 @@ object JobsGUI {
                         .setDisplayName(plugin.configYml.getString("gui.deactivate-job.name"))
                         .build()
                 ) {
-                    onLeftClick { event, _ ->
-                        val player = event.whoClicked as Player
-                        player.activeJob = null
+                    onLeftClick { player, _, _, _ ->
+                        player.activeJob?.leaveGUI?.open(player)
                     }
                 }
             )

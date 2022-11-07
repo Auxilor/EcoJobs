@@ -17,8 +17,16 @@ unlocked-by-default: true
 reset-on-quit: false
 
 # The price to join or leave this job (set to 0 to disable)
-join-price: 0
-leave-price: 0
+# Read here for more: https://plugins.auxilor.io/all-plugins/prices
+join-price:
+  value: 0
+  type: coins
+  display: "&a$%value%"
+
+leave-price:
+  value: 0
+  type: coins
+  display: "&a$%value%"
 
 # The xp requirements for each job level - add new levels by adding more to this list
 level-xp-requirements:

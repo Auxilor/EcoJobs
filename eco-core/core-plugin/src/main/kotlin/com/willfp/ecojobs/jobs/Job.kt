@@ -10,6 +10,8 @@ import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.eco.core.placeholder.PlayerStaticPlaceholder
 import com.willfp.eco.core.placeholder.PlayerlessPlaceholder
+import com.willfp.eco.core.price.ConfiguredPrice
+import com.willfp.eco.core.price.impl.PriceEconomy
 import com.willfp.eco.util.NumberUtils
 import com.willfp.eco.util.formatEco
 import com.willfp.eco.util.toNiceString
@@ -18,7 +20,6 @@ import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
 import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
 import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
 import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
-import com.willfp.ecojobs.jobs.Jobs.unlockedJobs
 import com.willfp.libreforge.conditions.Conditions
 import com.willfp.libreforge.conditions.ConfiguredCondition
 import com.willfp.libreforge.effects.ConfiguredEffect
@@ -29,7 +30,7 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.util.*
+import java.util.Objects
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
@@ -42,8 +43,16 @@ class Job(
     val description = config.getFormattedString("description")
     val isUnlockedByDefault = config.getBool("unlocked-by-default")
     val resetsOnQuit = config.getBool("reset-on-quit")
-    val joinPrice = config.getDouble("join-price")
-    val leavePrice = config.getDouble("leave-price")
+
+    val joinPrice = ConfiguredPrice.create(config.getSubsection("join-price")) ?: ConfiguredPrice(
+        PriceEconomy(config.getDouble("join-price")),
+        ""
+    )
+
+    val leavePrice = ConfiguredPrice.create(config.getSubsection("leave-price")) ?: ConfiguredPrice(
+        PriceEconomy(config.getDouble("leave-price")),
+        ""
+    )
 
     val levelKey: PersistentDataKey<Int> = PersistentDataKey(
         EcoJobsPlugin.instance.namespacedKeyFactory.create("${id}_level"),
@@ -62,6 +71,8 @@ class Job(
     val maxLevel = levelXpRequirements.size
 
     val levelGUI = JobLevelGUI(plugin, this)
+
+    val leaveGUI = JobLeaveGUI(plugin, this)
 
     private val baseItem: ItemStack = Items.lookup(config.getString("icon")).item
 
@@ -167,8 +178,8 @@ class Job(
         }.register()
 
         PlayerPlaceholder(
-                plugin,
-        "${id}_level"
+            plugin,
+            "${id}_level"
         ) {
             it.getJobLevel(this).toString()
         }.register()
@@ -264,8 +275,8 @@ class Job(
                     .replace("%description%", this.description)
                     .replace("%job%", this.name)
                     .replace("%level%", (forceLevel ?: player.getJobLevel(this)).toString())
-                    .replace("%join_price%", NumberUtils.format(this.joinPrice))
-                    .replace("%leave_price%", NumberUtils.format(this.leavePrice))
+                    .replace("%join_price%", this.joinPrice.getDisplay(player))
+                    .replace("%leave_price%", this.leavePrice.getDisplay(player))
             }
             .toMutableList()
 
@@ -294,7 +305,6 @@ class Job(
         val base = baseItem.clone()
 
         val level = player.getJobLevel(this)
-        val isActive = player.activeJob == this
 
         return ItemStackBuilder(base)
             .setDisplayName(
@@ -304,8 +314,11 @@ class Job(
             )
             .addLoreLines {
                 injectPlaceholdersInto(plugin.configYml.getStrings("gui.job-icon.lore"), player) +
-                        if (isActive) plugin.configYml.getStrings("gui.job-icon.active-lore") else
-                            plugin.configYml.getStrings("gui.job-icon.not-active-lore")
+                        when (player.activeJob) {
+                            this -> plugin.configYml.getStrings("gui.job-icon.active-lore")
+                            null -> plugin.configYml.getStrings("gui.job-icon.join-lore")
+                            else -> emptyList()
+                        }
             }
             .build()
     }

@@ -33,6 +33,11 @@ class CommandJoin(plugin: EcoPlugin) : Subcommand(plugin, "join", "ecojobs.comma
             return
         }
 
+        if (player.activeJob != null) {
+            player.sendMessage(plugin.langYml.getMessage("leave-current-job"))
+            return
+        }
+
         player.sendMessage(
             plugin.langYml.getMessage("joined-job", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
                 .replace("%job%", job.name)
