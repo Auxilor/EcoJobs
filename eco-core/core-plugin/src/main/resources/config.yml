@@ -254,6 +254,7 @@ leave-gui:
     name: "&cLeave %job%"
     lore:
       - ""
+      - "&cAre you sure?"
       - "%leave_lore%"
     location:
       row: 2
