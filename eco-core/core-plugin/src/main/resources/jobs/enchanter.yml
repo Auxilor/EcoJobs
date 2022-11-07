@@ -1,5 +1,5 @@
 name: "&#7A54FBEnchanter"
-description: "&7&oLevel up by enchanting items"
+description: "&8&oLevel up by enchanting items"
 
 unlocked-by-default: true
 
@@ -10,10 +10,15 @@ join-price:
   type: coins
   display: "&a$%value%"
 
+join-lore: []
+
 leave-price:
   value: 0
   type: coins
   display: "&a$%value%"
+
+leave-lore:
+  - ""
 
 level-xp-requirements:
   - 100

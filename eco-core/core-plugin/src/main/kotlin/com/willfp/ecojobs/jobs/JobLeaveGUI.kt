@@ -66,14 +66,14 @@ class JobLeaveGUI(
                             plugin.langYml.getMessage("left-job")
                                 .replace("%job%", job.name)
                         )
-                        player.closeInventory()
                     } else {
                         player.sendMessage(
                             plugin.langYml.getMessage("cant-leave-job")
                                 .replace("%job%", job.name)
                         )
-                        JobsGUI.open(player)
                     }
+
+                    JobsGUI.open(player)
                 }
             }
         )

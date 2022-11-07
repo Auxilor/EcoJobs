@@ -10,10 +10,15 @@ join-price:
   type: coins
   display: "&a$%value%"
 
+join-lore: []
+
 leave-price:
   value: 0
   type: coins
   display: "&a$%value%"
+
+leave-lore:
+  - ""
 
 level-xp-requirements:
   - 100

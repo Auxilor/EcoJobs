@@ -254,7 +254,7 @@ leave-gui:
     name: "&cLeave %job%"
     lore:
       - ""
-      - "&8» This will cost %leave_price%"
+      - "%leave_lore%"
     location:
       row: 2
       column: 7

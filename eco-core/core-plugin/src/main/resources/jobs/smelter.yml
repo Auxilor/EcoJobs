@@ -1,5 +1,5 @@
 name: "&#4B4736Smelter"
-description: "&7&oLevel up by smelting items"
+description: "&8&oLevel up by smelting items"
 
 unlocked-by-default: true
 
@@ -10,10 +10,15 @@ join-price:
   type: coins
   display: "&a$%value%"
 
+join-lore: []
+
 leave-price:
   value: 0
   type: coins
   display: "&a$%value%"
+
+leave-lore:
+  - ""
 
 level-xp-requirements:
   - 100

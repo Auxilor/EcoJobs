@@ -259,6 +259,24 @@ class Job(
             }
     }
 
+    private fun getLeaveLore(level: Int, whitespace: Int = 0): List<String> =
+        this.config.getStrings("leave-lore")
+            .map {
+                levelPlaceholders.format(it, level)
+            }
+            .map {
+                " ".repeat(whitespace) + it
+            }
+
+    private fun getJoinLore(level: Int, whitespace: Int = 0): List<String> =
+        this.config.getStrings("join-lore")
+            .map {
+                levelPlaceholders.format(it, level)
+            }
+            .map {
+                " ".repeat(whitespace) + it
+            }
+
     fun injectPlaceholdersInto(lore: List<String>, player: Player, forceLevel: Int? = null): List<String> {
         val withPlaceholders = lore
             .map {
@@ -292,6 +310,10 @@ class Job(
                     getRewardsDescription(forceLevel ?: player.getJobLevel(this), whitespace)
                 } else if (s.contains("%level_up_messages%")) {
                     getLevelUpMessages(forceLevel ?: player.getJobLevel(this), whitespace)
+                } else if (s.contains("%leave_lore%")) {
+                    getLeaveLore(forceLevel ?: player.getJobLevel(this), whitespace)
+                } else if (s.contains("%join_lore%")) {
+                    getJoinLore(forceLevel ?: player.getJobLevel(this), whitespace)
                 } else {
                     listOf(s)
                 }
