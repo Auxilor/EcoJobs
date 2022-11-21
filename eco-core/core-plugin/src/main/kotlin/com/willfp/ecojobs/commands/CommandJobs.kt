@@ -28,6 +28,10 @@ class CommandJobs(plugin: EcoPlugin) : PluginCommand(plugin, "jobs", "ecojobs.co
             return
         }
 
+        if (player.hasJob(job)) {
+            player.sendMessage(plugin.langYml.getMessage("dont-have-job"))
+        }
+
         job.levelGUI.open(player)
     }
 
