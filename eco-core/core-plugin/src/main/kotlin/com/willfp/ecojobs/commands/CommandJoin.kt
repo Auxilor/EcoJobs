@@ -52,7 +52,6 @@ class CommandJoin(plugin: EcoPlugin) : Subcommand(plugin, "join", "ecojobs.comma
 
         val completions = mutableListOf<String>()
         if (args.isEmpty()) {
-            // Currently, this case is not ever reached
             return Jobs.values().filter { sender.hasJob(it) }.map { it.id }
         }
 
