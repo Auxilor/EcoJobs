@@ -470,7 +470,7 @@ fun OfflinePlayer.getJobLevelObject(job: Job): JobLevel =
     job.getLevel(this.getJobLevel(job))
 
 fun OfflinePlayer.hasJob(job: Job): Boolean =
-    this.getJobLevel(job) > 0
+    this.getJobLevel(job) > 0 || job.isUnlockedByDefault
 
 fun OfflinePlayer.getJobXP(job: Job): Double =
     this.profile.read(job.xpKey)
