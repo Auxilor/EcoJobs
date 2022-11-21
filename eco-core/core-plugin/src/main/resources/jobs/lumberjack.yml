@@ -1,5 +1,5 @@
-name: "&#FB8810Lumberjack"
-description: "&8&oLevel up by chopping wood"
+name: "&#FD9113Lumberjack"
+description: "&7&oLevel up by chopping wood"
 
 unlocked-by-default: true
 
@@ -74,56 +74,57 @@ level-xp-requirements:
 xp-gain-methods:
   - trigger: mine_block
     multiplier: 0.5
-    conditions: [ ]
     filters:
-      items:
-        - "*oak_log"
-        - "*spruce_log"
-        - "*birch_log"
-        - "*jungle_log"
-        - "*acacia_log"
-        - "*dark_oak_log"
-        - "*mangrove_log"
-        - "*crimson_stem"
-        - "*warped_stem"
+      blocks:
+        - oak_log
+        - spruce_log
+        - birch_log
+        - jungle_log
+        - acacia_log
+        - dark_oak_log
+        - mangrove_log
+        - crimson_stem
+        - warped_stem
+      player_placed: false
+    conditions: [ ]
 
 level-placeholders:
   - id: "money"
-    value: "%level% * 0.4"
+    value: "%level% * 3.0"
 
 effects-description:
   1:
-    - "&8» &8Earn &a$%money%&8 for each log chopped."
+    - "&8» &7Earn &a$%money%&7 for each log chopped."
 
 rewards-description:
   1:
-    - "&8» &8Earn &a$%money%&8 for each log chopped."
+    - "&8» &7Earn &a$%money%&7 for each log chopped."
 
 level-up-messages:
   1:
-    - "&8» &8Earn &a$%money%&8 for each log chopped."
+    - "&8» &7Earn &a$%money%&7 for each log chopped."
 
 level-commands: [ ]
 
 effects:
   - id: give_money
     args:
-      every: "ceil(10 - %level% / 10)"
-      amount: "0.4 * %level%"
-    filters:
-      items:
-        - "*oak_log"
-        - "*spruce_log"
-        - "*birch_log"
-        - "*jungle_log"
-        - "*acacia_log"
-        - "*dark_oak_log"
-        - "*mangrove_log"
-        - "*crimson_stem"
-        - "*warped_stem"
+      amount: "%level% * 3.0"
     triggers:
       - mine_block
+    filters:
+      blocks:
+        - oak_log
+        - spruce_log
+        - birch_log
+        - jungle_log
+        - acacia_log
+        - dark_oak_log
+        - mangrove_log
+        - crimson_stem
+        - warped_stem
+      player_placed: false
 
 conditions: [ ]
 
-icon: player_head texture:basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2E2MjA3MDJmODBiZDJjMjI0MmUyZjEzMWMzZjlhMjU5NDAyYjdmYTg5NzRjODZjZjM0NTBmZjczZTc3MDU5NSJ9fX0=
+icon: player_head texture:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjk4NWEwNWQyYTMzOWExYzFiZDdlMmE3OWFlMDAyNWI5YTEwZTg0ZGI5OWFkZjQzNThkNmViZTgzNThhZDJkOCJ9fX0=
