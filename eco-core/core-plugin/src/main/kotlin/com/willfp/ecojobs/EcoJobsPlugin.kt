@@ -1,6 +1,7 @@
 package com.willfp.ecojobs
 
 import com.willfp.eco.core.command.impl.PluginCommand
+import com.willfp.eco.core.integrations.IntegrationLoader
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.eco.util.toSingletonList
 import com.willfp.ecojobs.commands.CommandEcojobs
@@ -13,6 +14,7 @@ import com.willfp.ecojobs.jobs.ResetOnQuitListener
 import com.willfp.ecojobs.jobs.activeJob
 import com.willfp.ecojobs.jobs.activeJobLevel
 import com.willfp.ecojobs.jobs.getJobLevel
+import com.willfp.ecojobs.placeholders.EcoJobsTopExpansion
 import com.willfp.libreforge.LibReforgePlugin
 import org.bukkit.event.Listener
 
@@ -65,6 +67,12 @@ class EcoJobsPlugin : LibReforgePlugin() {
             JobTriggerXPGainListener,
             ResetOnQuitListener,
             PriceHandler
+        )
+    }
+
+    override fun loadAdditionalIntegrations(): List<IntegrationLoader> {
+        return listOf(
+            IntegrationLoader("PlaceholderAPI") { EcoJobsTopExpansion(this).register() }
         )
     }
 

@@ -1,5 +1,6 @@
 package com.willfp.ecojobs.jobs
 
+import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.core.data.keys.PersistentDataKey
@@ -30,6 +31,7 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.time.Duration
 import java.util.Objects
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
@@ -43,6 +45,9 @@ class Job(
     val description = config.getFormattedString("description")
     val isUnlockedByDefault = config.getBool("unlocked-by-default")
     val resetsOnQuit = config.getBool("reset-on-quit")
+    val leaderBoardCache: Cache<Int, LeaderboardCacheEntry?> = Caffeine.newBuilder()
+        .expireAfterWrite(Duration.ofSeconds(plugin.configYml.getInt("cache-expire-after").toLong()))
+        .build()
 
     val joinPrice = ConfiguredPrice.create(config.getSubsection("join-price")) ?: ConfiguredPrice(
         PriceEconomy(config.getDouble("join-price")),
@@ -387,6 +392,17 @@ class Job(
         return this.id == other.id
     }
 
+    fun getTop(place: Int): LeaderboardCacheEntry? {
+        return leaderBoardCache.get(place) {
+            val top = Bukkit.getOfflinePlayers()
+                .sortedByDescending { it.getJobLevel(this) }.getOrNull(place - 1)
+
+            if (top == null) {
+                null
+            } else LeaderboardCacheEntry(top, top.getJobLevel(this))
+        }
+    }
+
     override fun hashCode(): Int {
         return Objects.hash(this.id)
     }
@@ -547,3 +563,5 @@ fun Player.giveExactJobExperience(job: Job, experience: Double) {
         this.setJobXP(job, progress)
     }
 }
+
+data class LeaderboardCacheEntry(val player: OfflinePlayer, val amount: Int)
