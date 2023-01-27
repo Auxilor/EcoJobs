@@ -13,6 +13,7 @@ import com.willfp.ecojobs.jobs.ResetOnQuitListener
 import com.willfp.ecojobs.jobs.activeJob
 import com.willfp.ecojobs.jobs.activeJobLevel
 import com.willfp.ecojobs.jobs.getJobLevel
+import com.willfp.ecojobs.jobs.getJobProgress
 import com.willfp.libreforge.LibReforgePlugin
 import org.bukkit.event.Listener
 
@@ -34,6 +35,16 @@ class EcoJobsPlugin : LibReforgePlugin() {
             this,
             "job_level"
         ) { it.activeJobLevel?.level?.toString() ?: "" }.register()
+
+        PlayerPlaceholder(
+            this,
+            "job_level_next"
+        ) { it.activeJobLevel?.level?.let { l -> (l + 1).toString() } ?: "" }.register()
+
+        PlayerPlaceholder(
+            this,
+            "job_percent"
+        ) { p -> p.activeJob?.let { "${String.format("%.1f", p.getJobProgress(it) * 100)}%" } ?: "" }.register()
 
         PlayerPlaceholder(
             this,
