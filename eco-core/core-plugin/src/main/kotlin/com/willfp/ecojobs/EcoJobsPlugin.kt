@@ -3,17 +3,12 @@ package com.willfp.ecojobs
 import com.willfp.eco.core.command.impl.PluginCommand
 import com.willfp.eco.core.integrations.IntegrationLoader
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
+import com.willfp.eco.util.NumberUtils
+import com.willfp.eco.util.toNiceString
 import com.willfp.eco.util.toSingletonList
 import com.willfp.ecojobs.commands.CommandEcojobs
 import com.willfp.ecojobs.commands.CommandJobs
-import com.willfp.ecojobs.jobs.JobLevelListener
-import com.willfp.ecojobs.jobs.JobTriggerXPGainListener
-import com.willfp.ecojobs.jobs.Jobs
-import com.willfp.ecojobs.jobs.PriceHandler
-import com.willfp.ecojobs.jobs.ResetOnQuitListener
-import com.willfp.ecojobs.jobs.activeJob
-import com.willfp.ecojobs.jobs.activeJobLevel
-import com.willfp.ecojobs.jobs.getJobLevel
+import com.willfp.ecojobs.jobs.*
 import com.willfp.ecojobs.placeholders.EcoJobsTopExpansion
 import com.willfp.libreforge.LibReforgePlugin
 import org.bukkit.event.Listener
@@ -41,6 +36,27 @@ class EcoJobsPlugin : LibReforgePlugin() {
             this,
             "job_id"
         ) { it.activeJob?.id ?: "" }.register()
+
+        PlayerPlaceholder(
+            this,
+            "percentage_progress"
+        ) {
+            (it.activeJob?.let { it1 -> it.getJobProgress(it1) }?.times(100)).toNiceString()
+        }.register()
+
+        PlayerPlaceholder(
+            this,
+            "current_xp"
+        ) {
+            it.activeJob?.let { it1 -> it.getJobXP(it1) }?.let { it2 -> NumberUtils.format(it2) }
+        }.register()
+
+        PlayerPlaceholder(
+            this,
+            "required_xp"
+        ) {
+            it.activeJob?.let { it1 -> it.getJobXPRequired(it1).toString() }
+        }.register()
 
         PlayerPlaceholder(
             this,
