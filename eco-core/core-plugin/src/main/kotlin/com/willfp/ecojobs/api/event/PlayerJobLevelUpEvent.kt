@@ -7,9 +7,9 @@ import org.bukkit.event.HandlerList
 
 class PlayerJobLevelUpEvent(
     who: Player,
-    val job: Job,
+    override val job: Job,
     val level: Int
-) : PlayerEvent(who) {
+) : PlayerEvent(who), JobEvent {
     override fun getHandlers(): HandlerList {
         return handlerList
     }
