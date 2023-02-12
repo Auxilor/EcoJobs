@@ -34,6 +34,7 @@ allprojects {
         maven { url 'https://repo.codemc.io/repository/maven-public/' }
         maven { url 'https://repo.dmulloy2.net/repository/public/' }
         maven { url 'https://repo.essentialsx.net/releases/' }
+        maven { url 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
     }
 
     jar {
@@ -47,6 +48,7 @@ allprojects {
     }
 
     dependencies {
+        compileOnly 'me.clip:placeholderapi:2.11.2'
         compileOnly 'com.willfp:eco:6.46.0'
         implementation 'com.willfp:libreforge:3.129.1'
         implementation 'com.willfp:ecomponent:1.0.0'
