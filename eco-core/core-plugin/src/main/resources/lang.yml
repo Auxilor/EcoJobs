@@ -33,7 +33,7 @@ messages:
   joined-job: "&fYou have joined the %job%&f job!"
   left-job: "&fYou have left the %job%&f job!"
   job-already-joined: "&cYou already have this job!"
-  leave-current-job: "&cYou must leave your current job before joining a new one!"
+  cannot-join-job: "&cYou are already in too many jobs, please leave one!"
   cant-leave-job: "&cYou can't leave the %job%&f job!"
   dont-have-job: "&cYou don't have this job unlocked!"
   not-in-job: "&cYou are not in this job!"

@@ -26,6 +26,7 @@ import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.api.getJobProgress
 import com.willfp.ecojobs.api.getJobXP
 import com.willfp.ecojobs.api.getJobXPRequired
+import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.jobLimit
 import com.willfp.libreforge.conditions.Conditions
 import com.willfp.libreforge.conditions.ConfiguredCondition
@@ -305,7 +306,9 @@ class Job(
         ).addLoreLines {
             injectPlaceholdersInto(
                 plugin.configYml.getStrings("gui.job-icon.lore"), player
-            ) + if (player.canJoinJob(this)) {
+            ) + if (player.hasJobActive(this)) {
+                plugin.configYml.getStrings("gui.job-icon.active-lore")
+            } else if (player.canJoinJob(this)) {
                 plugin.configYml.getStrings("gui.job-icon.join-lore")
             } else if (player.activeJobs.size == player.jobLimit) {
                 plugin.configYml.getStrings("gui.job-icon.too-many-jobs-lore")

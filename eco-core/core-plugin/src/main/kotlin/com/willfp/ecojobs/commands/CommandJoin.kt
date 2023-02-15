@@ -36,7 +36,7 @@ class CommandJoin(plugin: EcoPlugin) : Subcommand(plugin, "join", "ecojobs.comma
         }
 
         if (!player.canJoinJob(job)) {
-            player.sendMessage(plugin.langYml.getMessage("leave-current-job"))
+            player.sendMessage(plugin.langYml.getMessage("cannot-join-job"))
             return
         }
 

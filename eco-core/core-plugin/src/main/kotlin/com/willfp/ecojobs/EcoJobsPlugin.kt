@@ -2,7 +2,9 @@ package com.willfp.ecojobs
 
 import com.willfp.eco.core.command.impl.PluginCommand
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
-import com.willfp.eco.util.toSingletonList
+import com.willfp.ecojobs.api.activeJobs
+import com.willfp.ecojobs.api.getJobLevel
+import com.willfp.ecojobs.api.jobLimit
 import com.willfp.ecojobs.commands.CommandEcojobs
 import com.willfp.ecojobs.commands.CommandJobs
 import com.willfp.ecojobs.jobs.JobLevelListener
@@ -10,16 +12,15 @@ import com.willfp.ecojobs.jobs.JobTriggerXPGainListener
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.jobs.PriceHandler
 import com.willfp.ecojobs.jobs.ResetOnQuitListener
-import com.willfp.ecojobs.jobs.activeJob
-import com.willfp.ecojobs.jobs.activeJobLevel
-import com.willfp.ecojobs.jobs.getJobLevel
 import com.willfp.libreforge.LibReforgePlugin
 import org.bukkit.event.Listener
 
 class EcoJobsPlugin : LibReforgePlugin() {
     init {
         instance = this
-        registerHolderProvider { it.activeJobLevel?.toSingletonList() ?: emptyList() }
+        registerHolderProvider { player ->
+            player.activeJobs.map { it.getLevel(player.getJobLevel(it)) }
+        }
     }
 
     override fun handleEnableAdditional() {
@@ -27,18 +28,13 @@ class EcoJobsPlugin : LibReforgePlugin() {
 
         PlayerPlaceholder(
             this,
-            "job"
-        ) { it.activeJob?.name ?: "" }.register()
+            "limit"
+        ) { it.jobLimit.toString() }.register()
 
         PlayerPlaceholder(
             this,
-            "job_level"
-        ) { it.activeJobLevel?.level?.toString() ?: "" }.register()
-
-        PlayerPlaceholder(
-            this,
-            "job_id"
-        ) { it.activeJob?.id ?: "" }.register()
+            "in_jobs"
+        ) { it.activeJobs.size.toString() }.register()
 
         PlayerPlaceholder(
             this,
