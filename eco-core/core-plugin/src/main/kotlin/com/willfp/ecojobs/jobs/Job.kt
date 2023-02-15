@@ -175,6 +175,12 @@ class Job(
         }.register()
 
         PlayerPlaceholder(
+            plugin, "${id}_active"
+        ) {
+            it.hasJobActive(this).toString()
+        }.register()
+
+        PlayerPlaceholder(
             plugin, "${id}_total_players"
         ) {
             Bukkit.getOfflinePlayers().count { this in it.activeJobs }.toString()
