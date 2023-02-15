@@ -36,6 +36,7 @@ messages:
   leave-current-job: "&cYou must leave your current job before joining a new one!"
   cant-leave-job: "&cYou can't leave the %job%&f job!"
   dont-have-job: "&cYou don't have this job unlocked!"
+  not-in-job: "&cYou are not in this job!"
 
 menu:
   title: "Jobs"

@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap
 import com.google.common.collect.ImmutableList
 import com.willfp.eco.core.config.updating.ConfigUpdater
 import com.willfp.ecojobs.EcoJobsPlugin
+import com.willfp.ecojobs.api.getJobLevel
 import org.bukkit.OfflinePlayer
 
 object Jobs {

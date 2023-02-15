@@ -11,6 +11,7 @@ import com.willfp.eco.core.gui.slot.MaskItems
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.ecojobs.EcoJobsPlugin
+import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.jobs.Jobs.unlockedJobs
 import org.bukkit.Material
 import org.bukkit.Sound

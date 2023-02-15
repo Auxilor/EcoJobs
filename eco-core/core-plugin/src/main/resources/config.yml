@@ -3,6 +3,10 @@
 # by Auxilor
 #
 
+jobs:
+  limit: 3 # The most jobs a player can have at once.
+  # You can set custom limits with the ecojobs.limit.<number> permission
+
 gui:
   rows: 6
 
@@ -79,6 +83,10 @@ gui:
     active-lore:
       - ""
       - "&cYou've already joined this job!"
+
+    too-many-jobs-lore:
+      - ""
+      - "&cYou have too many jobs already!"
 
     join-lore:
       - ""

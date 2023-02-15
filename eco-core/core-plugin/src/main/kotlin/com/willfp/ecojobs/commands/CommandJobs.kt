@@ -2,9 +2,9 @@ package com.willfp.ecojobs.commands
 
 import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.command.impl.PluginCommand
+import com.willfp.ecojobs.api.hasJob
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.jobs.JobsGUI
-import com.willfp.ecojobs.jobs.hasJob
 import org.bukkit.entity.Player
 import org.bukkit.util.StringUtil
 

@@ -3,9 +3,11 @@ package com.willfp.ecojobs.commands
 import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.command.impl.Subcommand
 import com.willfp.eco.util.StringUtils
+import com.willfp.ecojobs.api.canJoinJob
+import com.willfp.ecojobs.api.hasJob
+import com.willfp.ecojobs.api.hasJobActive
+import com.willfp.ecojobs.api.joinJob
 import com.willfp.ecojobs.jobs.Jobs
-import com.willfp.ecojobs.jobs.activeJob
-import com.willfp.ecojobs.jobs.hasJob
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.util.StringUtil
@@ -28,12 +30,12 @@ class CommandJoin(plugin: EcoPlugin) : Subcommand(plugin, "join", "ecojobs.comma
             return
         }
 
-        if (player.activeJob == job) {
+        if (player.hasJobActive(job)) {
             player.sendMessage(plugin.langYml.getMessage("job-already-joined"))
             return
         }
 
-        if (player.activeJob != null) {
+        if (!player.canJoinJob(job)) {
             player.sendMessage(plugin.langYml.getMessage("leave-current-job"))
             return
         }
@@ -42,7 +44,8 @@ class CommandJoin(plugin: EcoPlugin) : Subcommand(plugin, "join", "ecojobs.comma
             plugin.langYml.getMessage("joined-job", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
                 .replace("%job%", job.name)
         )
-        player.activeJob = job
+
+        player.joinJob(job)
     }
 
     override fun tabComplete(sender: CommandSender, args: List<String>): List<String> {
@@ -51,6 +54,7 @@ class CommandJoin(plugin: EcoPlugin) : Subcommand(plugin, "join", "ecojobs.comma
         }
 
         val completions = mutableListOf<String>()
+
         if (args.isEmpty()) {
             return Jobs.values().filter { sender.hasJob(it) }.map { it.id }
         }

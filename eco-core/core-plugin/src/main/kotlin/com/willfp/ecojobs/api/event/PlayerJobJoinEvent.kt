@@ -8,8 +8,7 @@ import org.bukkit.event.HandlerList
 
 class PlayerJobJoinEvent(
     val player: OfflinePlayer,
-    override val job: Job,
-    val oldJob: Job?
+    override val job: Job
 ) : Event(), Cancellable, JobEvent {
     private var cancelled = false
 
