@@ -40,25 +40,24 @@ gui:
       column: 8
 
   player-info:
-    row: 2
-    column: 2
+    row: 1
+    column: 5
 
-    name: "%player%&f's Jobs:"
+    name: "&r%player%&f's Jobs:"
 
     no-jobs:
       - ""
       - "&cYou do not currently have a job active"
       - "&fPick one from the options below!"
       - ""
-      - "&fYou can have up to &a%ecojobs_limit% &fjobs at once"
+      - "&fYou can have up to &a%ecojobs_limit% &fjobs at once!"
       - ""
 
     has-jobs:
       - ""
       - "%jobs%"
       - ""
-      - "&fJob slots in use: &a%ecojobs_in_jobs%&r/&a%ecojobs_limit%"
-      - ""
+      - "&fJob slots in use: &a%ecojobs_in_jobs%&8/&a%ecojobs_limit%"
 
     job-line:
       - " %job% &fLvl. &a%level%"
