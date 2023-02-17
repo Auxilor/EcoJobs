@@ -38,6 +38,7 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.time.Duration
 import java.util.DoubleSummaryStatistics
 import java.util.Objects
 import java.util.concurrent.TimeUnit
@@ -47,7 +48,9 @@ import kotlin.math.max
 class Job(
     val id: String, val config: Config, private val plugin: EcoJobsPlugin
 ) {
-    private val topCache = Caffeine.newBuilder().build<Int, LeaderboardCacheEntry?>()
+    private val topCache = Caffeine.newBuilder()
+        .expireAfterWrite(Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong()))
+        .build<Int, LeaderboardCacheEntry?>()
 
     val name = config.getFormattedString("name")
     val description = config.getFormattedString("description")
