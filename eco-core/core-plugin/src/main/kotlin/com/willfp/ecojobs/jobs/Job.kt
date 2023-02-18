@@ -277,6 +277,7 @@ class Job(
                     }
                 }).replace("%description%", this.description).replace("%job%", this.name)
                 .replace("%level%", (forceLevel ?: player.getJobLevel(this)).toString())
+                .replace("%level_numeral%", NumberUtils.toNumeral(forceLevel ?: player.getJobLevel(this)))
                 .replace("%join_price%", this.joinPrice.getDisplay(player))
                 .replace("%leave_price%", this.leavePrice.getDisplay(player))
         }.toMutableList()
@@ -313,7 +314,7 @@ class Job(
 
         return ItemStackBuilder(base).setDisplayName(
             plugin.configYml.getFormattedString("gui.job-icon.name").replace("%level%", level.toString())
-                .replace("%job%", this.name)
+                .replace("%level_numeral%", NumberUtils.toNumeral(level)).replace("%job%", this.name)
         ).addLoreLines {
             injectPlaceholdersInto(
                 plugin.configYml.getStrings("gui.job-icon.lore"), player
@@ -333,7 +334,7 @@ class Job(
         val base = baseItem.clone()
         return ItemStackBuilder(base).setDisplayName(
             plugin.configYml.getFormattedString("gui.job-info.active.name")
-                .replace("%level%", player.getJobLevel(this).toString()).replace("%job%", this.name)
+                .replace("%level%", player.getJobLevel(this).toString()).replace("%level_numeral%", NumberUtils.toNumeral(player.getJobLevel(this))).replace("%job%", this.name)
         ).addLoreLines {
             injectPlaceholdersInto(plugin.configYml.getStrings("gui.job-info.active.lore"), player)
         }.build()
