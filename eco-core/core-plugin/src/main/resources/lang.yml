@@ -42,3 +42,7 @@ menu:
   title: "Jobs"
 
 infinity: "∞"
+
+top:
+  name-empty: "&cEmpty"
+  amount-empty: "0"

@@ -17,7 +17,7 @@ object JobTriggerXPGainListener : Listener {
             val amount = job.getXP(event)
 
             if (amount <= 0.0) {
-                return
+                continue
             }
 
             player.giveJobExperience(job, amount)
