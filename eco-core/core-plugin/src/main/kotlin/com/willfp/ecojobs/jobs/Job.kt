@@ -16,10 +16,7 @@ import com.willfp.eco.util.NumberUtils
 import com.willfp.eco.util.formatEco
 import com.willfp.eco.util.toNiceString
 import com.willfp.ecojobs.EcoJobsPlugin
-import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
-import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
-import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
-import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
+import com.willfp.ecojobs.api.event.*
 import com.willfp.libreforge.conditions.Conditions
 import com.willfp.libreforge.conditions.ConfiguredCondition
 import com.willfp.libreforge.effects.ConfiguredEffect
@@ -102,7 +99,7 @@ class Job(
             }
         }
 
-    private val jobXpGains = config.getSubsections("xp-gain-methods").mapNotNull {
+    val jobXpGains = config.getSubsections("xp-gain-methods").mapNotNull {
         Counters.compile(it, "Job $id")
     }
 
@@ -511,7 +508,9 @@ private fun Player.cacheJobExperienceMultiplier(): Double {
     for (permissionAttachmentInfo in this.effectivePermissions) {
         val permission = permissionAttachmentInfo.permission
         if (permission.startsWith(prefix)) {
-            return ((permission.substring(permission.lastIndexOf(".") + 1).toDoubleOrNull() ?: 100.0) / 100) + 1
+            (permission.substring(permission.lastIndexOf(".") + 1).toDoubleOrNull())?.let {
+                return (it / 100) + 1
+            }
         }
     }
 
@@ -519,7 +518,7 @@ private fun Player.cacheJobExperienceMultiplier(): Double {
 }
 
 fun Player.giveJobExperience(job: Job, experience: Double, noMultiply: Boolean = false) {
-    val exp = abs(if (noMultiply) experience else experience * this.jobExperienceMultiplier)
+    val exp = if (noMultiply) experience else experience * this.jobExperienceMultiplier
 
     val gainEvent = PlayerJobExpGainEvent(this, job, exp, !noMultiply)
     Bukkit.getPluginManager().callEvent(gainEvent)
@@ -531,18 +530,40 @@ fun Player.giveJobExperience(job: Job, experience: Double, noMultiply: Boolean =
     this.giveExactJobExperience(job, gainEvent.amount)
 }
 
+private val levelUpAfterSinkCache = Caffeine.newBuilder()
+    .expireAfterWrite(1, TimeUnit.SECONDS)
+    .build<String, Boolean>()
+
 fun Player.giveExactJobExperience(job: Job, experience: Double) {
     val level = this.getJobLevel(job)
 
     val progress = this.getJobXP(job) + experience
 
     if (progress >= job.getExpForLevel(level + 1) && level + 1 <= job.maxLevel) {
+
+        if (levelUpAfterSinkCache.getIfPresent("${this.uniqueId}_${job.id}") == true)
+            return
+
         val overshoot = progress - job.getExpForLevel(level + 1)
         this.setJobXP(job, 0.0)
         this.setJobLevel(job, level + 1)
         val levelUpEvent = PlayerJobLevelUpEvent(this, job, level + 1)
         Bukkit.getPluginManager().callEvent(levelUpEvent)
         this.giveExactJobExperience(job, overshoot)
+    } else if (progress < 0) {
+        var newLevel = 1
+        if (level > 1) {
+            newLevel = level - 1
+            val levelSinkEvent = PlayerJobLevelSinkEvent(this, job, newLevel)
+            Bukkit.getPluginManager().callEvent(levelSinkEvent)
+
+        }
+        levelUpAfterSinkCache.put("${this.uniqueId}_${job.id}", true)
+        EcoJobsPlugin.instance.runnableFactory.create {
+            this.setJobLevel(job, newLevel)
+            val newXp = job.getExpForLevel(level) + progress
+            this.setJobXP(job, if (newXp >= 0) newXp else 0.0)
+        }.runTaskLater(2)
     } else {
         this.setJobXP(job, progress)
     }

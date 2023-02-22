@@ -4,7 +4,9 @@ import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.ImmutableList
 import com.willfp.eco.core.config.updating.ConfigUpdater
+import com.willfp.eco.core.price.Prices
 import com.willfp.ecojobs.EcoJobsPlugin
+import com.willfp.ecojobs.PriceFactoryJobLevel
 import org.bukkit.OfflinePlayer
 
 object Jobs {
@@ -45,6 +47,10 @@ object Jobs {
 
         for ((id, jobConfig) in plugin.fetchConfigs("jobs")) {
             addNewJob(Job(id, jobConfig, plugin))
+        }
+
+        values().forEach {
+            Prices.registerPriceFactory(PriceFactoryJobLevel(it))
         }
     }
 

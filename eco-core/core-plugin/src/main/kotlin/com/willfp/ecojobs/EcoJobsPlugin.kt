@@ -5,17 +5,10 @@ import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.eco.util.toSingletonList
 import com.willfp.ecojobs.commands.CommandEcojobs
 import com.willfp.ecojobs.commands.CommandJobs
-import com.willfp.ecojobs.jobs.JobLevelListener
-import com.willfp.ecojobs.jobs.JobTriggerXPGainListener
-import com.willfp.ecojobs.jobs.Jobs
-import com.willfp.ecojobs.jobs.PriceHandler
-import com.willfp.ecojobs.jobs.ResetOnQuitListener
-import com.willfp.ecojobs.jobs.activeJob
-import com.willfp.ecojobs.jobs.activeJobLevel
-import com.willfp.ecojobs.jobs.getJobLevel
-import com.willfp.ecojobs.jobs.getJobProgress
+import com.willfp.ecojobs.jobs.*
 import com.willfp.libreforge.LibReforgePlugin
 import org.bukkit.event.Listener
+import org.bukkit.scheduler.BukkitRunnable
 
 class EcoJobsPlugin : LibReforgePlugin() {
     init {
@@ -70,13 +63,23 @@ class EcoJobsPlugin : LibReforgePlugin() {
         )
     }
 
+    val jobBlockListener = JobBlockBreakListener(this)
+
     override fun loadListeners(): List<Listener> {
         return listOf(
             JobLevelListener(this),
             JobTriggerXPGainListener,
             ResetOnQuitListener,
-            PriceHandler
+            PriceHandler,
+            jobBlockListener
         )
+    }
+
+    override fun handleReloadAdditional() {
+        super.handleReloadAdditional()
+        runnableFactory.create {
+            jobBlockListener.processQueue()
+        }.runTaskTimer(0, 2)
     }
 
     companion object {
