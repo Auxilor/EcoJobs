@@ -1,5 +1,7 @@
 package com.willfp.ecojobs.jobs
 
+import com.willfp.ecojobs.api.activeJobs
+import com.willfp.ecojobs.api.giveJobExperience
 import com.willfp.libreforge.events.TriggerPreProcessEvent
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -9,14 +11,16 @@ object JobTriggerXPGainListener : Listener {
     fun handle(event: TriggerPreProcessEvent) {
         val player = event.player
 
-        val job = event.player.activeJob ?: return
+        val jobs = event.player.activeJobs
 
-        val amount = job.getXP(event)
+        for (job in jobs) {
+            val amount = job.getXP(event)
 
-        if (amount == 0.0) {
-            return
+            if (amount == 0.0) {
+                continue
+            }
+
+            player.giveJobExperience(job, amount)
         }
-
-        player.giveJobExperience(job, amount)
     }
 }

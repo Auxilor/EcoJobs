@@ -4,9 +4,9 @@ import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.command.impl.Subcommand
 import com.willfp.eco.util.StringUtils
 import com.willfp.eco.util.savedDisplayName
+import com.willfp.ecojobs.api.hasJob
+import com.willfp.ecojobs.api.setJobLevel
 import com.willfp.ecojobs.jobs.Jobs
-import com.willfp.ecojobs.jobs.hasJob
-import com.willfp.ecojobs.jobs.setJobLevel
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.util.StringUtil

@@ -13,6 +13,7 @@ import com.willfp.eco.core.gui.slot.MaskItems
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.util.NumberUtils
+import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecomponent.components.LevelComponent
 import com.willfp.ecomponent.components.LevelState
 import org.bukkit.entity.Player

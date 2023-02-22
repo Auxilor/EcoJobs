@@ -1,117 +1,192 @@
+@file:JvmName("EcoJobsAPI")
+
 package com.willfp.ecojobs.api
 
-import com.willfp.ecojobs.EcoJobsAPIImpl
+import com.willfp.eco.core.data.keys.PersistentDataKey
+import com.willfp.eco.core.data.keys.PersistentDataKeyType
+import com.willfp.eco.core.data.profile
+import com.willfp.ecojobs.EcoJobsPlugin
+import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
+import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
+import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
+import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
 import com.willfp.ecojobs.jobs.Job
+import com.willfp.ecojobs.jobs.Jobs
+import com.willfp.ecojobs.jobs.getNumericalPermission
+import com.willfp.ecojobs.jobs.jobExperienceMultiplier
+import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
+import kotlin.math.abs
 
-interface EcoJobsAPI {
-    /**
-     * Get if a player has a job.
-     *
-     * @param player The player.
-     * @param job    The job.
-     * @return If the player has the job unlocked.
-     */
-    fun hasJob(
-        player: OfflinePlayer,
-        job: Job
-    ): Boolean
+private val plugin = EcoJobsPlugin.instance
 
-    /**
-     * Get a player's active job.
-     *
-     * @param player The player.
-     * @return The active job.
-     */
-    fun getActiveJob(
-        player: OfflinePlayer
-    ): Job?
+/*
 
-    /**
-     * Get a player's level of a certain job.
-     *
-     * @param player The player.
-     * @param job    The job.
-     * @return The level.
-     */
-    fun getJobLevel(
-        player: OfflinePlayer,
-        job: Job
-    ): Int
+The old key is around for backwards compatibility with 1.x.x.
 
-    /**
-     * Give job experience to a player.
-     *
-     * @param player The player.
-     * @param job    The job.
-     * @param amount The amount of experience to give.
-     */
-    fun giveJobExperience(
-        player: Player,
-        job: Job,
-        amount: Double
+ */
+
+private val legacyActiveJobKey: PersistentDataKey<String> = PersistentDataKey(
+    plugin.namespacedKeyFactory.create("active_job"), PersistentDataKeyType.STRING, ""
+)
+
+private val activeJobsKey: PersistentDataKey<List<String>> = PersistentDataKey(
+    plugin.namespacedKeyFactory.create("active_jobs"), PersistentDataKeyType.STRING_LIST, listOf()
+)
+
+/**
+ * The job limit.
+ */
+val Player.jobLimit: Int
+    get() {
+        return this.getNumericalPermission("ecojobs.limit", plugin.configYml.getDouble("jobs.limit")).toInt()
+    }
+
+/**
+ * If a player can join a job.
+ */
+fun Player.canJoinJob(job: Job): Boolean {
+    return this.activeJobs.size < this.jobLimit && job !in this.activeJobs && this.hasJob(job)
+}
+
+/**
+ * Get if a job is unlocked.
+ */
+fun OfflinePlayer.hasJob(job: Job) = this.getJobLevel(job) > 0
+
+/**
+ * Get if a player has a job active.
+ */
+fun OfflinePlayer.hasJobActive(job: Job) = job in this.activeJobs
+
+/**
+ * Get a player's active jobs.
+ */
+val OfflinePlayer.activeJobs: Collection<Job>
+    get() {
+        if (this.profile.read(legacyActiveJobKey).isNotBlank()) {
+            this.profile.write(activeJobsKey, listOf(this.profile.read(legacyActiveJobKey)))
+            this.profile.write(legacyActiveJobKey, "")
+        }
+
+        return this.profile.read(activeJobsKey).mapNotNull { Jobs.getByID(it) }
+
+    }
+
+/**
+ * Join a job.
+ */
+fun OfflinePlayer.joinJob(job: Job) {
+    val event = PlayerJobJoinEvent(this, job)
+    Bukkit.getPluginManager().callEvent(event)
+
+    if (!event.isCancelled) {
+        this.profile.write(activeJobsKey, this.activeJobs.plus(job).map { it.id })
+    }
+}
+
+/**
+ * Leave a job.
+ */
+fun OfflinePlayer.leaveJob(job: Job) {
+    if (job !in this.activeJobs) {
+        return
+    }
+
+    val event = PlayerJobLeaveEvent(this, job)
+    Bukkit.getPluginManager().callEvent(event)
+
+    if (!event.isCancelled) {
+        this.forceLeaveJob(job)
+    }
+}
+
+/**
+ * Leave a job without checking.
+ */
+fun OfflinePlayer.forceLeaveJob(job: Job) {
+    this.profile.write(activeJobsKey, this.activeJobs.minus(job).map { it.id })
+}
+
+/**
+ * Get the level of a certain job.
+ */
+fun OfflinePlayer.getJobLevel(job: Job) = this.profile.read(job.levelKey)
+
+/**
+ * Set the level of a certain job.
+ */
+fun OfflinePlayer.setJobLevel(job: Job, level: Int) = this.profile.write(job.levelKey, level)
+
+/**
+ * Get current job experience.
+ */
+fun OfflinePlayer.getJobXP(job: Job) = this.profile.read(job.xpKey)
+
+/**
+ * Set current job experience.
+ */
+fun OfflinePlayer.setJobXP(job: Job, xp: Double) = this.profile.write(job.xpKey, xp)
+
+/**
+ * Reset a job.
+ */
+fun OfflinePlayer.resetJob(job: Job) {
+    this.setJobLevel(job, 1)
+    this.setJobXP(job, 0.0)
+}
+
+/**
+ * Get the experience required to advance to the next level.
+ */
+fun OfflinePlayer.getJobXPRequired(job: Job) = job.getExpForLevel(this.getJobLevel(job) + 1)
+
+/**
+ * Get progress to next level between 0 and 1, where 0 is none and 1 is complete.
+ */
+fun OfflinePlayer.getJobProgress(job: Job): Double {
+    val currentXP = this.getJobXP(job)
+    val requiredXP = job.getExpForLevel(this.getJobLevel(job) + 1)
+    return currentXP / requiredXP
+}
+
+/**
+ * Give job experience.
+ */
+@JvmOverloads
+fun Player.giveJobExperience(job: Job, experience: Double, withMultipliers: Boolean = true) {
+    val exp = abs(
+        if (withMultipliers) experience * this.jobExperienceMultiplier
+        else experience
     )
 
-    /**
-     * Give job experience to a player.
-     *
-     * @param player           The player.
-     * @param job              The job.
-     * @param amount           The amount of experience to give.
-     * @param applyMultipliers If multipliers should be applied.
-     */
-    fun giveJobExperience(
-        player: Player,
-        job: Job,
-        amount: Double,
-        applyMultipliers: Boolean
-    )
+    val gainEvent = PlayerJobExpGainEvent(this, job, exp, !withMultipliers)
+    Bukkit.getPluginManager().callEvent(gainEvent)
 
-    /**
-     * Get progress to next level between 0 and 1, where 0 is none and 1 is complete.
-     *
-     * @param player The player.
-     * @param job    The job.
-     * @return The progress.
-     */
-    fun getJobProgress(
-        player: OfflinePlayer,
-        job: Job
-    ): Double
+    if (gainEvent.isCancelled) {
+        return
+    }
 
-    /**
-     * Get the experience required to advance to the next level.
-     *
-     * @param player The player.
-     * @param job    The job.
-     * @return The experience required.
-     */
-    fun getJobXPRequired(
-        player: OfflinePlayer,
-        job: Job
-    ): Int
+    this.giveExactJobExperience(job, gainEvent.amount)
+}
 
-    /**
-     * Get experience to the next level.
-     *
-     * @param player The player.
-     * @param job    The job.
-     * @return The experience.
-     */
-    fun getJobXP(
-        player: OfflinePlayer,
-        job: Job
-    ): Double
+/**
+ * Give exact job experience, without calling PlayerJobExpGainEvent.
+ */
+fun Player.giveExactJobExperience(job: Job, experience: Double) {
+    val level = this.getJobLevel(job)
 
-    companion object {
-        /**
-         * Get the instance of the API.
-         *
-         * @return The API.
-         */
-        @JvmStatic
-        val instance: EcoJobsAPI
-            get() = EcoJobsAPIImpl
+    val progress = this.getJobXP(job) + experience
+
+    if (progress >= job.getExpForLevel(level + 1) && level + 1 <= job.maxLevel) {
+        val overshoot = progress - job.getExpForLevel(level + 1)
+        this.setJobXP(job, 0.0)
+        this.setJobLevel(job, level + 1)
+        val levelUpEvent = PlayerJobLevelUpEvent(this, job, level + 1)
+        Bukkit.getPluginManager().callEvent(levelUpEvent)
+        this.giveExactJobExperience(job, overshoot)
+    } else {
+        this.setJobXP(job, progress)
     }
 }

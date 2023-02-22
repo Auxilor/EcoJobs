@@ -7,6 +7,7 @@ import com.willfp.eco.core.config.updating.ConfigUpdater
 import com.willfp.eco.core.price.Prices
 import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.PriceFactoryJobLevel
+import com.willfp.ecojobs.api.getJobLevel
 import org.bukkit.OfflinePlayer
 
 object Jobs {

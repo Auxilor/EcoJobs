@@ -4,10 +4,10 @@ import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.command.impl.Subcommand
 import com.willfp.eco.util.StringUtils
 import com.willfp.eco.util.savedDisplayName
+import com.willfp.ecojobs.api.forceLeaveJob
+import com.willfp.ecojobs.api.hasJob
+import com.willfp.ecojobs.api.resetJob
 import com.willfp.ecojobs.jobs.Jobs
-import com.willfp.ecojobs.jobs.activeJob
-import com.willfp.ecojobs.jobs.hasJob
-import com.willfp.ecojobs.jobs.resetJob
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 
@@ -44,9 +44,7 @@ class CommandReset(plugin: EcoPlugin) : Subcommand(plugin, "reset", "ecojobs.com
             return
         }
 
-        if (player.activeJob == job) {
-            player.activeJob = null
-        }
+        player.forceLeaveJob(job)
         player.resetJob(job)
 
         sender.sendMessage(

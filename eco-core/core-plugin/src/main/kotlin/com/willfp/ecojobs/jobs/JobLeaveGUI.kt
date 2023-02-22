@@ -9,6 +9,8 @@ import com.willfp.eco.core.gui.slot.MaskItems
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.util.formatEco
+import com.willfp.ecojobs.api.hasJobActive
+import com.willfp.ecojobs.api.leaveJob
 import org.bukkit.entity.Player
 
 class JobLeaveGUI(
@@ -59,9 +61,9 @@ class JobLeaveGUI(
                     .build()
             }) {
                 onLeftClick { player, _, _, _ ->
-                    player.activeJob = null
+                    player.leaveJob(job)
 
-                    if (player.activeJob == null) {
+                    if (!player.hasJobActive(job)) {
                         player.sendMessage(
                             plugin.langYml.getMessage("left-job")
                                 .replace("%job%", job.name)

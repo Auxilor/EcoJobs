@@ -8,10 +8,10 @@ import org.bukkit.event.Cancellable
 
 class PlayerJobExpGainEvent(
     who: Player,
-    val job: Job,
+    override val job: Job,
     var amount: Double,
     val isMultiply: Boolean
-) : PlayerEvent(who), Cancellable {
+) : PlayerEvent(who), Cancellable, JobEvent {
     private var cancelled = false
 
     override fun setCancelled(cancel: Boolean) {

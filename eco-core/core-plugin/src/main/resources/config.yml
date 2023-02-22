@@ -3,6 +3,10 @@
 # by Auxilor
 #
 
+jobs:
+  limit: 3 # The most jobs a player can have at once.
+  # You can set custom limits with the ecojobs.limit.<number> permission
+
 gui:
   rows: 6
 
@@ -20,49 +24,43 @@ gui:
     materials:
       - black_stained_glass_pane
     pattern:
+      - "111101111"
       - "111111111"
-      - "101000001"
-      - "111000001"
-      - "101000001"
-      - "111111111"
-      - "111100011"
+      - "100000001"
+      - "100000001"
+      - "100000001"
+      - "111101111"
 
   job-area:
     top-left:
-      row: 2
-      column: 4
+      row: 3
+      column: 2
     bottom-right:
-      row: 4
+      row: 5
       column: 8
 
-  job-info:
-    row: 2
-    column: 2
+  player-info:
+    row: 1
+    column: 5
 
-    no-active:
-      name: "&cNo Active Job"
-      lore:
-        - ""
-        - "&cYou do not currently have a job active"
-        - "&fPick one from the options below!"
-        - ""
-      item: player_head texture:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmFkYzA0OGE3Y2U3OGY3ZGFkNzJhMDdkYTI3ZDg1YzA5MTY4ODFlNTUyMmVlZWQxZTNkYWYyMTdhMzhjMWEifX19
+    name: "&r%player%&f's Jobs:"
 
-    # %join_price% and %leave_price% are also available as placeholders
+    no-jobs:
+      - ""
+      - "&cYou do not currently have a job active"
+      - "&fPick one from the options below!"
+      - ""
+      - "&fYou can have up to &a%ecojobs_limit% &fjobs at once!"
+      - ""
 
-    active:
-      name: "%job% &fLvl. &a%level%"
-      lore:
-        - "%description%"
-        - "&f"
-        - "&fJob Rewards:"
-        - "%effects%"
-        - ""
-        - "&fProgress:"
-        - "&8» &e%percentage_progress%%"
-        - "&8» &e%current_xp%&8/&7%required_xp% &fXP"
-        - ""
-        - "&eClick to view Level Progression!"
+    has-jobs:
+      - ""
+      - "%jobs%"
+      - ""
+      - "&fJob slots in use: &a%ecojobs_in_jobs%&8/&a%ecojobs_limit%"
+
+    job-line:
+      - " %job% &fLvl. &a%level%"
 
   job-icon:
     name: "%job% &fLvl. &a%level%"
@@ -76,9 +74,16 @@ gui:
       - "&8» &e%percentage_progress%%"
       - "&8» &e%current_xp%&8/&7%required_xp% &fXP"
 
+    # %join_price% and %leave_price% are also available as placeholders
+
     active-lore:
       - ""
-      - "&cYou've already joined this job!"
+      - "&eClick to view Level Progression!"
+      - "&eRight-click to leave this job!"
+
+    too-many-jobs-lore:
+      - ""
+      - "&cYou have too many jobs already!"
 
     join-lore:
       - ""
@@ -93,28 +98,21 @@ gui:
     name: "&fPrevious Page"
     location:
       row: 6
-      column: 5
+      column: 4
 
   next-page:
     item: arrow
     name: "&fNext Page"
     location:
       row: 6
-      column: 7
+      column: 6
 
   close:
     item: barrier
     name: "&cClose"
     location:
       row: 6
-      column: 6
-
-  deactivate-job:
-    item: player_head texture:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTRiZDlhNDViOTY4MWNlYTViMjhjNzBmNzVhNjk1NmIxZjU5NGZlYzg0MGI5NjA3Nzk4ZmIxZTcwNzc2NDQzMCJ9fX0=
-    name: "&cDeactivate Job"
-    location:
-      row: 4
-      column: 2
+      column: 5
 
   # Custom GUI slots; see here for a how-to: https://plugins.auxilor.io/all-plugins/custom-gui-slots
   custom-slots: [ ]
@@ -329,6 +327,7 @@ point-names: # If you have point names that look ugly (eg g_souls) then you can 
 
 use-faster-move-trigger: true # Disable if you want move trigger to detect sub-1-block movements
 raytrace-distance: 80 # The distance that alt_click should check for a location
+leaderboard-cache-lifetime: 180 # How often will top placeholders update their cache (in seconds)
 
 potions:
   icon:
