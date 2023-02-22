@@ -2,6 +2,8 @@ package com.willfp.ecojobs.jobs
 
 import com.willfp.eco.util.BlockUtils
 import com.willfp.ecojobs.EcoJobsPlugin
+import com.willfp.ecojobs.api.activeJobs
+import com.willfp.ecojobs.api.giveJobExperience
 import com.willfp.libreforge.events.TriggerPreProcessEvent
 import com.willfp.libreforge.triggers.Triggers
 import org.bukkit.block.Block
@@ -51,9 +53,9 @@ class JobBlockBreakListener(
         val data = queue.pop()
 
         (data.second ?: BlockUtils.whoPlaced(data.first)?.run { plugin.server.getPlayer(this) })?.let { blockPlayer ->
-            if (blockPlayer.activeJob?.id == "builder") {
-                blockPlayer.activeJob?.jobXpGains?.firstOrNull { it.trigger == Triggers.MINE_BLOCK }?.let { c ->
-                    blockPlayer.giveJobExperience(blockPlayer.activeJob!!, c.multiplier)
+            if (blockPlayer.activeJobs.firstOrNull()?.id == "builder") {
+                blockPlayer.activeJobs.firstOrNull()?.jobXpGains?.firstOrNull { it.trigger == Triggers.MINE_BLOCK }?.let { c ->
+                    blockPlayer.giveJobExperience(blockPlayer.activeJobs.firstOrNull()!!, c.multiplier)
                 }
             }
         }

@@ -2,21 +2,17 @@
 
 package com.willfp.ecojobs.api
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.willfp.eco.core.data.keys.PersistentDataKey
 import com.willfp.eco.core.data.keys.PersistentDataKeyType
 import com.willfp.eco.core.data.profile
 import com.willfp.ecojobs.EcoJobsPlugin
-import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
-import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
-import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
-import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
-import com.willfp.ecojobs.jobs.Job
-import com.willfp.ecojobs.jobs.Jobs
-import com.willfp.ecojobs.jobs.getNumericalPermission
-import com.willfp.ecojobs.jobs.jobExperienceMultiplier
+import com.willfp.ecojobs.api.event.*
+import com.willfp.ecojobs.jobs.*
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
+import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
 private val plugin = EcoJobsPlugin.instance
@@ -171,6 +167,10 @@ fun Player.giveJobExperience(job: Job, experience: Double, withMultipliers: Bool
     this.giveExactJobExperience(job, gainEvent.amount)
 }
 
+private val levelUpAfterSinkCache = Caffeine.newBuilder()
+    .expireAfterWrite(1, TimeUnit.SECONDS)
+    .build<String, Boolean>()
+
 /**
  * Give exact job experience, without calling PlayerJobExpGainEvent.
  */
@@ -180,12 +180,30 @@ fun Player.giveExactJobExperience(job: Job, experience: Double) {
     val progress = this.getJobXP(job) + experience
 
     if (progress >= job.getExpForLevel(level + 1) && level + 1 <= job.maxLevel) {
+
+        if (levelUpAfterSinkCache.getIfPresent("${this.uniqueId}_${job.id}") == true)
+            return
+
         val overshoot = progress - job.getExpForLevel(level + 1)
         this.setJobXP(job, 0.0)
         this.setJobLevel(job, level + 1)
         val levelUpEvent = PlayerJobLevelUpEvent(this, job, level + 1)
         Bukkit.getPluginManager().callEvent(levelUpEvent)
         this.giveExactJobExperience(job, overshoot)
+    } else if (progress < 0) {
+        var newLevel = 1
+        if (level > 1) {
+            newLevel = level - 1
+            val levelSinkEvent = PlayerJobLevelSinkEvent(this, job, newLevel)
+            Bukkit.getPluginManager().callEvent(levelSinkEvent)
+
+        }
+        levelUpAfterSinkCache.put("${this.uniqueId}_${job.id}", true)
+        EcoJobsPlugin.instance.runnableFactory.create {
+            this.setJobLevel(job, newLevel)
+            val newXp = job.getExpForLevel(level) + progress
+            this.setJobXP(job, if (newXp >= 0) newXp else 0.0)
+        }.runTaskLater(2)
     } else {
         this.setJobXP(job, progress)
     }

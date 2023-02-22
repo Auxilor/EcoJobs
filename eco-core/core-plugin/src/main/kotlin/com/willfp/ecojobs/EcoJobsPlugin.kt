@@ -7,6 +7,7 @@ import com.willfp.eco.util.savedDisplayName
 import com.willfp.eco.util.toNiceString
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.getJobLevel
+import com.willfp.ecojobs.api.getJobProgress
 import com.willfp.ecojobs.api.jobLimit
 import com.willfp.ecojobs.commands.CommandEcojobs
 import com.willfp.ecojobs.commands.CommandJobs
@@ -19,7 +20,6 @@ import com.willfp.ecojobs.jobs.*
 import com.willfp.libreforge.LibReforgePlugin
 import org.bukkit.event.Listener
 import java.util.regex.Pattern
-import org.bukkit.scheduler.BukkitRunnable
 
 class EcoJobsPlugin : LibReforgePlugin() {
     init {
@@ -40,12 +40,14 @@ class EcoJobsPlugin : LibReforgePlugin() {
         PlayerPlaceholder(
             this,
             "job_level_next"
-        ) { it.activeJobLevel?.level?.let { l -> (l + 1).toString() } ?: "" }.register()
+        ) { p -> p.activeJobs.firstOrNull()?.let { job -> (p.getJobLevel(job) + 1).toString() } }.register()
 
         PlayerPlaceholder(
             this,
             "job_percent"
-        ) { p -> p.activeJob?.let { "${String.format("%.1f", p.getJobProgress(it) * 100)}%" } ?: "" }.register()
+        ) { p ->
+            p.activeJobs.firstOrNull()?.let { job -> "${String.format("%.1f", p.getJobProgress(job) * 100)}%" } ?: ""
+        }.register()
 
         PlayerPlaceholder(
             this,
