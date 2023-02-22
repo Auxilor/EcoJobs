@@ -16,7 +16,10 @@ import com.willfp.eco.util.NumberUtils
 import com.willfp.eco.util.formatEco
 import com.willfp.eco.util.toNiceString
 import com.willfp.ecojobs.EcoJobsPlugin
-import com.willfp.ecojobs.api.event.*
+import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
+import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
+import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
+import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
 import com.willfp.libreforge.conditions.Conditions
 import com.willfp.libreforge.conditions.ConfiguredCondition
 import com.willfp.libreforge.effects.ConfiguredEffect
@@ -99,7 +102,7 @@ class Job(
             }
         }
 
-    val jobXpGains = config.getSubsections("xp-gain-methods").mapNotNull {
+    private val jobXpGains = config.getSubsections("xp-gain-methods").mapNotNull {
         Counters.compile(it, "Job $id")
     }
 
@@ -508,7 +511,7 @@ private fun Player.cacheJobExperienceMultiplier(): Double {
     for (permissionAttachmentInfo in this.effectivePermissions) {
         val permission = permissionAttachmentInfo.permission
         if (permission.startsWith(prefix)) {
-            (permission.substring(permission.lastIndexOf(".") + 1).toDoubleOrNull())?.let {
+            (permission.substring(permission.lastIndexOf(".") + 1).toDoubleOrNull())?.let{
                 return (it / 100) + 1
             }
         }
