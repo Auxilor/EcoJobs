@@ -40,7 +40,7 @@ class EcoJobsPlugin : LibReforgePlugin() {
         PlayerPlaceholder(
             this,
             "job_level_next"
-        ) { p -> p.activeJobs.firstOrNull()?.let { job -> (p.getJobLevel(job) + 1).toString() } }.register()
+        ) { p -> p.activeJobs.firstOrNull()?.let { job -> (p.getJobLevel(job) + 1).toString() } ?: "" }.register()
 
         PlayerPlaceholder(
             this,
@@ -51,8 +51,13 @@ class EcoJobsPlugin : LibReforgePlugin() {
 
         PlayerPlaceholder(
             this,
-            "in_jobs"
-        ) { it.activeJobs.size.toString() }.register()
+            "job"
+        ) { p -> p.activeJobs.firstOrNull()?.name ?: "" }.register()
+
+//        PlayerPlaceholder(
+//            this,
+//            "job"
+//        ) { it.activeJobs.size.toString() }.register()
 
         PlayerPlaceholder(
             this,
@@ -76,11 +81,13 @@ class EcoJobsPlugin : LibReforgePlugin() {
             val place = placeString.toIntOrNull() ?: return@DynamicPlaceholder "Invalid place!"
             val type = split.getOrNull(3) ?: return@DynamicPlaceholder "You must specify the top type!"
             val topEntry = job.getTop(place)
-            return@DynamicPlaceholder when(type) {
+            return@DynamicPlaceholder when (type) {
                 "name" -> topEntry?.player?.savedDisplayName
                     ?: this.langYml.getFormattedString("top.name-empty")
+
                 "amount" -> topEntry?.amount?.toNiceString()
                     ?: this.langYml.getFormattedString("top.amount-empty")
+
                 else -> "Invalid type: $type! Available types: name/amount"
             }
         }.register()
