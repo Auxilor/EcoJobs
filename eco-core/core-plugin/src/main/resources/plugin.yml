@@ -21,6 +21,9 @@ softdepend:
   - Boosters
   - EcoSkills
   - Reforges
+loadbefore:
+  - EcoEnchants
+
 commands:
   ecojobs:
     description: Base Command
