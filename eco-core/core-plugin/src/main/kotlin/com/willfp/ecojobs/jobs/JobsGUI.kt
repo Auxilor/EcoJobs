@@ -78,6 +78,7 @@ object JobsGUI {
                 plugin.configYml.getInt("gui.player-info.row"),
                 plugin.configYml.getInt("gui.player-info.column"),
                 slot { player, _ ->
+                    @Suppress("DEPRECATION")
                     val skullBuilder = SkullBuilder()
                         .setDisplayName(
                             plugin.configYml.getString("gui.player-info.name")
