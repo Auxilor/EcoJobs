@@ -1,15 +1,17 @@
 package com.willfp.ecojobs.jobs
 
-import com.google.common.collect.BiMap
-import com.google.common.collect.HashBiMap
 import com.google.common.collect.ImmutableList
+import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.core.config.updating.ConfigUpdater
+import com.willfp.eco.core.registry.Registry
 import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.getJobLevel
+import com.willfp.libreforge.loader.LibreforgePlugin
+import com.willfp.libreforge.loader.configs.ConfigCategory
 import org.bukkit.OfflinePlayer
 
-object Jobs {
-    private val BY_ID: BiMap<String, Job> = HashBiMap.create()
+object Jobs : ConfigCategory("job", "jobs") {
+    private val registry = Registry<Job>()
 
     /**
      * Get all registered [Job]s.
@@ -18,7 +20,7 @@ object Jobs {
      */
     @JvmStatic
     fun values(): List<Job> {
-        return ImmutableList.copyOf(BY_ID.values)
+        return ImmutableList.copyOf(registry.values())
     }
 
     /**
@@ -29,45 +31,15 @@ object Jobs {
      */
     @JvmStatic
     fun getByID(name: String): Job? {
-        return BY_ID[name]
+        return registry[name]
     }
 
-    /**
-     * Update all [Job]s.
-     *
-     * @param plugin Instance of EcoJobs.
-     */
-    @ConfigUpdater
-    @JvmStatic
-    fun update(plugin: EcoJobsPlugin) {
-        for (job in values()) {
-            removeJob(job)
-        }
-
-        for ((id, jobConfig) in plugin.fetchConfigs("jobs")) {
-            addNewJob(Job(id, jobConfig, plugin))
-        }
+    override fun clear(plugin: LibreforgePlugin) {
+        registry.clear()
     }
 
-    /**
-     * Add new [Job] to EcoJobs.
-     *
-     * @param job The [Job] to add.
-     */
-    @JvmStatic
-    fun addNewJob(job: Job) {
-        BY_ID.remove(job.id)
-        BY_ID[job.id] = job
-    }
-
-    /**
-     * Remove [Job] from EcoJobs.
-     *
-     * @param job The [Job] to remove.
-     */
-    @JvmStatic
-    fun removeJob(job: Job) {
-        BY_ID.remove(job.id)
+    override fun acceptConfig(plugin: LibreforgePlugin, id: String, config: Config) {
+        registry.register(Job(id, config, plugin as EcoJobsPlugin))
     }
 
     /**

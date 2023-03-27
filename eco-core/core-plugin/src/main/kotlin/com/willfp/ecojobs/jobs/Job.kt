@@ -4,7 +4,6 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.core.data.keys.PersistentDataKey
 import com.willfp.eco.core.data.keys.PersistentDataKeyType
-import com.willfp.eco.core.data.profile
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
@@ -12,42 +11,39 @@ import com.willfp.eco.core.placeholder.PlayerStaticPlaceholder
 import com.willfp.eco.core.placeholder.PlayerlessPlaceholder
 import com.willfp.eco.core.price.ConfiguredPrice
 import com.willfp.eco.core.price.impl.PriceEconomy
+import com.willfp.eco.core.registry.Registrable
 import com.willfp.eco.util.NumberUtils
 import com.willfp.eco.util.formatEco
 import com.willfp.eco.util.toNiceString
 import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.canJoinJob
-import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
-import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
-import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
-import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.api.getJobProgress
 import com.willfp.ecojobs.api.getJobXP
 import com.willfp.ecojobs.api.getJobXPRequired
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.jobLimit
+import com.willfp.libreforge.ViolationContext
+import com.willfp.libreforge.conditions.ConditionList
 import com.willfp.libreforge.conditions.Conditions
-import com.willfp.libreforge.conditions.ConfiguredCondition
-import com.willfp.libreforge.effects.ConfiguredEffect
+import com.willfp.libreforge.counters.Counters
+import com.willfp.libreforge.effects.EffectList
 import com.willfp.libreforge.effects.Effects
-import com.willfp.libreforge.events.TriggerPreProcessEvent
-import com.willfp.libreforge.triggers.Counters
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.time.Duration
-import java.util.DoubleSummaryStatistics
 import java.util.Objects
 import java.util.concurrent.TimeUnit
-import kotlin.math.abs
 import kotlin.math.max
 
 class Job(
-    val id: String, val config: Config, private val plugin: EcoJobsPlugin
-) {
+    val id: String,
+    val config: Config,
+    private val plugin: EcoJobsPlugin
+) : Registrable {
     private val topCache = Caffeine.newBuilder()
         .expireAfterWrite(Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong()))
         .build<Int, LeaderboardCacheEntry?>()
@@ -85,8 +81,8 @@ class Job(
 
     private val baseItem: ItemStack = Items.lookup(config.getString("icon")).item
 
-    private val effects: Set<ConfiguredEffect>
-    private val conditions: Set<ConfiguredCondition>
+    private val effects: EffectList
+    private val conditions: ConditionList
 
     private val levels = Caffeine.newBuilder().build<Int, JobLevel>()
     private val effectsDescription = Caffeine.newBuilder().build<Int, List<String>>()
@@ -106,7 +102,7 @@ class Job(
     }
 
     private val jobXpGains = config.getSubsections("xp-gain-methods").mapNotNull {
-        Counters.compile(it, "Job $id")
+        Counters.compile(it, ViolationContext(plugin, "Job $id"))
     }
 
     init {
@@ -116,13 +112,15 @@ class Job(
             p.getJobLevel(this).toString()
         })
 
-        effects = config.getSubsections("effects").mapNotNull {
-            Effects.compile(it, "Job $id")
-        }.toSet()
+        effects = Effects.compile(
+            config.getSubsections("effects"),
+            ViolationContext(plugin, "Job $id")
+        )
 
-        conditions = config.getSubsections("conditions").mapNotNull {
-            Conditions.compile(it, "Job $id")
-        }.toSet()
+        conditions = Conditions.compile(
+            config.getSubsections("conditions"),
+            ViolationContext(plugin, "Job $id")
+        )
 
         for (string in config.getStrings("level-commands")) {
             val split = string.split(":")
@@ -192,8 +190,16 @@ class Job(
         }.register()
     }
 
+    override fun onRegister() {
+        jobXpGains.forEach { it.bind(JobXPAccumulator(this)) }
+    }
+
+    override fun onRemove() {
+        jobXpGains.forEach { it.unbind() }
+    }
+
     fun getLevel(level: Int): JobLevel = levels.get(level) {
-        JobLevel(this, it, effects, conditions)
+        JobLevel(plugin, this, it, effects, conditions)
     }
 
     private fun getLevelUpMessages(level: Int, whitespace: Int = 0): List<String> = levelUpMessages.get(level) {
@@ -334,7 +340,8 @@ class Job(
         val base = baseItem.clone()
         return ItemStackBuilder(base).setDisplayName(
             plugin.configYml.getFormattedString("gui.job-info.active.name")
-                .replace("%level%", player.getJobLevel(this).toString()).replace("%level_numeral%", NumberUtils.toNumeral(player.getJobLevel(this))).replace("%job%", this.name)
+                .replace("%level%", player.getJobLevel(this).toString())
+                .replace("%level_numeral%", NumberUtils.toNumeral(player.getJobLevel(this))).replace("%job%", this.name)
         ).addLoreLines {
             injectPlaceholdersInto(plugin.configYml.getStrings("gui.job-info.active.lore"), player)
         }.build()
@@ -356,16 +363,16 @@ class Job(
         }
     }
 
-    fun getXP(event: TriggerPreProcessEvent): Double {
-        return jobXpGains.sumOf { it.getCount(event) }
-    }
-
     fun getTop(place: Int): LeaderboardCacheEntry? {
         return topCache.get(place) {
             val players = Bukkit.getOfflinePlayers().sortedByDescending { it.getJobLevel(this) }
-            val target = players.getOrNull(place-1) ?: return@get null
+            val target = players.getOrNull(place - 1) ?: return@get null
             return@get LeaderboardCacheEntry(target, target.getJobLevel(this))
         }
+    }
+
+    override fun getID(): String {
+        return this.id
     }
 
     override fun equals(other: Any?): Boolean {

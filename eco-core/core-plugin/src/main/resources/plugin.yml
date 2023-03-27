@@ -1,25 +1,13 @@
-name: EcoJobs
-version: ${projectVersion}
-main: com.willfp.ecojobs.EcoJobsPlugin
+name: ${pluginName}
+version: ${version}
+main: com.willfp.ecopets.EcoPetsPlugin
 api-version: 1.17
 authors: [ Auxilor ]
 website: willfp.com
 depend:
   - eco
 softdepend:
-  - AureliumSkills
-  - Vault
-  - mcMMO
-  - Jobs
-  - TMMobcoins
-  - EcoEnchants
-  - EcoBosses
-  - Talismans
-  - EcoArmor
-  - EcoItems
-  - Boosters
-  - EcoSkills
-  - Reforges
+  - libreforge
 commands:
   ecojobs:
     description: Base Command
@@ -49,8 +37,6 @@ permissions:
       ecojobs.command.join: true
       ecojobs.command.leave: true
       ecojobs.command.reset: true
-      ecojobs.command.import: true
-      ecojobs.command.export: true
 
   ecojobs.command.reload:
     description: Allows reloading the config
@@ -69,12 +55,6 @@ permissions:
     default: op
   ecojobs.command.reset:
     description: Allows the use of /ecojobs reset.
-    default: op
-  ecojobs.command.import:
-    description: Allows the use of /ecojobs import.
-    default: op
-  ecojobs.command.export:
-    description: Allows the use of /ecojobs export.
     default: op
   ecojobs.command.join:
     description: Allows the use of /jobs join.

@@ -8,28 +8,36 @@ import com.willfp.eco.util.toNiceString
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.api.jobLimit
-import com.willfp.ecojobs.commands.CommandEcojobs
+import com.willfp.ecojobs.commands.CommandEcoJobs
 import com.willfp.ecojobs.commands.CommandJobs
 import com.willfp.ecojobs.jobs.JobLevelListener
-import com.willfp.ecojobs.jobs.JobTriggerXPGainListener
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.jobs.PriceHandler
 import com.willfp.ecojobs.jobs.ResetOnQuitListener
-import com.willfp.libreforge.LibReforgePlugin
+import com.willfp.libreforge.SimpleProvidedHolder
+import com.willfp.libreforge.loader.LibreforgePlugin
+import com.willfp.libreforge.loader.configs.ConfigCategory
+import com.willfp.libreforge.registerHolderProvider
 import org.bukkit.event.Listener
 import java.util.regex.Pattern
 
-class EcoJobsPlugin : LibReforgePlugin() {
+class EcoJobsPlugin : LibreforgePlugin() {
     init {
         instance = this
         registerHolderProvider { player ->
-            player.activeJobs.map { it.getLevel(player.getJobLevel(it)) }
+            player.activeJobs.map { it.getLevel(player.getJobLevel(it)) }.map {
+                SimpleProvidedHolder(it)
+            }
         }
     }
 
-    override fun handleEnableAdditional() {
-        this.copyConfigs("jobs")
+    override fun loadConfigCategories(): List<ConfigCategory> {
+        return listOf(
+            Jobs
+        )
+    }
 
+    override fun handleEnable() {
         PlayerPlaceholder(
             this,
             "limit"
@@ -62,11 +70,13 @@ class EcoJobsPlugin : LibReforgePlugin() {
             val place = placeString.toIntOrNull() ?: return@DynamicPlaceholder "Invalid place!"
             val type = split.getOrNull(3) ?: return@DynamicPlaceholder "You must specify the top type!"
             val topEntry = job.getTop(place)
-            return@DynamicPlaceholder when(type) {
+            return@DynamicPlaceholder when (type) {
                 "name" -> topEntry?.player?.savedDisplayName
                     ?: this.langYml.getFormattedString("top.name-empty")
+
                 "amount" -> topEntry?.amount?.toNiceString()
                     ?: this.langYml.getFormattedString("top.amount-empty")
+
                 else -> "Invalid type: $type! Available types: name/amount"
             }
         }.register()
@@ -74,7 +84,7 @@ class EcoJobsPlugin : LibReforgePlugin() {
 
     override fun loadPluginCommands(): List<PluginCommand> {
         return listOf(
-            CommandEcojobs(this),
+            CommandEcoJobs(this),
             CommandJobs(this)
         )
     }
@@ -82,7 +92,6 @@ class EcoJobsPlugin : LibReforgePlugin() {
     override fun loadListeners(): List<Listener> {
         return listOf(
             JobLevelListener(this),
-            JobTriggerXPGainListener,
             ResetOnQuitListener,
             PriceHandler
         )
