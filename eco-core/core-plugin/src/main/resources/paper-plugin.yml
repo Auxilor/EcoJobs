@@ -15,3 +15,61 @@ dependencies:
 load-after:
   - name: eco
     bootstrap: false
+
+
+permissions:
+  ecojobs.*:
+    description: All EcoJobs permissions
+    default: op
+    children:
+      ecojobs.command.*: true
+  ecojobs.command.*:
+    description: All commands
+    default: op
+    children:
+      ecojobs.command.ecojobs: true
+      ecojobs.command.reload: true
+      ecojobs.command.jobs: true
+      ecojobs.command.unlock: true
+      ecojobs.command.givexp: true
+      ecojobs.command.join: true
+      ecojobs.command.leave: true
+      ecojobs.command.reset: true
+
+  ecojobs.command.reload:
+    description: Allows reloading the config
+    default: op
+  ecojobs.command.ecojobs:
+    description: Allows the use of /ecojobs.
+    default: true
+  ecojobs.command.jobs:
+    description: Allows the use of /jobs.
+    default: true
+  ecojobs.command.unlock:
+    description: Allows the use of /ecojobs unlock.
+    default: op
+  ecojobs.command.givexp:
+    description: Allows the use of /ecojobs givexp.
+    default: op
+  ecojobs.command.reset:
+    description: Allows the use of /ecojobs reset.
+    default: op
+  ecojobs.command.join:
+    description: Allows the use of /jobs join.
+    default: true
+  ecojobs.command.leave:
+    description: Allows the use of /jobs leave.
+    default: true
+
+  ecojobs.xpmultiplier.50percent:
+    description: Gives the player 50% more job experience
+    default: false
+  ecojobs.xpmultiplier.double:
+    description: Gives the player 2x job experience
+    default: false
+  ecojobs.xpmultiplier.triple:
+    description: Gives the player 3x job experience
+    default: false
+  ecojobs.xpmultiplier.quadruple:
+    description: Gives the player 4x job experience
+    default: false
