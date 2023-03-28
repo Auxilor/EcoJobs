@@ -24,11 +24,6 @@ import java.util.regex.Pattern
 class EcoJobsPlugin : LibreforgePlugin() {
     init {
         instance = this
-        registerHolderProvider { player ->
-            player.activeJobs.map { it.getLevel(player.getJobLevel(it)) }.map {
-                SimpleProvidedHolder(it)
-            }
-        }
     }
 
     override fun loadConfigCategories(): List<ConfigCategory> {
@@ -38,6 +33,12 @@ class EcoJobsPlugin : LibreforgePlugin() {
     }
 
     override fun handleEnable() {
+        registerHolderProvider { player ->
+            player.activeJobs.map { it.getLevel(player.getJobLevel(it)) }.map {
+                SimpleProvidedHolder(it)
+            }
+        }
+
         PlayerPlaceholder(
             this,
             "limit"

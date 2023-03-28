@@ -1,6 +1,6 @@
 name: ${pluginName}
 version: ${version}
-main: com.willfp.ecopets.EcoPetsPlugin
+main: com.willfp.ecojobs.EcoJobsPlugin
 api-version: 1.17
 authors: [ Auxilor ]
 website: willfp.com
