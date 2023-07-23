@@ -65,7 +65,7 @@ class JobLevelGUI(
         }
 
         menu = menu(plugin.configYml.getInt("level-gui.rows")) {
-            title = job.name
+            title = job.title
 
             maxPages(component.pages)
 
