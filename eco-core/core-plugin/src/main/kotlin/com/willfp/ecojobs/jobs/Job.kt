@@ -49,6 +49,7 @@ class Job(
         .build<Int, LeaderboardCacheEntry?>()
 
     val name = config.getFormattedString("name")
+    val title = config.getFormattedStringOrNull("title") ?: name
     val description = config.getFormattedString("description")
     val isUnlockedByDefault = config.getBool("unlocked-by-default")
     val resetsOnQuit = config.getBool("reset-on-quit")
