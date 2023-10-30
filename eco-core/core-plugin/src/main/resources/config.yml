@@ -124,6 +124,7 @@ gui:
 
 level-gui:
   rows: 6
+  title: "%job%"
 
   mask:
     # The way the mask works is by having a list of materials
