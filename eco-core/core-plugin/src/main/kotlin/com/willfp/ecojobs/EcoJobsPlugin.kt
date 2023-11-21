@@ -30,7 +30,9 @@ import com.willfp.libreforge.filters.Filters
 import com.willfp.libreforge.loader.LibreforgePlugin
 import com.willfp.libreforge.loader.configs.ConfigCategory
 import com.willfp.libreforge.registerHolderProvider
+import com.willfp.libreforge.registerSpecificHolderProvider
 import com.willfp.libreforge.triggers.Triggers
+import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import java.util.regex.Pattern
 
@@ -56,7 +58,7 @@ class EcoJobsPlugin : LibreforgePlugin() {
         Triggers.register(TriggerLeaveJob)
         Filters.register(FilterJob)
         
-        registerHolderProvider { player ->
+        registerSpecificHolderProvider<Player> { player ->
             player.activeJobs.map { it.getLevel(player.getJobLevel(it)) }.map {
                 SimpleProvidedHolder(it)
             }

@@ -2,6 +2,7 @@ package com.willfp.ecojobs.libreforge
 
 import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
 import com.willfp.ecojobs.api.getJobLevel
+import com.willfp.libreforge.toDispatcher
 import com.willfp.libreforge.triggers.Trigger
 import com.willfp.libreforge.triggers.TriggerData
 import com.willfp.libreforge.triggers.TriggerParameter
@@ -20,7 +21,7 @@ object TriggerJoinJob : Trigger("join_job") {
         val player = event.player as? Player ?: return
 
         this.dispatch(
-            player,
+            player.toDispatcher(),
             TriggerData(
                 player = player,
                 location = player.location,
