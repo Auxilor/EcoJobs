@@ -74,15 +74,17 @@ level-xp-requirements:
 xp-gain-methods:
   - trigger: mine_block
     multiplier: 0.5
-    conditions: [ ]
-    filters:
-      items:
-        - "*wooden_pickaxe"
-        - "*stone_pickaxe"
-        - "*iron_pickaxe"
-        - "*golden_pickaxe"
-        - "*diamond_pickaxe"
-        - "*netherite_pickaxe"
+    filters: [ ]
+    conditions:
+      - id: in_mainhand
+        args:
+          items:
+            - "*wooden_pickaxe"
+            - "*stone_pickaxe"
+            - "*iron_pickaxe"
+            - "*golden_pickaxe"
+            - "*diamond_pickaxe"
+            - "*netherite_pickaxe"
 
 level-placeholders:
   - id: "money"
@@ -109,14 +111,16 @@ effects:
     args:
       every: "ceil(10 - %level% / 10)"
       amount: "0.4 * %level%"
-    filters:
-      items:
-        - "*wooden_pickaxe"
-        - "*stone_pickaxe"
-        - "*iron_pickaxe"
-        - "*golden_pickaxe"
-        - "*diamond_pickaxe"
-        - "*netherite_pickaxe"
+    conditions:
+      - id: in_mainhand
+        args:
+          items:
+            - "*wooden_pickaxe"
+            - "*stone_pickaxe"
+            - "*iron_pickaxe"
+            - "*golden_pickaxe"
+            - "*diamond_pickaxe"
+            - "*netherite_pickaxe"
     triggers:
       - mine_block
 
