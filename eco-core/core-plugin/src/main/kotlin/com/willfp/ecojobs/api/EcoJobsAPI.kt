@@ -140,7 +140,7 @@ fun OfflinePlayer.resetJob(job: Job) {
 /**
  * Get the experience required to advance to the next level.
  */
-fun OfflinePlayer.getJobXPRequired(job: Job) = job.getExpForLevel(this.getJobLevel(job) + 1)
+fun OfflinePlayer.getJobXPRequired(job: Job) = job.getFormattedExpForLevel(this.getJobLevel(job) + 1)
 
 /**
  * Get progress to next level between 0 and 1, where 0 is none and 1 is complete.

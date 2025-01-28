@@ -6,11 +6,10 @@ import com.willfp.eco.core.data.keys.PersistentDataKey
 import com.willfp.eco.core.data.keys.PersistentDataKeyType
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
-import com.willfp.eco.core.placeholder.InjectablePlaceholder
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.eco.core.placeholder.PlayerStaticPlaceholder
 import com.willfp.eco.core.placeholder.PlayerlessPlaceholder
-import com.willfp.eco.core.placeholder.StaticPlaceholder
+import com.willfp.eco.core.placeholder.context.placeholderContext
 import com.willfp.eco.core.price.ConfiguredPrice
 import com.willfp.eco.core.price.impl.PriceEconomy
 import com.willfp.eco.core.registry.Registrable
@@ -27,6 +26,7 @@ import com.willfp.ecojobs.api.getJobXP
 import com.willfp.ecojobs.api.getJobXPRequired
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.jobLimit
+import com.willfp.ecojobs.util.LevelInjectable
 import com.willfp.libreforge.ViolationContext
 import com.willfp.libreforge.conditions.ConditionList
 import com.willfp.libreforge.conditions.Conditions
@@ -286,13 +286,8 @@ class Job(
         val withPlaceholders = lore.map {
             it.replace("%percentage_progress%", (player.getJobProgress(this) * 100).toNiceString())
                 .replace("%current_xp%", player.getJobXP(this).toNiceString())
-                .replace("%required_xp%", this.getExpForLevel(player.getJobLevel(this) + 1).let { req ->
-                    if (req == Int.MAX_VALUE) {
-                        plugin.langYml.getFormattedString("infinity")
-                    } else {
-                        req.toNiceString()
-                    }
-                }).replace("%description%", this.description).replace("%job%", this.name)
+                .replace("%required_xp%", this.getFormattedExpForLevel(player.getJobLevel(this) + 1))
+                .replace("%description%", this.description).replace("%job%", this.name)
                 .replace("%level%", (forceLevel ?: player.getJobLevel(this)).toString())
                 .replace("%level_numeral%", NumberUtils.toNumeral(forceLevel ?: player.getJobLevel(this)))
                 .replace("%join_price%", this.joinPrice.getDisplay(player))
@@ -358,27 +353,34 @@ class Job(
         }.build()
     }
 
-    fun getExpForLevel(level: Int): Int {
-        if (level < 1 || level > maxLevel) {
-            return Int.MAX_VALUE
-        }
-
-        // Use levelXpRequirements if it exists and covers the level
-        if (levelXpRequirements != null && levelXpRequirements.size >= level) {
-            return levelXpRequirements[level - 1].toInt()
-        }
-
-        // Fallback to using the xpFormula if it exists
+    /**
+     * Get the XP required to reach the next level, if currently at [level].
+     */
+    fun getExpForLevel(level: Int): Double {
         if (xpFormula != null) {
             return evaluateExpression(
-                xpFormula.replace("%level%", level.toString())
-            ).toInt()
+                xpFormula,
+                placeholderContext(
+                    injectable = LevelInjectable(level)
+                )
+            )
         }
 
-        // Default fallback if neither configuration is usable
-        return Int.MAX_VALUE
+        if (levelXpRequirements != null) {
+            return levelXpRequirements.getOrNull(level) ?: Double.POSITIVE_INFINITY
+        }
+
+        return Double.POSITIVE_INFINITY
     }
 
+    fun getFormattedExpForLevel(level: Int): String {
+        val required = getExpForLevel(level)
+        return if (required.isInfinite()) {
+            plugin.langYml.getFormattedString("infinity")
+        } else {
+            required.toNiceString()
+        }
+    }
 
     fun executeLevelCommands(player: Player, level: Int) {
         val commands = levelCommands[level] ?: emptyList()
