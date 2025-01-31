@@ -39,7 +39,15 @@ leave-price:
 leave-lore:
   - " &8» This will cost %leave_price%"
 
-# The xp requirements for each job level - add new levels by adding more to this list
+# There are two ways to specify level XP requirements:
+#  1. A formula to calculate for infinite levels
+#  2. A list of XP requirements for each level
+
+# Formula
+# xp-formula: (2 ^ %level%) * 25
+# max-level: 100 # The max level of the job
+
+# List
 level-xp-requirements:
   - 100
   - 120

@@ -9,10 +9,12 @@ import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.eco.core.placeholder.PlayerStaticPlaceholder
 import com.willfp.eco.core.placeholder.PlayerlessPlaceholder
+import com.willfp.eco.core.placeholder.context.placeholderContext
 import com.willfp.eco.core.price.ConfiguredPrice
 import com.willfp.eco.core.price.impl.PriceEconomy
 import com.willfp.eco.core.registry.Registrable
 import com.willfp.eco.util.NumberUtils
+import com.willfp.eco.util.NumberUtils.evaluateExpression
 import com.willfp.eco.util.formatEco
 import com.willfp.eco.util.toNiceString
 import com.willfp.ecojobs.EcoJobsPlugin
@@ -24,6 +26,7 @@ import com.willfp.ecojobs.api.getJobXP
 import com.willfp.ecojobs.api.getJobXPRequired
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.jobLimit
+import com.willfp.ecojobs.util.LevelInjectable
 import com.willfp.libreforge.ViolationContext
 import com.willfp.libreforge.conditions.ConditionList
 import com.willfp.libreforge.conditions.Conditions
@@ -32,12 +35,11 @@ import com.willfp.libreforge.effects.EffectList
 import com.willfp.libreforge.effects.Effects
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
+import org.bukkit.configuration.InvalidConfigurationException
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.time.Duration
 import java.util.Objects
-import java.util.concurrent.TimeUnit
-import kotlin.math.max
 
 class Job(
     val id: String,
@@ -49,8 +51,11 @@ class Job(
         .build<Int, LeaderboardCacheEntry?>()
 
     val name = config.getFormattedString("name")
+
     val description = config.getFormattedString("description")
+
     val isUnlockedByDefault = config.getBool("unlocked-by-default")
+
     val resetsOnQuit = config.getBool("reset-on-quit")
 
     val joinPrice = ConfiguredPrice.create(config.getSubsection("join-price")) ?: ConfiguredPrice(
@@ -71,9 +76,11 @@ class Job(
         EcoJobsPlugin.instance.namespacedKeyFactory.create("${id}_xp"), PersistentDataKeyType.DOUBLE, 0.0
     )
 
-    private val levelXpRequirements = listOf(0) + config.getInts("level-xp-requirements")
+    private val xpFormula = config.getStringOrNull("xp-formula")
 
-    val maxLevel = levelXpRequirements.size
+    private val levelXpRequirements = config.getDoublesOrNull("level-xp-requirements")
+
+    val maxLevel = config.getIntOrNull("max-level") ?: levelXpRequirements?.size ?: Int.MAX_VALUE
 
     val levelGUI = JobLevelGUI(plugin, this)
 
@@ -106,6 +113,10 @@ class Job(
     }
 
     init {
+        if (xpFormula == null && levelXpRequirements == null) {
+            throw InvalidConfigurationException("Skill $id has no requirements or xp formula")
+        }
+
         config.injectPlaceholders(PlayerStaticPlaceholder(
             "level"
         ) { p ->
@@ -275,13 +286,8 @@ class Job(
         val withPlaceholders = lore.map {
             it.replace("%percentage_progress%", (player.getJobProgress(this) * 100).toNiceString())
                 .replace("%current_xp%", player.getJobXP(this).toNiceString())
-                .replace("%required_xp%", this.getExpForLevel(player.getJobLevel(this) + 1).let { req ->
-                    if (req == Int.MAX_VALUE) {
-                        plugin.langYml.getFormattedString("infinity")
-                    } else {
-                        req.toNiceString()
-                    }
-                }).replace("%description%", this.description).replace("%job%", this.name)
+                .replace("%required_xp%", this.getFormattedExpForLevel(player.getJobLevel(this) + 1))
+                .replace("%description%", this.description).replace("%job%", this.name)
                 .replace("%level%", (forceLevel ?: player.getJobLevel(this)).toString())
                 .replace("%level_numeral%", NumberUtils.toNumeral(forceLevel ?: player.getJobLevel(this)))
                 .replace("%join_price%", this.joinPrice.getDisplay(player))
@@ -347,12 +353,33 @@ class Job(
         }.build()
     }
 
-    fun getExpForLevel(level: Int): Int {
-        if (level < 1 || level > maxLevel) {
-            return Int.MAX_VALUE
+    /**
+     * Get the XP required to reach the next level, if currently at [level].
+     */
+    fun getExpForLevel(level: Int): Double {
+        if (xpFormula != null) {
+            return evaluateExpression(
+                xpFormula,
+                placeholderContext(
+                    injectable = LevelInjectable(level)
+                )
+            )
         }
 
-        return levelXpRequirements[level - 1]
+        if (levelXpRequirements != null) {
+            return levelXpRequirements.getOrNull(level) ?: Double.POSITIVE_INFINITY
+        }
+
+        return Double.POSITIVE_INFINITY
+    }
+
+    fun getFormattedExpForLevel(level: Int): String {
+        val required = getExpForLevel(level)
+        return if (required.isInfinite()) {
+            plugin.langYml.getFormattedString("infinity")
+        } else {
+            required.toNiceString()
+        }
     }
 
     fun executeLevelCommands(player: Player, level: Int) {
@@ -409,43 +436,3 @@ private fun Collection<LevelPlaceholder>.format(string: String, level: Int): Str
 
 fun OfflinePlayer.getJobLevelObject(job: Job): JobLevel = job.getLevel(this.getJobLevel(job))
 
-private val expMultiplierCache = Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS).build<Player, Double> {
-    it.cacheJobExperienceMultiplier()
-}
-
-val Player.jobExperienceMultiplier: Double
-    get() = expMultiplierCache.get(this)
-
-private fun Player.cacheJobExperienceMultiplier(): Double {
-    if (this.hasPermission("ecojobs.xpmultiplier.quadruple")) {
-        return 4.0
-    }
-
-    if (this.hasPermission("ecojobs.xpmultiplier.triple")) {
-        return 3.0
-    }
-
-    if (this.hasPermission("ecojobs.xpmultiplier.double")) {
-        return 2.0
-    }
-
-    if (this.hasPermission("ecojobs.xpmultiplier.50percent")) {
-        return 1.5
-    }
-
-    return 1 + getNumericalPermission("ecojobs.xpmultiplier", 0.0) / 100
-}
-
-fun Player.getNumericalPermission(permission: String, default: Double): Double {
-    var highest: Double? = null
-
-    for (permissionAttachmentInfo in this.effectivePermissions) {
-        val perm = permissionAttachmentInfo.permission
-        if (perm.startsWith(permission)) {
-            val found = perm.substring(perm.lastIndexOf(".") + 1).toDoubleOrNull() ?: continue
-            highest = max(highest ?: Double.MIN_VALUE, found)
-        }
-    }
-
-    return highest ?: default
-}
