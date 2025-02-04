@@ -104,7 +104,7 @@ level-up-messages:
   1:
     - "&8» &7Earn &a$%money%&7 for each log chopped."
 
-level-commands: [ ]
+level-up-effects: [ ]
 
 effects:
   - id: give_money
