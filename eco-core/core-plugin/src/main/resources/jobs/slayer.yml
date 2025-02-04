@@ -95,7 +95,7 @@ level-up-messages:
     - "&8» &8Earn &a$%money%&8 per heart of health that"
     - "  &8mobs you kill have"
 
-level-commands: [ ]
+level-up-effects: [ ]
 
 effects:
   - id: give_money

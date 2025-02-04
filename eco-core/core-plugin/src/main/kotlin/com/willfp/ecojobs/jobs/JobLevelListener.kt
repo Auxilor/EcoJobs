@@ -2,6 +2,7 @@ package com.willfp.ecojobs.jobs
 
 import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
+import com.willfp.libreforge.toDispatcher
 import org.bukkit.Sound
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -16,6 +17,7 @@ class JobLevelListener(
         val player = event.player
         val level = event.level
 
+        job.levelUpEffects?.trigger(player.toDispatcher())
         job.executeLevelCommands(player, level)
 
         if (this.plugin.configYml.getBool("level-up.sound.enabled")) {
