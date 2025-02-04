@@ -33,6 +33,7 @@ import com.willfp.libreforge.conditions.Conditions
 import com.willfp.libreforge.counters.Counters
 import com.willfp.libreforge.effects.EffectList
 import com.willfp.libreforge.effects.Effects
+import com.willfp.libreforge.effects.executors.impl.NormalExecutorFactory
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.configuration.InvalidConfigurationException
@@ -133,24 +134,7 @@ class Job(
             ViolationContext(plugin, "Job $id")
         )
 
-        for (string in config.getStrings("level-commands")) {
-            val split = string.split(":")
-
-            if (split.size == 1) {
-                for (level in 1..maxLevel) {
-                    val commands = levelCommands[level] ?: mutableListOf()
-                    commands.add(string)
-                    levelCommands[level] = commands
-                }
-            } else {
-                val level = split[0].toInt()
-
-                val command = string.removePrefix("$level:")
-                val commands = levelCommands[level] ?: mutableListOf()
-                commands.add(command)
-                levelCommands[level] = commands
-            }
-        }
+        manageLevelCommands(config)
 
         PlayerPlaceholder(
             plugin, "${id}_percentage_progress"
@@ -200,6 +184,37 @@ class Job(
             Bukkit.getOfflinePlayers().count { this in it.activeJobs }.toString()
         }.register()
     }
+
+    @Deprecated("Use level-up-effects instead")
+    private fun manageLevelCommands(config: Config) {
+        if (config.getStrings("level-commands").isNotEmpty()) {
+            plugin.logger.warning("$id job: The `level-commands` key is deprecated and will be removed in future versions. Switch to `level-up-effects` instead. Refer to the wiki for more info.")
+        }
+        for (string in config.getStrings("level-commands")) {
+            val split = string.split(":")
+
+            if (split.size == 1) {
+                for (level in 1..maxLevel) {
+                    val commands = levelCommands[level] ?: mutableListOf()
+                    commands.add(string)
+                    levelCommands[level] = commands
+                }
+            } else {
+                val level = split[0].toInt()
+
+                val command = string.removePrefix("$level:")
+                val commands = levelCommands[level] ?: mutableListOf()
+                commands.add(command)
+                levelCommands[level] = commands
+            }
+        }
+    }
+
+    val levelUpEffects = Effects.compileChain(
+        config.getSubsections("level-up-effects"),
+        NormalExecutorFactory.create(),
+        ViolationContext(plugin, "Job $id level-up-effects")
+    )
 
     override fun onRegister() {
         jobXpGains.forEach { it.bind(JobXPAccumulator(this)) }
@@ -382,6 +397,7 @@ class Job(
         }
     }
 
+    @Deprecated("Use level-up-effects instead")
     fun executeLevelCommands(player: Player, level: Int) {
         val commands = levelCommands[level] ?: emptyList()
 
