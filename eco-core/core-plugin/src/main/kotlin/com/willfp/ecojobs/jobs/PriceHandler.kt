@@ -2,6 +2,7 @@ package com.willfp.ecojobs.jobs
 
 import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
 import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
+import com.willfp.libreforge.toDispatcher
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -23,6 +24,7 @@ object PriceHandler : Listener {
         }
 
         price.pay(player)
+        job.joinEffects?.trigger(player.toDispatcher())
     }
 
     @EventHandler(
@@ -40,5 +42,6 @@ object PriceHandler : Listener {
         }
 
         price.pay(player)
+        job.leaveEffects?.trigger(player.toDispatcher())
     }
 }
