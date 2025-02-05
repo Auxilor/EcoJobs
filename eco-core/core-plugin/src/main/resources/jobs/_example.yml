@@ -27,6 +27,13 @@ join-price:
 # Reference with %join_lore%
 join-lore: []
 
+# A list of effects to run when the player joins the job.
+# Read https://plugins.auxilor.io/effects/configuring-an-effect
+join-effects:
+  - id: broadcast
+    args:
+      message: "&8» &a%player% &8joined the &6Miner &8job!"
+
 # The price to leave this job (set to 0 to disable)
 # Read here for more: https://plugins.auxilor.io/all-plugins/prices
 leave-price:
@@ -38,6 +45,13 @@ leave-price:
 # Reference with %leave_lore%
 leave-lore:
   - " &8» This will cost %leave_price%"
+
+# A list of effects to run when the player leaves the job.
+# Read https://plugins.auxilor.io/effects/configuring-an-effect
+leave-effects:
+  - id: send_message
+    args:
+      message: "&8» &8You left the &6Miner &8job!"
 
 # There are two ways to specify level XP requirements:
 #  1. A formula to calculate for infinite levels

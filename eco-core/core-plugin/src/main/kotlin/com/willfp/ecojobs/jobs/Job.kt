@@ -33,6 +33,7 @@ import com.willfp.libreforge.conditions.Conditions
 import com.willfp.libreforge.counters.Counters
 import com.willfp.libreforge.effects.EffectList
 import com.willfp.libreforge.effects.Effects
+import com.willfp.libreforge.effects.executors.impl.NormalExecutorFactory
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.configuration.InvalidConfigurationException
@@ -200,6 +201,18 @@ class Job(
             Bukkit.getOfflinePlayers().count { this in it.activeJobs }.toString()
         }.register()
     }
+
+    val joinEffects = Effects.compileChain(
+        config.getSubsections("join-effects"),
+        NormalExecutorFactory.create(),
+        ViolationContext(plugin, "Job $id join-effects")
+    )
+
+    val leaveEffects = Effects.compileChain(
+        config.getSubsections("leave-effects"),
+        NormalExecutorFactory.create(),
+        ViolationContext(plugin, "Job $id leave-effects")
+    )
 
     override fun onRegister() {
         jobXpGains.forEach { it.bind(JobXPAccumulator(this)) }
