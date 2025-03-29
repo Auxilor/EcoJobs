@@ -215,6 +215,18 @@ class Job(
         NormalExecutorFactory.create(),
         ViolationContext(plugin, "Job $id level-up-effects")
     )
+    
+    val joinEffects = Effects.compileChain(
+        config.getSubsections("join-effects"),
+        NormalExecutorFactory.create(),
+        ViolationContext(plugin, "Job $id join-effects")
+    )
+
+    val leaveEffects = Effects.compileChain(
+        config.getSubsections("leave-effects"),
+        NormalExecutorFactory.create(),
+        ViolationContext(plugin, "Job $id leave-effects")
+    )
 
     override fun onRegister() {
         jobXpGains.forEach { it.bind(JobXPAccumulator(this)) }

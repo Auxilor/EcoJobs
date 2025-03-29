@@ -10,12 +10,16 @@ join-price:
   type: coins
   display: "&a$%value%"
 
+join-effects: []
+
 join-lore: []
 
 leave-price:
   value: 0
   type: coins
   display: "&a$%value%"
+
+leave-effects: []
 
 leave-lore:
   - ""
