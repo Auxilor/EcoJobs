@@ -111,7 +111,7 @@ level-up-messages:
   1:
     - "&8» &8Earn &a$%money%&8 for each crop farmed"
 
-level-commands: [ ]
+level-up-effects: [ ]
 
 effects:
   - id: give_money

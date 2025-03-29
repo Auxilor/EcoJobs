@@ -155,10 +155,13 @@ level-up-messages:
   1:
     - "&8» &8Earn &a$%money%&8 for each &a%blocks%&8 blocks mined"
 
-# Commands to be sent on levelup, can be formatted two ways:
-# level:command (e.g. 10:eco give %player% 1000), which would execute that command for level 10
-# command (e.g. eco give %player% 5000), which would execute that command for all levels
-level-commands: [ ]
+# Effects to run when the skill levels up
+# %level% is the level the skill leveled up to.
+# If you want to restrict this to certain levels, you can use
+# require: %level% = 20, or require: %level% < 50, etc.
+# If you want a reward to run every x levels, you can use
+# every: 1, or every: 12, etc
+level-up-effects: [ ]
 
 # The effects for the job, has %level% as a placeholder
 effects:
