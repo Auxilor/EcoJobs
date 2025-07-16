@@ -17,6 +17,7 @@ import com.willfp.eco.util.NumberUtils
 import com.willfp.eco.util.NumberUtils.evaluateExpression
 import com.willfp.eco.util.formatEco
 import com.willfp.eco.util.toNiceString
+import com.willfp.eco.util.toNumeral
 import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.canJoinJob
@@ -310,8 +311,9 @@ class Job(
     }
 
     fun injectPlaceholdersInto(lore: List<String>, player: Player, forceLevel: Int? = null): List<String> {
-        val withPlaceholders = lore.map {
-            it.replace("%percentage_progress%", (player.getJobProgress(this) * 100).toNiceString())
+        val withPlaceholders = lore.map { line ->
+            var result = line
+                .replace("%percentage_progress%", (player.getJobProgress(this) * 100).toNiceString())
                 .replace("%current_xp%", player.getJobXP(this).toNiceString())
                 .replace("%required_xp%", this.getFormattedExpForLevel(player.getJobLevel(this) + 1))
                 .replace("%description%", this.description).replace("%job%", this.name)
@@ -319,6 +321,20 @@ class Job(
                 .replace("%level_numeral%", NumberUtils.toNumeral(forceLevel ?: player.getJobLevel(this)))
                 .replace("%join_price%", this.joinPrice.getDisplay(player))
                 .replace("%leave_price%", this.leavePrice.getDisplay(player))
+
+            val level = forceLevel ?: player.getJobLevel(this)
+            val regex = Regex("%level_(-?\\d+)(_numeral)?%")
+
+            // Handle dynamic %level_X% and %level_X_numeral%
+            result = regex.replace(result) { match ->
+                val offset = match.groupValues[1].toIntOrNull() ?: return@replace match.value
+                val isNumeral = match.groupValues[2].isNotEmpty()
+                val newLevel = level + offset
+
+                if (isNumeral) newLevel.toNumeral() else newLevel.toString()
+            }
+
+            result
         }.toMutableList()
 
         val processed = mutableListOf<List<String>>()
