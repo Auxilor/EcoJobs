@@ -9,28 +9,26 @@ import java.util.regex.Pattern
 class EcoJobsJobTopPlaceholder(
     private val plugin: EcoPlugin
 ) : RegistrablePlaceholder {
-    private val pattern = Pattern.compile("(top_)[a-z]+_[0-9]+_[a-z]+")
+    private val pattern = Pattern.compile("top_([a-z0-9_]+)_(\\d+)_(name|level|amount)")
 
     override fun getPattern(): Pattern = pattern
     override fun getPlugin(): EcoPlugin = plugin
 
     override fun getValue(params: String, ctx: PlaceholderContext): String? {
         val emptyPosition: String = plugin.langYml.getString("top.empty-position")
-        val args = params.split("_")
 
-        if (args.size < 3) {
+        val matcher = pattern.matcher(params)
+        if (!matcher.matches()) {
             return null
         }
 
-        if (args[0] != "top") {
-            return null
-        }
+        val jobId = matcher.group(1)
+        val place = matcher.group(2).toIntOrNull() ?: return null
+        val type = matcher.group(3)
 
-        val job = Jobs.getByID(args[1]) ?: return null
+        val job = Jobs.getByID(jobId) ?: return null
 
-        val place = args[2].toIntOrNull() ?: return null
-
-        return when (args.last()) {
+        return when (type) {
             "name" -> job.getTop(place)?.player?.savedDisplayName ?: emptyPosition
             "level", "amount" -> job.getTop(place)?.level?.toString() ?: emptyPosition
             else -> null
