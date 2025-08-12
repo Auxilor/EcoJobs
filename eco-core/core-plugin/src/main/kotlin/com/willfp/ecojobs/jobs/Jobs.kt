@@ -2,7 +2,6 @@ package com.willfp.ecojobs.jobs
 
 import com.google.common.collect.ImmutableList
 import com.willfp.eco.core.config.interfaces.Config
-import com.willfp.eco.core.config.updating.ConfigUpdater
 import com.willfp.eco.core.registry.Registry
 import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.getJobLevel
@@ -30,8 +29,8 @@ object Jobs : ConfigCategory("job", "jobs") {
      * @return The matching [Job], or null if not found.
      */
     @JvmStatic
-    fun getByID(name: String): Job? {
-        return registry[name]
+    fun getByID(name: String?): Job? {
+        return name?.let { registry[it] }
     }
 
     override fun clear(plugin: LibreforgePlugin) {

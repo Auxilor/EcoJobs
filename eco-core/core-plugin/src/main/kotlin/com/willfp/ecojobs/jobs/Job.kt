@@ -188,7 +188,7 @@ class Job(
         }.register()
 
         PlayerPlaceholder(
-            plugin, "top_position_${id}"
+            plugin, "${id}_leaderboard_rank"
         ) { player ->
             val emptyPosition = plugin.langYml.getString("top.empty-position")
             val position = getPosition(player.uniqueId)
@@ -331,7 +331,7 @@ class Job(
                 .replace("%level_numeral%", NumberUtils.toNumeral(forceLevel ?: player.getJobLevel(this)))
                 .replace("%join_price%", this.joinPrice.getDisplay(player))
                 .replace("%leave_price%", this.leavePrice.getDisplay(player))
-                .replace("%job_top_position%", this.getPosition(player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position"))
+                .replace("%job_leaderboard_rank", this.getPosition(player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position"))
 
             val level = forceLevel ?: player.getJobLevel(this)
             val regex = Regex("%level_(-?\\d+)(_numeral)?%")

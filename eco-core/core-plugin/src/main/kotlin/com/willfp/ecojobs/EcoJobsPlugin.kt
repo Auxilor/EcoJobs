@@ -54,13 +54,13 @@ class EcoJobsPlugin : LibreforgePlugin() {
         Triggers.register(TriggerLeaveJob)
         Filters.register(FilterJob)
 
-        EcoJobsJobTopPlaceholder(this).register()
-
         registerSpecificHolderProvider<Player> { player ->
             player.activeJobs.map { it.getLevel(player.getJobLevel(it)) }.map {
                 SimpleProvidedHolder(it)
             }
         }
+
+        EcoJobsJobTopPlaceholder(this).register()
 
         PlayerPlaceholder(
             this,
