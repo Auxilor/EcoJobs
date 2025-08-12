@@ -27,6 +27,7 @@ import com.willfp.ecojobs.api.getJobXP
 import com.willfp.ecojobs.api.getJobXPRequired
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.jobLimit
+import com.willfp.ecojobs.util.LeaderboardCacheEntry
 import com.willfp.ecojobs.util.LevelInjectable
 import com.willfp.libreforge.ViolationContext
 import com.willfp.libreforge.conditions.ConditionList
@@ -42,6 +43,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.time.Duration
 import java.util.Objects
+import java.util.UUID
 
 class Job(
     val id: String,
@@ -184,6 +186,14 @@ class Job(
         ) {
             Bukkit.getOfflinePlayers().count { this in it.activeJobs }.toString()
         }.register()
+
+        PlayerPlaceholder(
+            plugin, "top_position_${id}"
+        ) { player ->
+            val emptyPosition = plugin.langYml.getString("top.empty-position")
+            val position = getPosition(player.uniqueId)
+            position?.toString() ?: emptyPosition
+        }.register()
     }
 
     @Deprecated("Use level-up-effects instead")
@@ -321,6 +331,7 @@ class Job(
                 .replace("%level_numeral%", NumberUtils.toNumeral(forceLevel ?: player.getJobLevel(this)))
                 .replace("%join_price%", this.joinPrice.getDisplay(player))
                 .replace("%leave_price%", this.leavePrice.getDisplay(player))
+                .replace("%job_top_position%", this.getPosition(player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position"))
 
             val level = forceLevel ?: player.getJobLevel(this)
             val regex = Regex("%level_(-?\\d+)(_numeral)?%")
@@ -442,6 +453,14 @@ class Job(
         }
     }
 
+    fun getPosition(uuid: UUID): Int? {
+        val leaderboard = Bukkit.getOfflinePlayers().sortedByDescending { it.getJobLevel(this) }
+            .map { it.uniqueId }
+
+        val index = leaderboard.indexOf(uuid)
+        return if (index == -1) null else index + 1
+    }
+
     override fun getID(): String {
         return this.id
     }
@@ -464,11 +483,6 @@ private class LevelPlaceholder(
 ) {
     operator fun invoke(level: Int) = function(level)
 }
-
-data class LeaderboardCacheEntry(
-    val player: OfflinePlayer,
-    val amount: Int
-)
 
 private fun Collection<LevelPlaceholder>.format(string: String, level: Int): String {
     var process = string
