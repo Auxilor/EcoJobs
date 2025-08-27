@@ -12,6 +12,7 @@ class CommandJobs(plugin: EcoPlugin) : PluginCommand(plugin, "jobs", "ecojobs.co
     init {
         this.addSubcommand(CommandJoin(plugin))
             .addSubcommand(CommandLeave(plugin))
+            .addSubcommand(CommandTop(plugin))
     }
 
     override fun onExecute(player: Player, args: List<String>) {

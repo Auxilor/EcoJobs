@@ -42,6 +42,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.time.Duration
 import java.util.Objects
+import java.util.UUID
 
 class Job(
     val id: String,
@@ -184,6 +185,14 @@ class Job(
         ) {
             Bukkit.getOfflinePlayers().count { this in it.activeJobs }.toString()
         }.register()
+
+        PlayerPlaceholder(
+            plugin, "${id}_leaderboard_rank"
+        ) { player ->
+            val emptyPosition = plugin.langYml.getString("top.empty-position")
+            val position = getPosition(player.uniqueId)
+            position?.toString() ?: emptyPosition
+        }.register()
     }
 
     @Deprecated("Use level-up-effects instead")
@@ -321,6 +330,7 @@ class Job(
                 .replace("%level_numeral%", NumberUtils.toNumeral(forceLevel ?: player.getJobLevel(this)))
                 .replace("%join_price%", this.joinPrice.getDisplay(player))
                 .replace("%leave_price%", this.leavePrice.getDisplay(player))
+                .replace("%rank%", this.getPosition(player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position"))
 
             val level = forceLevel ?: player.getJobLevel(this)
             val regex = Regex("%level_(-?\\d+)(_numeral)?%")
@@ -442,6 +452,14 @@ class Job(
         }
     }
 
+    fun getPosition(uuid: UUID): Int? {
+        val leaderboard = Bukkit.getOfflinePlayers().sortedByDescending { it.getJobLevel(this) }
+            .map { it.uniqueId }
+
+        val index = leaderboard.indexOf(uuid)
+        return if (index == -1) null else index + 1
+    }
+
     override fun getID(): String {
         return this.id
     }
@@ -464,11 +482,6 @@ private class LevelPlaceholder(
 ) {
     operator fun invoke(level: Int) = function(level)
 }
-
-data class LeaderboardCacheEntry(
-    val player: OfflinePlayer,
-    val amount: Int
-)
 
 private fun Collection<LevelPlaceholder>.format(string: String, level: Int): String {
     var process = string
