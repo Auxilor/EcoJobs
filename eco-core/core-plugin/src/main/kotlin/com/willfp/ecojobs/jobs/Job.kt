@@ -80,7 +80,7 @@ class Job(
 
     private val xpFormula = config.getStringOrNull("xp-formula")
 
-    private val levelXpRequirements = config.getDoublesOrNull("level-xp-requirements")
+    private val levelXpRequirements = listOf(0) + config.getInts("level-xp-requirements")
 
     val maxLevel = config.getIntOrNull("max-level") ?: levelXpRequirements?.size ?: Int.MAX_VALUE
 
@@ -216,7 +216,7 @@ class Job(
         NormalExecutorFactory.create(),
         ViolationContext(plugin, "Job $id level-up-effects")
     )
-    
+
     val joinEffects = Effects.compileChain(
         config.getSubsections("join-effects"),
         NormalExecutorFactory.create(),
@@ -400,20 +400,20 @@ class Job(
      * Get the XP required to reach the next level, if currently at [level].
      */
     fun getExpForLevel(level: Int): Double {
+        if (level < 1 || level > maxLevel) {
+            return Double.MAX_VALUE
+        }
+
         if (xpFormula != null) {
             return evaluateExpression(
                 xpFormula,
                 placeholderContext(
-                    injectable = LevelInjectable(level)
+                    injectable = LevelInjectable(level - 1)
                 )
             )
         }
 
-        if (levelXpRequirements != null) {
-            return levelXpRequirements.getOrNull(level) ?: Double.POSITIVE_INFINITY
-        }
-
-        return Double.POSITIVE_INFINITY
+        return levelXpRequirements[level - 1].toDouble()
     }
 
     fun getFormattedExpForLevel(level: Int): String {
@@ -479,4 +479,3 @@ private fun Collection<LevelPlaceholder>.format(string: String, level: Int): Str
 }
 
 fun OfflinePlayer.getJobLevelObject(job: Job): JobLevel = job.getLevel(this.getJobLevel(job))
-
