@@ -34,6 +34,9 @@ menu:
 
 infinity: "∞"
 
+top-line-format: "%rank%. %player% - %level%"
 top:
-  name-empty: "&cEmpty"
-  amount-empty: "0"
+  empty-position: "&cN/A"
+  format:
+    - "---- Jobs Leaderboard ----"
+    - "%lines%"

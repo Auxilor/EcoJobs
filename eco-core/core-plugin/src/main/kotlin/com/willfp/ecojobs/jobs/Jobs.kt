@@ -30,8 +30,8 @@ object Jobs : ConfigCategory("job", "jobs") {
      * @return The matching [Job], or null if not found.
      */
     @JvmStatic
-    fun getByID(name: String): Job? {
-        return registry[name]
+    fun getByID(name: String?): Job? {
+        return name?.let { registry[it] }
     }
 
     override fun clear(plugin: LibreforgePlugin) {
