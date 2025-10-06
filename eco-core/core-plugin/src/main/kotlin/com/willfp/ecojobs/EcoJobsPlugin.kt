@@ -13,6 +13,7 @@ import com.willfp.ecojobs.commands.CommandJobs
 import com.willfp.ecojobs.jobs.EcoJobsJobTopPlaceholder
 import com.willfp.ecojobs.jobs.JobLevelListener
 import com.willfp.ecojobs.jobs.Jobs
+import com.willfp.ecojobs.jobs.JobsGUI
 import com.willfp.ecojobs.jobs.PriceHandler
 import com.willfp.ecojobs.jobs.ResetOnQuitListener
 import com.willfp.ecojobs.libreforge.ConditionHasActiveJob
@@ -87,6 +88,10 @@ class EcoJobsPlugin : LibreforgePlugin() {
             }
             level.toString()
         }.register()
+    }
+
+    override fun handleReload() {
+        JobsGUI.update(this)
     }
 
     override fun loadPluginCommands(): List<PluginCommand> {

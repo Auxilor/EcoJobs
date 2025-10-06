@@ -1,6 +1,5 @@
 package com.willfp.ecojobs.jobs
 
-import com.willfp.eco.core.config.updating.ConfigUpdater
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
 import com.willfp.eco.core.gui.onLeftClick
@@ -27,16 +26,12 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.min
 
 object JobsGUI {
     private lateinit var menu: Menu
     private val jobAreaSlots = mutableListOf<Pair<Int, Int>>()
 
-    @JvmStatic
-    @ConfigUpdater
-    fun update(plugin: EcoJobsPlugin) {
+    internal fun update(plugin: EcoJobsPlugin) {
         val topLeftRow = plugin.configYml.getInt("gui.job-area.top-left.row")
         val topLeftColumn = plugin.configYml.getInt("gui.job-area.top-left.column")
         val bottomRightRow = plugin.configYml.getInt("gui.job-area.bottom-right.row")
