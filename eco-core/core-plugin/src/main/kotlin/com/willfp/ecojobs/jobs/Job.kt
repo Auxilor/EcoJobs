@@ -27,6 +27,7 @@ import com.willfp.ecojobs.api.getJobXP
 import com.willfp.ecojobs.api.getJobXPRequired
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.jobLimit
+import com.willfp.ecojobs.util.LeaderboardCacheEntry
 import com.willfp.ecojobs.util.LevelInjectable
 import com.willfp.libreforge.ViolationContext
 import com.willfp.libreforge.conditions.ConditionList
