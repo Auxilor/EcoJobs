@@ -12,6 +12,7 @@ import com.willfp.eco.core.gui.slot.MaskItems
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.core.items.builder.SkullBuilder
+import com.willfp.eco.util.SoundUtils
 import com.willfp.eco.util.formatEco
 import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.activeJobs
@@ -145,12 +146,16 @@ object JobsGUI {
                             }
                         }
 
-                        player.playSound(
-                            player.location,
-                            Sound.valueOf(plugin.configYml.getString("gui.job-icon.click.sound").uppercase()),
-                            1f,
-                            plugin.configYml.getDouble("gui.job-icon.click.pitch").toFloat()
-                        )
+                        val sound = SoundUtils.getSound(plugin.configYml.getString("gui.job-icon.click.sound"))
+
+                        if (sound != null) {
+                            player.playSound(
+                                player.location,
+                                sound,
+                                1f,
+                                plugin.configYml.getDouble("gui.job-icon.click.pitch").toFloat()
+                            )
+                        }
                     }
 
                     onRightClick { player, _, _, menu ->
@@ -165,12 +170,16 @@ object JobsGUI {
                         if (player.hasJobActive(job)) {
                             job.leaveGUI.open(player)
 
-                            player.playSound(
-                                player.location,
-                                Sound.valueOf(plugin.configYml.getString("gui.job-icon.click.sound").uppercase()),
-                                1f,
-                                plugin.configYml.getDouble("gui.job-icon.click.pitch").toFloat()
-                            )
+                            val sound = SoundUtils.getSound(plugin.configYml.getString("gui.job-icon.click.sound"))
+
+                            if (sound != null) {
+                                player.playSound(
+                                    player.location,
+                                    sound,
+                                    1f,
+                                    plugin.configYml.getDouble("gui.job-icon.click.pitch").toFloat()
+                                )
+                            }
                         }
                     }
                 })
@@ -199,12 +208,14 @@ object JobsGUI {
             )
 
             maxPages { player ->
-                ceil(Jobs.values()
-                    .filter { player.getJobLevel(it) > 0 }
-                    .size.toDouble() / jobAreaSlots.size).toInt()
+                ceil(
+                    Jobs.values()
+                        .filter { player.getJobLevel(it) > 0 }
+                        .size.toDouble() / jobAreaSlots.size).toInt()
             }
 
-            setSlot(plugin.configYml.getInt("gui.close.location.row"),
+            setSlot(
+                plugin.configYml.getInt("gui.close.location.row"),
                 plugin.configYml.getInt("gui.close.location.column"),
                 slot(
                     ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.close.item")))
