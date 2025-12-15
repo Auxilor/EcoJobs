@@ -50,9 +50,16 @@ class Job(
     val config: Config,
     private val plugin: EcoJobsPlugin
 ) : Registrable {
-    private val topCache = Caffeine.newBuilder()
-        .expireAfterWrite(Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong()))
-        .build<Int, LeaderboardCacheEntry?>()
+    private val topCache = mutableMapOf<Int, LeaderboardCacheEntry>()
+    private var topCacheLastUpdate: Long = System.currentTimeMillis()
+    private var topCacheNextUpdate: Long =
+        System.currentTimeMillis() + Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong())
+            .toMillis()
+    private val posCache = mutableMapOf<UUID, Int>()
+    private var posCacheLastUpdate: Long = System.currentTimeMillis()
+    private var posCacheNextUpdate: Long =
+        System.currentTimeMillis() + Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong())
+            .toMillis()
 
     val name = config.getFormattedString("name")
 
@@ -121,11 +128,12 @@ class Job(
             throw InvalidConfigurationException("Skill $id has no requirements or xp formula")
         }
 
-        config.injectPlaceholders(PlayerStaticPlaceholder(
-            "level"
-        ) { p ->
-            p.getJobLevel(this).toString()
-        })
+        config.injectPlaceholders(
+            PlayerStaticPlaceholder(
+                "level"
+            ) { p ->
+                p.getJobLevel(this).toString()
+            })
 
         effects = Effects.compile(
             config.getSubsections("effects"),
@@ -331,7 +339,10 @@ class Job(
                 .replace("%level_numeral%", NumberUtils.toNumeral(forceLevel ?: player.getJobLevel(this)))
                 .replace("%join_price%", this.joinPrice.getDisplay(player))
                 .replace("%leave_price%", this.leavePrice.getDisplay(player))
-                .replace("%rank%", this.getPosition(player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position"))
+                .replace(
+                    "%rank%",
+                    this.getPosition(player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position")
+                )
 
             val level = forceLevel ?: player.getJobLevel(this)
             val regex = Regex("%level_(-?\\d+)(_numeral)?%")
@@ -446,19 +457,31 @@ class Job(
     }
 
     fun getTop(place: Int): LeaderboardCacheEntry? {
-        return topCache.get(place) {
-            val players = Bukkit.getOfflinePlayers().sortedByDescending { it.getJobLevel(this) }
-            val target = players.getOrNull(place - 1) ?: return@get null
-            return@get LeaderboardCacheEntry(target, target.getJobLevel(this))
+        if (topCacheNextUpdate <= topCacheLastUpdate +
+            Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong()).toMillis()
+        ) {
+            topCacheLastUpdate = System.currentTimeMillis()
+            topCacheNextUpdate = topCacheLastUpdate +
+                    Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong()).toMillis()
+            topCache.clear()
+            topCache.putAll(Bukkit.getOfflinePlayers().sortedByDescending { it.getJobLevel(this) }
+                .mapIndexed { place, player -> place + 1 to LeaderboardCacheEntry(player, player.getJobLevel(this)) })
         }
+        return topCache[place]
     }
 
     fun getPosition(uuid: UUID): Int? {
-        val leaderboard = Bukkit.getOfflinePlayers().sortedByDescending { it.getJobLevel(this) }
-            .map { it.uniqueId }
-
-        val index = leaderboard.indexOf(uuid)
-        return if (index == -1) null else index + 1
+        if (posCacheNextUpdate <= posCacheLastUpdate +
+            Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong()).toMillis()
+        ) {
+            posCacheLastUpdate = System.currentTimeMillis()
+            posCacheNextUpdate = posCacheLastUpdate +
+                    Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong()).toMillis()
+            posCache.clear()
+            posCache.putAll(Bukkit.getOfflinePlayers().sortedByDescending { it.getJobLevel(this) }
+                .map { it.uniqueId to it.getJobLevel(this) })
+        }
+        return posCache[uuid]?.plus(1)
     }
 
     override fun getID(): String {
