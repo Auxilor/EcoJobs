@@ -6,6 +6,7 @@ import com.willfp.eco.core.placeholder.context.placeholderContext
 import com.willfp.eco.util.formatEco
 import com.willfp.eco.util.savedDisplayName
 import com.willfp.ecojobs.jobs.Jobs
+import com.willfp.ecojobs.jobs.JobsLeaderboard.getTop
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.util.StringUtil
@@ -30,7 +31,7 @@ class CommandTop(plugin: EcoPlugin) : Subcommand(plugin, "top", "ecojobs.command
             val offset = (page - 1) * 10
             val positions = (offset + 1..offset + 10).toList()
 
-            val top = positions.mapNotNull { job.getTop(it) }
+            val top = positions.mapNotNull { getTop(job, it) }
 
             val messages = plugin.langYml.getStrings("top.format").toMutableList()
             val lines = mutableListOf<String>()

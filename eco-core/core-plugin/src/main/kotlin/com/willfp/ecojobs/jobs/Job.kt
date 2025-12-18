@@ -27,6 +27,7 @@ import com.willfp.ecojobs.api.getJobXP
 import com.willfp.ecojobs.api.getJobXPRequired
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.jobLimit
+import com.willfp.ecojobs.jobs.JobsLeaderboard.getPosition
 import com.willfp.ecojobs.util.LeaderboardCacheEntry
 import com.willfp.ecojobs.util.LevelInjectable
 import com.willfp.libreforge.ViolationContext
@@ -50,16 +51,6 @@ class Job(
     val config: Config,
     private val plugin: EcoJobsPlugin
 ) : Registrable {
-    private val topCache = mutableMapOf<Int, LeaderboardCacheEntry>()
-    private var topCacheLastUpdate: Long = System.currentTimeMillis()
-    private var topCacheNextUpdate: Long =
-        System.currentTimeMillis() + Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong())
-            .toMillis()
-    private val posCache = mutableMapOf<UUID, Int>()
-    private var posCacheLastUpdate: Long = System.currentTimeMillis()
-    private var posCacheNextUpdate: Long =
-        System.currentTimeMillis() + Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong())
-            .toMillis()
 
     val name = config.getFormattedString("name")
 
@@ -199,7 +190,7 @@ class Job(
             plugin, "${id}_leaderboard_rank"
         ) { player ->
             val emptyPosition = plugin.langYml.getString("top.empty-position")
-            val position = getPosition(player.uniqueId)
+            val position = getPosition(this, player.uniqueId)
             position?.toString() ?: emptyPosition
         }.register()
     }
@@ -341,7 +332,7 @@ class Job(
                 .replace("%leave_price%", this.leavePrice.getDisplay(player))
                 .replace(
                     "%rank%",
-                    this.getPosition(player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position")
+                    getPosition(this, player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position")
                 )
 
             val level = forceLevel ?: player.getJobLevel(this)
@@ -454,34 +445,6 @@ class Job(
         for (command in commands) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.name))
         }
-    }
-
-    fun getTop(place: Int): LeaderboardCacheEntry? {
-        if (topCacheNextUpdate <= topCacheLastUpdate +
-            Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong()).toMillis()
-        ) {
-            topCacheLastUpdate = System.currentTimeMillis()
-            topCacheNextUpdate = topCacheLastUpdate +
-                    Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong()).toMillis()
-            topCache.clear()
-            topCache.putAll(Bukkit.getOfflinePlayers().sortedByDescending { it.getJobLevel(this) }
-                .mapIndexed { place, player -> place + 1 to LeaderboardCacheEntry(player, player.getJobLevel(this)) })
-        }
-        return topCache[place]
-    }
-
-    fun getPosition(uuid: UUID): Int? {
-        if (posCacheNextUpdate <= posCacheLastUpdate +
-            Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong()).toMillis()
-        ) {
-            posCacheLastUpdate = System.currentTimeMillis()
-            posCacheNextUpdate = posCacheLastUpdate +
-                    Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong()).toMillis()
-            posCache.clear()
-            posCache.putAll(Bukkit.getOfflinePlayers().sortedByDescending { it.getJobLevel(this) }
-                .map { it.uniqueId to it.getJobLevel(this) })
-        }
-        return posCache[uuid]?.plus(1)
     }
 
     override fun getID(): String {
