@@ -6,7 +6,6 @@ import com.willfp.eco.core.placeholder.context.placeholderContext
 import com.willfp.eco.util.formatEco
 import com.willfp.eco.util.savedDisplayName
 import com.willfp.ecojobs.jobs.Jobs
-import com.willfp.ecojobs.jobs.JobsLeaderboard.getTop
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.util.StringUtil
