@@ -31,7 +31,7 @@ class CommandTop(plugin: EcoPlugin) : Subcommand(plugin, "top", "ecojobs.command
             val offset = (page - 1) * 10
             val positions = (offset + 1..offset + 10).toList()
 
-            val top = positions.mapNotNull { getTop(job, it) }
+            val top = positions.mapNotNull { job.getTop(it) }
 
             val messages = plugin.langYml.getStrings("top.format").toMutableList()
             val lines = mutableListOf<String>()
