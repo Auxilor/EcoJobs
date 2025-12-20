@@ -191,7 +191,7 @@ class Job(
             plugin, "${id}_leaderboard_rank"
         ) { player ->
             val emptyPosition = plugin.langYml.getString("top.empty-position")
-            val position = getPosition(this, player.uniqueId)
+            val position = getPosition(player.uniqueId)
             position?.toString() ?: emptyPosition
         }.register()
     }
@@ -333,7 +333,7 @@ class Job(
                 .replace("%leave_price%", this.leavePrice.getDisplay(player))
                 .replace(
                     "%rank%",
-                    getPosition(this, player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position")
+                    getPosition(player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position")
                 )
 
             val level = forceLevel ?: player.getJobLevel(this)
