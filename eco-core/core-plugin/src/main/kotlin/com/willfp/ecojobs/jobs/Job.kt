@@ -28,7 +28,8 @@ import com.willfp.ecojobs.api.getJobXPRequired
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.jobLimit
 import com.willfp.ecojobs.jobs.JobsLeaderboard.getPosition
-import com.willfp.ecojobs.util.LeaderboardCacheEntry
+import com.willfp.ecojobs.jobs.JobsLeaderboard.getTop
+import com.willfp.ecojobs.util.LeaderboardEntry
 import com.willfp.ecojobs.util.LevelInjectable
 import com.willfp.libreforge.ViolationContext
 import com.willfp.libreforge.conditions.ConditionList
@@ -447,12 +448,12 @@ class Job(
         }
     }
 
-    fun getTop(place: Int): LeaderboardCacheEntry? {
-        return JobsLeaderboard.getTop(this, place)
+    fun getTop(place: Int): LeaderboardEntry? {
+        return getTop(this, place)
     }
 
     fun getPosition(uuid: UUID): Int? {
-        return JobsLeaderboard.getPosition(this, uuid)
+        return getPosition(this, uuid)
     }
 
     override fun getID(): String {

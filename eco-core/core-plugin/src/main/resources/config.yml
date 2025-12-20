@@ -8,9 +8,6 @@
 # cross-server sync.
 use-local-storage: false
 
-# Time in seconds for the lifetime of the leaderboard cache.
-leaderboard-cache-lifetime: 60
-
 jobs:
   limit: 3 # The most jobs a player can have at once.
   # You can set custom limits with the ecojobs.limit.<number> permission

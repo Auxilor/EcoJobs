@@ -4,74 +4,39 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.willfp.eco.core.tuples.Pair
 import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.getJobLevel
-import com.willfp.ecojobs.util.LeaderboardCacheEntry
+import com.willfp.ecojobs.util.LeaderboardEntry
 import org.bukkit.Bukkit
 import java.time.Duration
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 object JobsLeaderboard {
-    private var topLeaderboard = Caffeine.newBuilder()
-        .expireAfterWrite(
-            Duration.ofSeconds(
-                EcoJobsPlugin.instance.configYml.getInt("leaderboard-cache-lifetime").toLong()
-            )
-        )
-        .build<Boolean, Map<TopEntry, LeaderboardCacheEntry?>> {
+    private var leaderboardCache = Caffeine.newBuilder()
+        .expireAfterWrite(1, TimeUnit.MINUTES)
+        .build<Boolean, Map<Job, List<UUID>>> {
             val offlinePlayers = Bukkit.getOfflinePlayers()
-            val top = mutableMapOf<TopEntry, LeaderboardCacheEntry>()
+            val top = mutableMapOf<Job, List<UUID>>()
             for (job in Jobs.values())
-                top.putAll(offlinePlayers.sortedByDescending { it.getJobLevel(job) }
-                    .mapIndexed { place, player ->
-                        TopEntry(job, place + 1) to LeaderboardCacheEntry(
-                            player,
-                            player.getJobLevel(job)
-                        )
-                    })
+                top[job] = offlinePlayers.sortedByDescending { it.getJobLevel(job) }.map { it.uniqueId }
             return@build top
         }
-    private var posLeaderboard = Caffeine.newBuilder()
-        .expireAfterWrite(
-            Duration.ofSeconds(
-                EcoJobsPlugin.instance.configYml.getInt("leaderboard-cache-lifetime").toLong()
-            )
-        )
-        .build<Boolean, Map<PosEntry, Int>> {
-            val offlinePlayers = Bukkit.getOfflinePlayers()
-            val pos = mutableMapOf<PosEntry, Int>()
-            for (job in Jobs.values())
-                pos.putAll(offlinePlayers.sortedByDescending { it.getJobLevel(job) }
-                    .map { PosEntry(job, it.uniqueId) to it.getJobLevel(job) })
-            return@build pos
-        }
 
-    fun getTop(job: Job, place: Int): LeaderboardCacheEntry? {
-        return topLeaderboard.get(true)[TopEntry(job, place)]
+    fun getTop(job: Job, position: Int): LeaderboardEntry? {
+        require(position > 0) { "Position must be greater than 0" }
+
+        val uuid = leaderboardCache.get(true)[job]?.getOrNull(position - 1) ?: return null
+
+        val player = Bukkit.getOfflinePlayer(uuid).takeIf { it.hasPlayedBefore() } ?: return null
+
+        return LeaderboardEntry(
+            player,
+            player.getJobLevel(job)
+        )
     }
 
     fun getPosition(job: Job, uuid: UUID): Int? {
-        return posLeaderboard.get(true)[PosEntry(job, uuid)]?.plus(1)
-    }
-
-    private class TopEntry(val job: Job, val place: Int) {
-        override fun equals(other: Any?): Boolean {
-            if (other !is TopEntry) return false
-            return job == other.job && place == other.place
-        }
-
-        override fun hashCode(): Int {
-            return Objects.hash(job, place)
-        }
-    }
-
-    private class PosEntry(val job: Job, val uuid: UUID) {
-
-        override fun equals(other: Any?): Boolean {
-            if (other !is PosEntry) return false
-            return job == other.job && uuid == other.uuid
-        }
-
-        override fun hashCode(): Int {
-            return Objects.hash(job, uuid)
-        }
+        val leaderboard = leaderboardCache.get(true)[job]
+        val index = leaderboard?.indexOf(uuid)
+        return if (index == -1) null else index?.plus(1)
     }
 }
