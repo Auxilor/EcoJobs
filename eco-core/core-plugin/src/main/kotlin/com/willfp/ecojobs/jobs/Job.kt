@@ -447,6 +447,14 @@ class Job(
         }
     }
 
+    fun getTop(place: Int): LeaderboardCacheEntry? {
+        return JobsLeaderboard.getTop(this, place)
+    }
+
+    fun getPosition(uuid: UUID): Int? {
+        return JobsLeaderboard.getPosition(this, uuid)
+    }
+
     override fun getID(): String {
         return this.id
     }
