@@ -12,8 +12,14 @@ import java.util.concurrent.TimeUnit
 
 object JobsLeaderboard {
     private var leaderboardCache = Caffeine.newBuilder()
-        .expireAfterWrite(1, TimeUnit.MINUTES)
+        .expireAfterWrite(
+            Duration.ofSeconds(
+                EcoJobsPlugin.instance.configYml.getInt("leaderboard.cache-lifetime").toLong()
+            )
+        )
         .build<Boolean, Map<Job, List<UUID>>> {
+            if (!EcoJobsPlugin.instance.configYml.getBool("leaderboard.enabled"))
+                return@build emptyMap()
             val offlinePlayers = Bukkit.getOfflinePlayers()
             val top = mutableMapOf<Job, List<UUID>>()
             for (job in Jobs.values())

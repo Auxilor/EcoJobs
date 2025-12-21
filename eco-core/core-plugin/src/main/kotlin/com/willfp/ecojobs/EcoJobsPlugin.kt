@@ -59,14 +59,15 @@ class EcoJobsPlugin : LibreforgePlugin() {
         Triggers.register(TriggerJoinJob)
         Triggers.register(TriggerLeaveJob)
         Filters.register(FilterJob)
-        
+
         registerSpecificHolderProvider<Player> { player ->
             player.activeJobs.map { it.getLevel(player.getJobLevel(it)) }.map {
                 SimpleProvidedHolder(it)
             }
         }
 
-        EcoJobsJobTopPlaceholder(this).register()
+        if (this.configYml.getBool("leaderboard.enabled"))
+            EcoJobsJobTopPlaceholder(this).register()
 
         PlayerPlaceholder(
             this,
