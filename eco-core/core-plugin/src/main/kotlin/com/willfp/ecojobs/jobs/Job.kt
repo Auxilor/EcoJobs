@@ -70,13 +70,13 @@ class Job(
     )
 
     val levelKey: PersistentDataKey<Int> = PersistentDataKey(
-        EcoJobsPlugin.instance.namespacedKeyFactory.create("${id}_level"),
+        plugin.namespacedKeyFactory.create("${id}_level"),
         PersistentDataKeyType.INT,
         if (isUnlockedByDefault) 1 else 0
     )
 
     val xpKey: PersistentDataKey<Double> = PersistentDataKey(
-        EcoJobsPlugin.instance.namespacedKeyFactory.create("${id}_xp"), PersistentDataKeyType.DOUBLE, 0.0
+        plugin.namespacedKeyFactory.create("${id}_xp"), PersistentDataKeyType.DOUBLE, 0.0
     )
 
     private val xpFormula = config.getStringOrNull("xp-formula")

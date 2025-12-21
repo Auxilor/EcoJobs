@@ -1,10 +1,7 @@
 package com.willfp.ecojobs
 
 import com.willfp.eco.core.command.impl.PluginCommand
-import com.willfp.eco.core.placeholder.DynamicPlaceholder
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
-import com.willfp.eco.util.savedDisplayName
-import com.willfp.eco.util.toNiceString
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.api.jobLimit
@@ -31,16 +28,17 @@ import com.willfp.libreforge.effects.Effects
 import com.willfp.libreforge.filters.Filters
 import com.willfp.libreforge.loader.LibreforgePlugin
 import com.willfp.libreforge.loader.configs.ConfigCategory
-import com.willfp.libreforge.registerHolderProvider
 import com.willfp.libreforge.registerSpecificHolderProvider
 import com.willfp.libreforge.triggers.Triggers
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
-import java.util.regex.Pattern
+
+internal lateinit var plugin: EcoJobsPlugin
+    private set
 
 class EcoJobsPlugin : LibreforgePlugin() {
     init {
-        instance = this
+        plugin = this
     }
 
     override fun loadConfigCategories(): List<ConfigCategory> {
@@ -108,11 +106,6 @@ class EcoJobsPlugin : LibreforgePlugin() {
             ResetOnQuitListener,
             PriceHandler
         )
-    }
-
-    companion object {
-        @JvmStatic
-        lateinit var instance: EcoJobsPlugin
     }
 }
 
