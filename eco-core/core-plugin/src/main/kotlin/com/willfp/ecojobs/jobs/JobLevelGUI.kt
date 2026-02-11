@@ -1,6 +1,5 @@
 package com.willfp.ecojobs.jobs
 
-import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
 import com.willfp.eco.core.gui.menu.MenuLayer
@@ -15,13 +14,13 @@ import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.util.NumberUtils
 import com.willfp.eco.util.formatEco
 import com.willfp.ecojobs.api.getJobLevel
+import com.willfp.ecojobs.plugin
 import com.willfp.ecomponent.components.LevelComponent
 import com.willfp.ecomponent.components.LevelState
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class JobLevelGUI(
-    plugin: EcoPlugin,
     private val job: Job
 ) {
     private val menu: Menu
@@ -32,7 +31,10 @@ class JobLevelGUI(
 
         val progressionPattern = plugin.configYml.getStrings("level-gui.progression-slots.pattern")
 
-        val component = object : LevelComponent(progressionPattern, job.maxLevel) {
+        val component = object : LevelComponent() {
+            override val maxLevel: Int = job.maxLevel
+            override val pattern: List<String> = progressionPattern
+
             override fun getLevelItem(player: Player, menu: Menu, level: Int, levelState: LevelState): ItemStack {
                 val key = levelState.name.lowercase().replace("_", "-")
 

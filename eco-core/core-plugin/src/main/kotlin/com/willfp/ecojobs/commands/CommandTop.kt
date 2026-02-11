@@ -1,16 +1,22 @@
 package com.willfp.ecojobs.commands
 
-import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.command.impl.Subcommand
 import com.willfp.eco.core.placeholder.context.placeholderContext
 import com.willfp.eco.util.formatEco
 import com.willfp.eco.util.savedDisplayName
 import com.willfp.ecojobs.jobs.Jobs
+import com.willfp.ecojobs.jobs.JobsLeaderboard.getTop
+import com.willfp.ecojobs.plugin
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.util.StringUtil
 
-class CommandTop(plugin: EcoPlugin) : Subcommand(plugin, "top", "ecojobs.command.top", false) {
+object CommandTop : Subcommand(
+    plugin,
+    "top",
+    "ecojobs.command.top",
+    false
+) {
     override fun onExecute(sender: CommandSender, args: List<String>) {
         plugin.scheduler.runAsync {
             val job = Jobs.getByID(args.getOrNull(0))

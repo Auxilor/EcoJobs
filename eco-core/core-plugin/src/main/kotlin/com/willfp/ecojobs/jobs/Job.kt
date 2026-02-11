@@ -18,7 +18,6 @@ import com.willfp.eco.util.NumberUtils.evaluateExpression
 import com.willfp.eco.util.formatEco
 import com.willfp.eco.util.toNiceString
 import com.willfp.eco.util.toNumeral
-import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.canJoinJob
 import com.willfp.ecojobs.api.getJobLevel
@@ -28,8 +27,7 @@ import com.willfp.ecojobs.api.getJobXPRequired
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.jobLimit
 import com.willfp.ecojobs.jobs.JobsLeaderboard.getPosition
-import com.willfp.ecojobs.jobs.JobsLeaderboard.getTop
-import com.willfp.ecojobs.util.LeaderboardEntry
+import com.willfp.ecojobs.plugin
 import com.willfp.ecojobs.util.LevelInjectable
 import com.willfp.libreforge.ViolationContext
 import com.willfp.libreforge.conditions.ConditionList
@@ -43,14 +41,11 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.configuration.InvalidConfigurationException
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.time.Duration
 import java.util.Objects
-import java.util.UUID
 
 class Job(
     val id: String,
-    val config: Config,
-    private val plugin: EcoJobsPlugin
+    val config: Config
 ) : Registrable {
 
     val name = config.getFormattedString("name")
@@ -83,11 +78,11 @@ class Job(
 
     private val levelXpRequirements = listOf(0) + config.getInts("level-xp-requirements")
 
-    val maxLevel = config.getIntOrNull("max-level") ?: levelXpRequirements?.size ?: Int.MAX_VALUE
+    val maxLevel = config.getIntOrNull("max-level") ?: levelXpRequirements.size
 
-    val levelGUI = JobLevelGUI(plugin, this)
+    val levelGUI = JobLevelGUI(this)
 
-    val leaveGUI = JobLeaveGUI(plugin, this)
+    val leaveGUI = JobLeaveGUI(this)
 
     private val baseItem: ItemStack = Items.lookup(config.getString("icon")).item
 
@@ -105,7 +100,7 @@ class Job(
         LevelPlaceholder(
             sub.getString("id")
         ) {
-            NumberUtils.evaluateExpression(
+            evaluateExpression(
                 sub.getString("value").replace("%level%", it.toString())
             ).toNiceString()
         }
@@ -137,6 +132,7 @@ class Job(
             ViolationContext(plugin, "Job $id")
         )
 
+        @Suppress("DEPRECATION")
         manageLevelCommands(config)
 
         PlayerPlaceholder(
@@ -160,7 +156,7 @@ class Job(
         PlayerPlaceholder(
             plugin, "${id}_required_xp"
         ) {
-            it.getJobXPRequired(this).toString()
+            it.getJobXPRequired(this)
         }.register()
 
         PlayerlessPlaceholder(
@@ -248,7 +244,7 @@ class Job(
     }
 
     fun getLevel(level: Int): JobLevel = levels.get(level) {
-        JobLevel(plugin, this, it, effects, conditions)
+        JobLevel(this, it, effects, conditions)
     }
 
     private fun getLevelUpMessages(level: Int, whitespace: Int = 0): List<String> = levelUpMessages.get(level) {
@@ -414,7 +410,7 @@ class Job(
      * Get the XP required to reach the next level, if currently at [level].
      */
     fun getExpForLevel(level: Int): Double {
-        if (level < 1 || level > maxLevel) {
+        if (level !in 1..maxLevel) {
             return Double.MAX_VALUE
         }
 
@@ -446,14 +442,6 @@ class Job(
         for (command in commands) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.name))
         }
-    }
-
-    fun getTop(place: Int): LeaderboardEntry? {
-        return getTop(this, place)
-    }
-
-    fun getPosition(uuid: UUID): Int? {
-        return getPosition(this, uuid)
     }
 
     override fun getID(): String {

@@ -3,7 +3,6 @@ package com.willfp.ecojobs.jobs
 import com.google.common.collect.ImmutableList
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.core.registry.Registry
-import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.libreforge.loader.LibreforgePlugin
 import com.willfp.libreforge.loader.configs.ConfigCategory
@@ -38,7 +37,7 @@ object Jobs : ConfigCategory("job", "jobs") {
     }
 
     override fun acceptConfig(plugin: LibreforgePlugin, id: String, config: Config) {
-        registry.register(Job(id, config, plugin as EcoJobsPlugin))
+        registry.register(Job(id, config))
     }
 
     /**

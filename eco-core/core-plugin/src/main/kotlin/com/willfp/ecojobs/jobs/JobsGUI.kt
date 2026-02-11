@@ -14,15 +14,14 @@ import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.core.items.builder.SkullBuilder
 import com.willfp.eco.util.SoundUtils
 import com.willfp.eco.util.formatEco
-import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.canJoinJob
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.joinJob
 import com.willfp.ecojobs.jobs.Jobs.unlockedJobs
+import com.willfp.ecojobs.plugin
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
@@ -32,7 +31,7 @@ object JobsGUI {
     private lateinit var menu: Menu
     private val jobAreaSlots = mutableListOf<Pair<Int, Int>>()
 
-    internal fun update(plugin: EcoJobsPlugin) {
+    internal fun update() {
         val topLeftRow = plugin.configYml.getInt("gui.job-area.top-left.row")
         val topLeftColumn = plugin.configYml.getInt("gui.job-area.top-left.column")
         val bottomRightRow = plugin.configYml.getInt("gui.job-area.bottom-right.row")
@@ -45,10 +44,10 @@ object JobsGUI {
             }
         }
 
-        menu = buildMenu(plugin)
+        menu = buildMenu()
     }
 
-    private fun buildMenu(plugin: EcoJobsPlugin): Menu {
+    private fun buildMenu(): Menu {
         val jobIconBuilder = { player: Player, menu: Menu, index: Int ->
             val page = menu.getPage(player)
 

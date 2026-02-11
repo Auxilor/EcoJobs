@@ -1,15 +1,20 @@
 package com.willfp.ecojobs.commands
 
-import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.command.impl.PluginCommand
+import com.willfp.ecojobs.plugin
 import org.bukkit.command.CommandSender
 
-class CommandEcoJobs(plugin: EcoPlugin) : PluginCommand(plugin, "ecojobs", "ecojobs.command.ecojobs", false) {
+object CommandEcoJobs : PluginCommand(
+    plugin,
+    "ecojobs",
+    "ecojobs.command.ecojobs",
+    false
+) {
     init {
-        this.addSubcommand(CommandReload(plugin))
-            .addSubcommand(CommandUnlock(plugin))
-            .addSubcommand(CommandGiveXP(plugin))
-            .addSubcommand(CommandReset(plugin))
+        this.addSubcommand(CommandReload)
+            .addSubcommand(CommandUnlock)
+            .addSubcommand(CommandGiveXP)
+            .addSubcommand(CommandReset)
     }
 
     override fun onExecute(sender: CommandSender, args: List<String>) {
