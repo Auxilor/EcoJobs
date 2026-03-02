@@ -14,12 +14,11 @@ import com.willfp.ecojobs.jobs.Job
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.jobs.getNumericalPermission
 import com.willfp.ecojobs.jobs.jobExperienceMultiplier
+import com.willfp.ecojobs.plugin
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import kotlin.math.abs
-
-private val plugin = EcoJobsPlugin.instance
 
 /*
 

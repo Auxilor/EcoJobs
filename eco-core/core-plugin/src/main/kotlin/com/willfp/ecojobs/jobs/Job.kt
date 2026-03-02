@@ -27,7 +27,9 @@ import com.willfp.ecojobs.api.getJobXP
 import com.willfp.ecojobs.api.getJobXPRequired
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.jobLimit
-import com.willfp.ecojobs.util.LeaderboardCacheEntry
+import com.willfp.ecojobs.jobs.JobsLeaderboard.getPosition
+import com.willfp.ecojobs.jobs.JobsLeaderboard.getTop
+import com.willfp.ecojobs.util.LeaderboardEntry
 import com.willfp.ecojobs.util.LevelInjectable
 import com.willfp.libreforge.ViolationContext
 import com.willfp.libreforge.conditions.ConditionList
@@ -50,9 +52,6 @@ class Job(
     val config: Config,
     private val plugin: EcoJobsPlugin
 ) : Registrable {
-    private val topCache = Caffeine.newBuilder()
-        .expireAfterWrite(Duration.ofSeconds(plugin.configYml.getInt("leaderboard-cache-lifetime").toLong()))
-        .build<Int, LeaderboardCacheEntry?>()
 
     val name = config.getFormattedString("name")
 
@@ -71,13 +70,13 @@ class Job(
     )
 
     val levelKey: PersistentDataKey<Int> = PersistentDataKey(
-        EcoJobsPlugin.instance.namespacedKeyFactory.create("${id}_level"),
+        plugin.namespacedKeyFactory.create("${id}_level"),
         PersistentDataKeyType.INT,
         if (isUnlockedByDefault) 1 else 0
     )
 
     val xpKey: PersistentDataKey<Double> = PersistentDataKey(
-        EcoJobsPlugin.instance.namespacedKeyFactory.create("${id}_xp"), PersistentDataKeyType.DOUBLE, 0.0
+        plugin.namespacedKeyFactory.create("${id}_xp"), PersistentDataKeyType.DOUBLE, 0.0
     )
 
     private val xpFormula = config.getStringOrNull("xp-formula")
@@ -121,11 +120,12 @@ class Job(
             throw InvalidConfigurationException("Skill $id has no requirements or xp formula")
         }
 
-        config.injectPlaceholders(PlayerStaticPlaceholder(
-            "level"
-        ) { p ->
-            p.getJobLevel(this).toString()
-        })
+        config.injectPlaceholders(
+            PlayerStaticPlaceholder(
+                "level"
+            ) { p ->
+                p.getJobLevel(this).toString()
+            })
 
         effects = Effects.compile(
             config.getSubsections("effects"),
@@ -331,7 +331,10 @@ class Job(
                 .replace("%level_numeral%", NumberUtils.toNumeral(forceLevel ?: player.getJobLevel(this)))
                 .replace("%join_price%", this.joinPrice.getDisplay(player))
                 .replace("%leave_price%", this.leavePrice.getDisplay(player))
-                .replace("%rank%", this.getPosition(player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position"))
+                .replace(
+                    "%rank%",
+                    getPosition(player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position")
+                )
 
             val level = forceLevel ?: player.getJobLevel(this)
             val regex = Regex("%level_(-?\\d+)(_numeral)?%")
@@ -445,20 +448,12 @@ class Job(
         }
     }
 
-    fun getTop(place: Int): LeaderboardCacheEntry? {
-        return topCache.get(place) {
-            val players = Bukkit.getOfflinePlayers().sortedByDescending { it.getJobLevel(this) }
-            val target = players.getOrNull(place - 1) ?: return@get null
-            return@get LeaderboardCacheEntry(target, target.getJobLevel(this))
-        }
+    fun getTop(place: Int): LeaderboardEntry? {
+        return getTop(this, place)
     }
 
     fun getPosition(uuid: UUID): Int? {
-        val leaderboard = Bukkit.getOfflinePlayers().sortedByDescending { it.getJobLevel(this) }
-            .map { it.uniqueId }
-
-        val index = leaderboard.indexOf(uuid)
-        return if (index == -1) null else index + 1
+        return getPosition(this, uuid)
     }
 
     override fun getID(): String {
