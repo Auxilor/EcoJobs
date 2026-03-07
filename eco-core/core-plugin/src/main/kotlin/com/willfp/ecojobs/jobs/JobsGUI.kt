@@ -12,7 +12,7 @@ import com.willfp.eco.core.gui.slot.MaskItems
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.core.items.builder.SkullBuilder
-import com.willfp.eco.util.SoundConfigUtils
+import com.willfp.eco.core.sound.PlayableSound
 import com.willfp.eco.util.formatEco
 import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.activeJobs
@@ -143,7 +143,7 @@ object JobsGUI {
                             }
                         }
 
-                        SoundConfigUtils.playIfEnabled(plugin.configYml, player, "gui.job-icon.click")
+                        PlayableSound.create(plugin.configYml.getSubsection("gui.job-icon.click"))?.playTo(player)
                     }
 
                     onRightClick { player, _, _, menu ->
@@ -155,7 +155,7 @@ object JobsGUI {
 
                         if (player.hasJobActive(job)) {
                             job.leaveGUI.open(player)
-                            SoundConfigUtils.playIfEnabled(plugin.configYml, player, "gui.job-icon.click")
+                            PlayableSound.create(plugin.configYml.getSubsection("gui.job-icon.click"))?.playTo(player)
                         }
                     }
                 })

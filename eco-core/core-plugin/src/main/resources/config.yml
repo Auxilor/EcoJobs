@@ -288,7 +288,7 @@ level-up:
       - " &#964B00&lREWARDS:"
       - " %level_up_messages%"
       - "&f"
-  sounds:
+  sound:
     enabled: true
     sound: entity_player_levelup
     pitch: 1.3
