@@ -1,15 +1,12 @@
 package com.willfp.ecojobs.jobs
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.willfp.eco.core.tuples.Pair
-import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.plugin
 import com.willfp.ecojobs.util.LeaderboardEntry
 import org.bukkit.Bukkit
 import java.time.Duration
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 object JobsLeaderboard {
     private var leaderboardCache = Caffeine.newBuilder()

@@ -12,7 +12,7 @@ import com.willfp.eco.core.gui.slot.MaskItems
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.core.items.builder.SkullBuilder
-import com.willfp.eco.util.SoundUtils
+import com.willfp.eco.core.sound.PlayableSound
 import com.willfp.eco.util.formatEco
 import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.activeJobs
@@ -22,7 +22,6 @@ import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.joinJob
 import com.willfp.ecojobs.jobs.Jobs.unlockedJobs
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
@@ -121,9 +120,7 @@ object JobsGUI {
                 setSlot(row, column, slot({ p, m -> jobIconBuilder(p, m, index) }) {
                     onLeftClick { player, _, _, menu ->
                         val page = menu.getPage(player)
-
                         val unlockedJobs = player.unlockedJobs
-
                         val pagedIndex = ((page - 1) * jobAreaSlots.size) + index
 
                         val job = unlockedJobs.getOrNull(pagedIndex) ?: return@onLeftClick
@@ -146,40 +143,19 @@ object JobsGUI {
                             }
                         }
 
-                        val sound = SoundUtils.getSound(plugin.configYml.getString("gui.job-icon.click.sound"))
-
-                        if (sound != null) {
-                            player.playSound(
-                                player.location,
-                                sound,
-                                1f,
-                                plugin.configYml.getDouble("gui.job-icon.click.pitch").toFloat()
-                            )
-                        }
+                        PlayableSound.create(plugin.configYml.getSubsection("gui.job-icon.click"))?.playTo(player)
                     }
 
                     onRightClick { player, _, _, menu ->
                         val page = menu.getPage(player)
-
                         val unlockedJobs = player.unlockedJobs
-
                         val pagedIndex = ((page - 1) * jobAreaSlots.size) + index
 
                         val job = unlockedJobs.getOrNull(pagedIndex) ?: return@onRightClick
 
                         if (player.hasJobActive(job)) {
                             job.leaveGUI.open(player)
-
-                            val sound = SoundUtils.getSound(plugin.configYml.getString("gui.job-icon.click.sound"))
-
-                            if (sound != null) {
-                                player.playSound(
-                                    player.location,
-                                    sound,
-                                    1f,
-                                    plugin.configYml.getDouble("gui.job-icon.click.pitch").toFloat()
-                                )
-                            }
+                            PlayableSound.create(plugin.configYml.getSubsection("gui.job-icon.click"))?.playTo(player)
                         }
                     }
                 })
