@@ -6,7 +6,7 @@ import com.willfp.ecojobs.plugin
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import java.time.Duration
-import java.util.UUID
+import java.util.*
 
 object JobsLeaderboard {
     private var leaderboardCache = Caffeine.newBuilder()

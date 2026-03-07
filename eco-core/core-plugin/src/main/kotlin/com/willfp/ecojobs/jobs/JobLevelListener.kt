@@ -1,6 +1,6 @@
 package com.willfp.ecojobs.jobs
 
-import com.willfp.eco.util.SoundUtils
+import com.willfp.eco.core.sound.PlayableSound
 import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
 import com.willfp.ecojobs.plugin
 import com.willfp.libreforge.toDispatcher
@@ -19,19 +19,7 @@ object JobLevelListener : Listener {
         job.levelUpEffects?.trigger(player.toDispatcher())
         job.executeLevelCommands(player, level)
 
-        if (plugin.configYml.getBool("level-up.sound.enabled")) {
-            val sound = SoundUtils.getSound(plugin.configYml.getString("level-up.sound.id"))
-            val pitch = plugin.configYml.getDouble("level-up.sound.pitch")
-
-            if (sound != null) {
-                player.playSound(
-                    player.location,
-                    sound,
-                    100f,
-                    pitch.toFloat()
-                )
-            }
-        }
+        PlayableSound.create(plugin.configYml.getSubsection("level-up.sound"))?.playTo(player)
 
         if (plugin.configYml.getBool("level-up.message.enabled")) {
             for (message in job.injectPlaceholdersInto(
