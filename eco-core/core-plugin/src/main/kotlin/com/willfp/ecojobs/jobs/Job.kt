@@ -49,7 +49,7 @@ class Job(
 ) : Registrable {
 
     val name = config.getFormattedString("name")
-
+    val title = config.getFormattedStringOrNull("title") ?: name
     val description = config.getFormattedString("description")
 
     val isUnlockedByDefault = config.getBool("unlocked-by-default")
