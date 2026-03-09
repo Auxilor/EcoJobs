@@ -20,8 +20,8 @@ class JobLeaveGUI(
         val maskPattern = plugin.configYml.getStrings("leave-gui.mask.pattern").toTypedArray()
         val maskItems = MaskItems.fromItemNames(plugin.configYml.getStrings("leave-gui.mask.materials"))
 
-        title = plugin.configYml.getString("leave-gui.title")
-            .replace("%job%", job.name)
+        title = (job.title ?: plugin.configYml.getString("leave-gui.title")
+            .replace("%job%", job.name))
             .formatEco()
 
         setMask(

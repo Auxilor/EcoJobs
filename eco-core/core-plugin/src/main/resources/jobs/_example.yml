@@ -10,6 +10,10 @@ name: "&6Miner"
 # The description of the job
 description: "&8&oLevel up by mining blocks"
 
+# (Optional) The custom GUI title for this job
+# If not specified, uses the default from config.yml level-gui.title with %job% placeholder
+# title: "&6&lMiner Job Progression"
+
 # If the job should be unlocked by default
 unlocked-by-default: true
 
