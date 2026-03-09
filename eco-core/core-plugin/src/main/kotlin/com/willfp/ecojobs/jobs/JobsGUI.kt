@@ -1,6 +1,5 @@
 package com.willfp.ecojobs.jobs
 
-import com.willfp.eco.core.config.updating.ConfigUpdater
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
 import com.willfp.eco.core.gui.onLeftClick
@@ -13,30 +12,26 @@ import com.willfp.eco.core.gui.slot.MaskItems
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.core.items.builder.SkullBuilder
+import com.willfp.eco.core.sound.PlayableSound
 import com.willfp.eco.util.formatEco
-import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.canJoinJob
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.joinJob
 import com.willfp.ecojobs.jobs.Jobs.unlockedJobs
+import com.willfp.ecojobs.plugin
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.min
 
 object JobsGUI {
     private lateinit var menu: Menu
     private val jobAreaSlots = mutableListOf<Pair<Int, Int>>()
 
-    @JvmStatic
-    @ConfigUpdater
-    fun update(plugin: EcoJobsPlugin) {
+    internal fun update() {
         val topLeftRow = plugin.configYml.getInt("gui.job-area.top-left.row")
         val topLeftColumn = plugin.configYml.getInt("gui.job-area.top-left.column")
         val bottomRightRow = plugin.configYml.getInt("gui.job-area.bottom-right.row")
@@ -49,10 +44,10 @@ object JobsGUI {
             }
         }
 
-        menu = buildMenu(plugin)
+        menu = buildMenu()
     }
 
-    private fun buildMenu(plugin: EcoJobsPlugin): Menu {
+    private fun buildMenu(): Menu {
         val jobIconBuilder = { player: Player, menu: Menu, index: Int ->
             val page = menu.getPage(player)
 
@@ -125,9 +120,7 @@ object JobsGUI {
                 setSlot(row, column, slot({ p, m -> jobIconBuilder(p, m, index) }) {
                     onLeftClick { player, _, _, menu ->
                         val page = menu.getPage(player)
-
                         val unlockedJobs = player.unlockedJobs
-
                         val pagedIndex = ((page - 1) * jobAreaSlots.size) + index
 
                         val job = unlockedJobs.getOrNull(pagedIndex) ?: return@onLeftClick
@@ -150,32 +143,19 @@ object JobsGUI {
                             }
                         }
 
-                        player.playSound(
-                            player.location,
-                            Sound.valueOf(plugin.configYml.getString("gui.job-icon.click.sound").uppercase()),
-                            1f,
-                            plugin.configYml.getDouble("gui.job-icon.click.pitch").toFloat()
-                        )
+                        PlayableSound.create(plugin.configYml.getSubsection("gui.job-icon.click"))?.playTo(player)
                     }
 
                     onRightClick { player, _, _, menu ->
                         val page = menu.getPage(player)
-
                         val unlockedJobs = player.unlockedJobs
-
                         val pagedIndex = ((page - 1) * jobAreaSlots.size) + index
 
                         val job = unlockedJobs.getOrNull(pagedIndex) ?: return@onRightClick
 
                         if (player.hasJobActive(job)) {
                             job.leaveGUI.open(player)
-
-                            player.playSound(
-                                player.location,
-                                Sound.valueOf(plugin.configYml.getString("gui.job-icon.click.sound").uppercase()),
-                                1f,
-                                plugin.configYml.getDouble("gui.job-icon.click.pitch").toFloat()
-                            )
+                            PlayableSound.create(plugin.configYml.getSubsection("gui.job-icon.click"))?.playTo(player)
                         }
                     }
                 })
@@ -204,12 +184,14 @@ object JobsGUI {
             )
 
             maxPages { player ->
-                ceil(Jobs.values()
-                    .filter { player.getJobLevel(it) > 0 }
-                    .size.toDouble() / jobAreaSlots.size).toInt()
+                ceil(
+                    Jobs.values()
+                        .filter { player.getJobLevel(it) > 0 }
+                        .size.toDouble() / jobAreaSlots.size).toInt()
             }
 
-            setSlot(plugin.configYml.getInt("gui.close.location.row"),
+            setSlot(
+                plugin.configYml.getInt("gui.close.location.row"),
                 plugin.configYml.getInt("gui.close.location.column"),
                 slot(
                     ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.close.item")))

@@ -4,6 +4,7 @@ import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
 import com.willfp.ecojobs.jobs.Job
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.libreforge.effects.templates.MultiMultiplierEffect
+import com.willfp.libreforge.toDispatcher
 import org.bukkit.event.EventHandler
 
 object EffectJobXpMultiplier : MultiMultiplierEffect<Job>("job_xp_multiplier") {
@@ -19,6 +20,6 @@ object EffectJobXpMultiplier : MultiMultiplierEffect<Job>("job_xp_multiplier") {
 
     @EventHandler(ignoreCancelled = true)
     fun handle(event: PlayerJobExpGainEvent) {
-        event.amount *= getMultiplier(event.player, event.job)
+        event.amount *= getMultiplier(event.player.toDispatcher(), event.job)
     }
 }

@@ -5,7 +5,6 @@ package com.willfp.ecojobs.api
 import com.willfp.eco.core.data.keys.PersistentDataKey
 import com.willfp.eco.core.data.keys.PersistentDataKeyType
 import com.willfp.eco.core.data.profile
-import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
 import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
 import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
@@ -14,12 +13,11 @@ import com.willfp.ecojobs.jobs.Job
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.jobs.getNumericalPermission
 import com.willfp.ecojobs.jobs.jobExperienceMultiplier
+import com.willfp.ecojobs.plugin
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import kotlin.math.abs
-
-private val plugin = EcoJobsPlugin.instance
 
 /*
 
@@ -140,7 +138,7 @@ fun OfflinePlayer.resetJob(job: Job) {
 /**
  * Get the experience required to advance to the next level.
  */
-fun OfflinePlayer.getJobXPRequired(job: Job) = job.getExpForLevel(this.getJobLevel(job) + 1)
+fun OfflinePlayer.getJobXPRequired(job: Job) = job.getFormattedExpForLevel(this.getJobLevel(job) + 1)
 
 /**
  * Get progress to next level between 0 and 1, where 0 is none and 1 is complete.

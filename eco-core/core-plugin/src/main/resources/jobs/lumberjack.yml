@@ -10,12 +10,16 @@ join-price:
   type: coins
   display: "&a$%value%"
 
+join-effects: []
+
 join-lore: []
 
 leave-price:
   value: 0
   type: coins
   display: "&a$%value%"
+
+leave-effects: []
 
 leave-lore:
   - ""
@@ -104,7 +108,7 @@ level-up-messages:
   1:
     - "&8» &7Earn &a$%money%&7 for each log chopped."
 
-level-commands: [ ]
+level-up-effects: [ ]
 
 effects:
   - id: give_money

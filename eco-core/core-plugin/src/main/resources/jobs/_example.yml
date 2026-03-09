@@ -27,6 +27,13 @@ join-price:
 # Reference with %join_lore%
 join-lore: []
 
+# A list of effects to run when the player joins the job.
+# Read https://plugins.auxilor.io/effects/configuring-an-effect
+join-effects:
+  - id: broadcast
+    args:
+      message: "&8» &a%player% &8joined the &6Miner &8job!"
+
 # The price to leave this job (set to 0 to disable)
 # Read here for more: https://plugins.auxilor.io/all-plugins/prices
 leave-price:
@@ -39,7 +46,22 @@ leave-price:
 leave-lore:
   - " &8» This will cost %leave_price%"
 
-# The xp requirements for each job level - add new levels by adding more to this list
+# A list of effects to run when the player leaves the job.
+# Read https://plugins.auxilor.io/effects/configuring-an-effect
+leave-effects:
+  - id: send_message
+    args:
+      message: "&8» &8You left the &6Miner &8job!"
+
+# There are two ways to specify level XP requirements:
+#  1. A formula to calculate for infinite levels
+#  2. A list of XP requirements for each level
+
+# Formula
+# xp-formula: (2 ^ %level%) * 25
+# max-level: 100 # The max level of the job
+
+# List
 level-xp-requirements:
   - 100
   - 120
@@ -133,10 +155,13 @@ level-up-messages:
   1:
     - "&8» &8Earn &a$%money%&8 for each &a%blocks%&8 blocks mined"
 
-# Commands to be sent on levelup, can be formatted two ways:
-# level:command (e.g. 10:eco give %player% 1000), which would execute that command for level 10
-# command (e.g. eco give %player% 5000), which would execute that command for all levels
-level-commands: [ ]
+# Effects to run when the skill levels up
+# %level% is the level the skill leveled up to.
+# If you want to restrict this to certain levels, you can use
+# require: %level% = 20, or require: %level% < 50, etc.
+# If you want a reward to run every x levels, you can use
+# every: 1, or every: 12, etc
+level-up-effects: [ ]
 
 # The effects for the job, has %level% as a placeholder
 effects:

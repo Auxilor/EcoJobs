@@ -1,9 +1,9 @@
 package com.willfp.ecojobs.api.event
 
-import org.bukkit.entity.Player
 import com.willfp.ecojobs.jobs.Job
-import org.bukkit.event.player.PlayerEvent
+import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
+import org.bukkit.event.player.PlayerEvent
 
 class PlayerJobLevelUpEvent(
     who: Player,

@@ -10,12 +10,16 @@ join-price:
   type: coins
   display: "&a$%value%"
 
+join-effects: []
+
 join-lore: []
 
 leave-price:
   value: 0
   type: coins
   display: "&a$%value%"
+
+leave-effects: []
 
 leave-lore:
   - ""
@@ -107,7 +111,7 @@ level-up-messages:
   1:
     - "&8» &8Earn &a$%money%&8 for each crop farmed"
 
-level-commands: [ ]
+level-up-effects: [ ]
 
 effects:
   - id: give_money

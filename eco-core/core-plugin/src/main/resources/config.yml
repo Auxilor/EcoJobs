@@ -3,6 +3,19 @@
 # by Auxilor
 #
 
+# Even if eco is set up to use a database, you can
+# force EcoJobs to save to local storage to disable
+# cross-server sync.
+use-local-storage: false
+
+leaderboard:
+  # You can disable the top leaderboard if you don't want it
+  # Please note that it will require a full server restart to take into effect
+  enabled: true
+
+  # Time in seconds for the lifetime of the leaderboard cache
+  cache-lifetime: 60
+
 jobs:
   limit: 3 # The most jobs a player can have at once.
   # You can set custom limits with the ecojobs.limit.<number> permission
@@ -90,8 +103,11 @@ gui:
       - "&eClick to join this job!"
 
     click:
+      enabled: true
       sound: ui_button_click
       pitch: 1
+      volume: 1
+      category: MASTER
 
   prev-page:
     item: arrow
@@ -119,6 +135,7 @@ gui:
 
 level-gui:
   rows: 6
+  title: "%job%"
 
   mask:
     # The way the mask works is by having a list of materials
@@ -272,9 +289,8 @@ level-up:
       - " %level_up_messages%"
       - "&f"
   sound:
-    # If a sound should be played
     enabled: true
-    # The sound that should be played
-    id: entity_player_levelup
-    # Pitch between 0.5 and 2
+    sound: entity_player_levelup
     pitch: 1.3
+    volume: 0.8
+    category: PLAYER

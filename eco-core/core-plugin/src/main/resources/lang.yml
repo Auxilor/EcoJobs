@@ -3,11 +3,14 @@ messages:
   no-permission: "&cYou don't have permission to do this!"
   not-player: "&cThis command must be run by a player"
   invalid-command: "&cUnknown subcommand!"
-  reloaded: "Reloaded!"
+  reloaded: "Reloaded! Took %time%ms"
 
   needs-player: "&cYou must specify a player!"
   gave-xp: "&fYou have given &a%xp% &fXP to %player%&f's %job%&f!"
   reset-xp: "&fYou have reset %player%&f's %job%&f XP!"
+  reset-all-players: "&fYou have reset all players' %job%&f XP!"
+  reset-all-jobs: "&fYou have reset %player%&f's XP for all jobs!"
+  reset-all-players-all-jobs: "&fYou have reset all players' XP for all jobs!"
   needs-job: "&cYou must specify a job!"
   need-amount: "&cYou must specify a amount!"
   invalid-player: "&cInvalid player!"
@@ -31,6 +34,9 @@ menu:
 
 infinity: "∞"
 
+top-line-format: "%rank%. %player% - %level%"
 top:
-  name-empty: "&cEmpty"
-  amount-empty: "0"
+  empty-position: "&cN/A"
+  format:
+    - "---- Jobs Leaderboard ----"
+    - "%lines%"

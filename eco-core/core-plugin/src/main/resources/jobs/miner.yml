@@ -10,12 +10,16 @@ join-price:
   type: coins
   display: "&a$%value%"
 
+join-effects: []
+
 join-lore: []
 
 leave-price:
   value: 0
   type: coins
   display: "&a$%value%"
+
+leave-effects: []
 
 leave-lore:
   - ""
@@ -74,15 +78,17 @@ level-xp-requirements:
 xp-gain-methods:
   - trigger: mine_block
     multiplier: 0.5
-    conditions: [ ]
-    filters:
-      items:
-        - "*wooden_pickaxe"
-        - "*stone_pickaxe"
-        - "*iron_pickaxe"
-        - "*golden_pickaxe"
-        - "*diamond_pickaxe"
-        - "*netherite_pickaxe"
+    filters: [ ]
+    conditions:
+      - id: in_mainhand
+        args:
+          items:
+            - "*wooden_pickaxe"
+            - "*stone_pickaxe"
+            - "*iron_pickaxe"
+            - "*golden_pickaxe"
+            - "*diamond_pickaxe"
+            - "*netherite_pickaxe"
 
 level-placeholders:
   - id: "money"
@@ -102,21 +108,23 @@ level-up-messages:
   1:
     - "&8» &8Earn &a$%money%&8 for each &a%blocks%&8 blocks mined"
 
-level-commands: [ ]
+level-up-effects: [ ]
 
 effects:
   - id: give_money
     args:
       every: "ceil(10 - %level% / 10)"
       amount: "0.4 * %level%"
-    filters:
-      items:
-        - "*wooden_pickaxe"
-        - "*stone_pickaxe"
-        - "*iron_pickaxe"
-        - "*golden_pickaxe"
-        - "*diamond_pickaxe"
-        - "*netherite_pickaxe"
+    conditions:
+      - id: in_mainhand
+        args:
+          items:
+            - "*wooden_pickaxe"
+            - "*stone_pickaxe"
+            - "*iron_pickaxe"
+            - "*golden_pickaxe"
+            - "*diamond_pickaxe"
+            - "*netherite_pickaxe"
     triggers:
       - mine_block
 

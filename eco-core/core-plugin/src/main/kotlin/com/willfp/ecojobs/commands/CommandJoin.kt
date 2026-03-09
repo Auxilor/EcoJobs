@@ -1,6 +1,5 @@
 package com.willfp.ecojobs.commands
 
-import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.command.impl.Subcommand
 import com.willfp.eco.util.StringUtils
 import com.willfp.ecojobs.api.canJoinJob
@@ -8,11 +7,17 @@ import com.willfp.ecojobs.api.hasJob
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.joinJob
 import com.willfp.ecojobs.jobs.Jobs
+import com.willfp.ecojobs.plugin
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.util.StringUtil
 
-class CommandJoin(plugin: EcoPlugin) : Subcommand(plugin, "join", "ecojobs.command.join", true) {
+object CommandJoin : Subcommand(
+    plugin,
+    "join",
+    "ecojobs.command.join",
+    true
+) {
     override fun onExecute(player: CommandSender, args: List<String>) {
         player as Player
 

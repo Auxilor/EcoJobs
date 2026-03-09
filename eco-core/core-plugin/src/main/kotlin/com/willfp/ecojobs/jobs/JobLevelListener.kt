@@ -1,38 +1,29 @@
 package com.willfp.ecojobs.jobs
 
-import com.willfp.ecojobs.EcoJobsPlugin
+import com.willfp.eco.core.sound.PlayableSound
 import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
-import org.bukkit.Sound
+import com.willfp.ecojobs.plugin
+import com.willfp.libreforge.toDispatcher
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
-class JobLevelListener(
-    private val plugin: EcoJobsPlugin
-) : Listener {
+object JobLevelListener : Listener {
+    @Suppress("DEPRECATION")
     @EventHandler(priority = EventPriority.MONITOR)
     fun onLevelUp(event: PlayerJobLevelUpEvent) {
         val job = event.job
         val player = event.player
         val level = event.level
 
+        job.levelUpEffects?.trigger(player.toDispatcher())
         job.executeLevelCommands(player, level)
 
-        if (this.plugin.configYml.getBool("level-up.sound.enabled")) {
-            val sound = Sound.valueOf(this.plugin.configYml.getString("level-up.sound.id").uppercase())
-            val pitch = this.plugin.configYml.getDouble("level-up.sound.pitch")
+        PlayableSound.create(plugin.configYml.getSubsection("level-up.sound"))?.playTo(player)
 
-            player.playSound(
-                player.location,
-                sound,
-                100f,
-                pitch.toFloat()
-            )
-        }
-
-        if (this.plugin.configYml.getBool("level-up.message.enabled")) {
+        if (plugin.configYml.getBool("level-up.message.enabled")) {
             for (message in job.injectPlaceholdersInto(
-                this.plugin.configYml.getFormattedStrings("level-up.message.message"),
+                plugin.configYml.getFormattedStrings("level-up.message.message"),
                 player,
                 forceLevel = level
             )) {
