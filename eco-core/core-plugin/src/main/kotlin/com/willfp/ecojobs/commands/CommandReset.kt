@@ -1,6 +1,5 @@
 package com.willfp.ecojobs.commands
 
-import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.command.impl.Subcommand
 import com.willfp.eco.util.StringUtils
 import com.willfp.eco.util.savedDisplayName
@@ -8,11 +7,17 @@ import com.willfp.ecojobs.api.forceLeaveJob
 import com.willfp.ecojobs.api.hasJob
 import com.willfp.ecojobs.api.resetJob
 import com.willfp.ecojobs.jobs.Jobs
+import com.willfp.ecojobs.plugin
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.util.StringUtil
 
-class CommandReset(plugin: EcoPlugin) : Subcommand(plugin, "reset", "ecojobs.command.reset", false) {
+object CommandReset : Subcommand(
+    plugin,
+    "reset",
+    "ecojobs.command.reset",
+    false
+) {
     override fun onExecute(sender: CommandSender, args: List<String>) {
         if (args.isEmpty()) {
             sender.sendMessage(plugin.langYml.getMessage("needs-player"))

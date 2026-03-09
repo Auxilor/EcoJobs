@@ -3,8 +3,8 @@ package com.willfp.ecojobs.jobs
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.plugin
-import com.willfp.ecojobs.util.LeaderboardEntry
 import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import java.time.Duration
 import java.util.*
 
@@ -25,22 +25,27 @@ object JobsLeaderboard {
             return@build top
         }
 
-    fun getTop(job: Job, position: Int): LeaderboardEntry? {
+    fun Job.getTop(position: Int): LeaderboardEntry? {
         require(position > 0) { "Position must be greater than 0" }
 
-        val uuid = leaderboardCache.get(true)[job]?.getOrNull(position - 1) ?: return null
+        val uuid = leaderboardCache.get(true)[this]?.getOrNull(position - 1) ?: return null
 
         val player = Bukkit.getOfflinePlayer(uuid).takeIf { it.hasPlayedBefore() } ?: return null
 
         return LeaderboardEntry(
             player,
-            player.getJobLevel(job)
+            player.getJobLevel(this)
         )
     }
 
-    fun getPosition(job: Job, uuid: UUID): Int? {
-        val leaderboard = leaderboardCache.get(true)[job]
+    fun Job.getPosition(uuid: UUID): Int? {
+        val leaderboard = leaderboardCache.get(true)[this]
         val index = leaderboard?.indexOf(uuid)
         return if (index == -1) null else index?.plus(1)
     }
+
+    data class LeaderboardEntry(
+        val player: OfflinePlayer,
+        val level: Int
+    )
 }

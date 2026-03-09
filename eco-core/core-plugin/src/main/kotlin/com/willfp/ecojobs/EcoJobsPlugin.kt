@@ -65,7 +65,7 @@ class EcoJobsPlugin : LibreforgePlugin() {
         }
 
         if (this.configYml.getBool("leaderboard.enabled"))
-            EcoJobsJobTopPlaceholder(this).register()
+            EcoJobsJobTopPlaceholder.register()
 
         PlayerPlaceholder(
             this,
@@ -90,19 +90,19 @@ class EcoJobsPlugin : LibreforgePlugin() {
     }
 
     override fun handleReload() {
-        JobsGUI.update(this)
+        JobsGUI.update()
     }
 
     override fun loadPluginCommands(): List<PluginCommand> {
         return listOf(
-            CommandEcoJobs(this),
-            CommandJobs(this)
+            CommandEcoJobs,
+            CommandJobs
         )
     }
 
     override fun loadListeners(): List<Listener> {
         return listOf(
-            JobLevelListener(this),
+            JobLevelListener,
             ResetOnQuitListener,
             PriceHandler
         )
