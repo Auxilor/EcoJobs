@@ -9,7 +9,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
 object JobLevelListener : Listener {
-    @Suppress("DEPRECATION")
     @EventHandler(priority = EventPriority.MONITOR)
     fun onLevelUp(event: PlayerJobLevelUpEvent) {
         val job = event.job
@@ -17,7 +16,6 @@ object JobLevelListener : Listener {
         val level = event.level
 
         job.levelUpEffects?.trigger(player.toDispatcher())
-        job.executeLevelCommands(player, level)
 
         PlayableSound.create(plugin.configYml.getSubsection("level-up.sound"))?.playTo(player)
 
