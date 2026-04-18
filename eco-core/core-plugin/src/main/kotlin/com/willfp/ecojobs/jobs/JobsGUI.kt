@@ -190,20 +190,17 @@ object JobsGUI {
                         .size.toDouble() / jobAreaSlots.size).toInt()
             }
 
-            val closeEnabled = plugin.configYml.getBoolOrNull("gui.close.enabled") ?: true
-            if (closeEnabled) {
-                setSlot(
-                    plugin.configYml.getInt("gui.close.location.row"),
-                    plugin.configYml.getInt("gui.close.location.column"),
-                    slot(
-                        ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.close.item")))
-                            .setDisplayName(plugin.configYml.getString("gui.close.name"))
-                            .build()
-                    ) {
-                        onLeftClick { event, _ -> event.whoClicked.closeInventory() }
-                    }
-                )
-            }
+            setSlot(
+                plugin.configYml.getInt("gui.close.location.row"),
+                plugin.configYml.getInt("gui.close.location.column"),
+                slot(
+                    ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.close.item")))
+                        .setDisplayName(plugin.configYml.getString("gui.close.name"))
+                        .build()
+                ) {
+                    onLeftClick { event, _ -> event.whoClicked.closeInventory() }
+                }
+            )
 
             for (config in plugin.configYml.getSubsections("gui.custom-slots")) {
                 setSlot(
