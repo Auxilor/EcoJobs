@@ -124,6 +124,7 @@ gui:
       column: 6
 
   close:
+    enabled: true
     item: barrier
     name: "&cClose"
     location:
@@ -187,6 +188,7 @@ level-gui:
         column: 6
 
     close:
+      enabled: true
       material: barrier
       name: "&cClose"
       location:
@@ -220,13 +222,6 @@ level-gui:
         - "&f"
         - "&fRewards:"
         - "%rewards%"
-
-  close:
-    material: barrier
-    name: "&cClose"
-    location:
-      row: 6
-      column: 5
 
   # Custom GUI slots; see here for a how-to: https://plugins.auxilor.io/all-plugins/custom-gui-slots
   custom-slots: [ ]
