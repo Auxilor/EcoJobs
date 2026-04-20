@@ -18,19 +18,19 @@ object CommandTop : Subcommand(
     false
 ) {
     override fun onExecute(sender: CommandSender, args: List<String>) {
-        plugin.scheduler.runAsync {
+        plugin.scheduler.runTaskAsync {
             val job = Jobs.getByID(args.getOrNull(0))
 
             if (job == null) {
                 sender.sendMessage(plugin.langYml.getMessage("invalid-job"))
-                return@runAsync
+                return@runTaskAsync
             }
 
             val page = args.getOrNull(1)?.toIntOrNull() ?: 1
 
             if (args.getOrNull(1)?.let { it.isNotBlank() && !it.matches("\\d+".toRegex()) } == true) {
                 sender.sendMessage(plugin.langYml.getMessage("invalid-page"))
-                return@runAsync
+                return@runTaskAsync
             }
 
             val offset = (page - 1) * 10
