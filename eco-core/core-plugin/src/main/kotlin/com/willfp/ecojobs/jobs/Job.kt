@@ -383,7 +383,7 @@ class Job(
      */
     fun getExpForLevel(level: Int): Double {
         if (level !in 1..maxLevel) {
-            return Double.MAX_VALUE
+            return Double.POSITIVE_INFINITY
         }
 
         if (xpFormula != null) {
