@@ -1,9 +1,12 @@
 package com.willfp.ecojobs.jobs
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import com.willfp.eco.core.integrations.afk.AFKManager
 import com.willfp.ecojobs.api.giveJobExperience
 import com.willfp.ecojobs.api.hasJobActive
+import com.willfp.ecojobs.plugin
 import com.willfp.libreforge.counters.Accumulator
+import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
@@ -13,6 +16,14 @@ class JobXPAccumulator(
 ) : Accumulator {
     override fun accept(player: Player, count: Double) {
         if (!player.hasJobActive(job)) {
+            return
+        }
+
+        if (plugin.configYml.getBool("jobs.prevent-levelling-while-afk") && AFKManager.isAfk(player)) {
+            return
+        }
+
+        if (player.gameMode in setOf(GameMode.CREATIVE, GameMode.SPECTATOR)) {
             return
         }
 

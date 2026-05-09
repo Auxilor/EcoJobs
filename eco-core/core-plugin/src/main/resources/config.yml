@@ -19,6 +19,7 @@ leaderboard:
 jobs:
   limit: 3 # The most jobs a player can have at once.
   # You can set custom limits with the ecojobs.limit.<number> permission
+  prevent-levelling-while-afk: true # If the player is AFK then don't give xp
 
 gui:
   rows: 6
