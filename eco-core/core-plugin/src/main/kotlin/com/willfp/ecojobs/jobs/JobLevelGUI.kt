@@ -1,5 +1,6 @@
 package com.willfp.ecojobs.jobs
 
+import com.willfp.eco.core.Prerequisite
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
 import com.willfp.eco.core.gui.menu.MenuLayer
@@ -56,8 +57,12 @@ class JobLevelGUI(
                     .build()
                     .also {
                         if (plugin.configYml.getBool("level-gui.progression-slots.level-as-amount")) {
-                            it.setData(DataComponentTypes.MAX_STACK_SIZE, 99)
-                            it.amount = level.coerceIn(1, 99)
+                            if (Prerequisite.HAS_PAPER.isMet) {
+                                it.setData(DataComponentTypes.MAX_STACK_SIZE, 99)
+                                it.amount = level.coerceIn(1, 99)
+                            } else {
+                                it.amount = level.coerceIn(1, 64)
+                            }
                         }
                     }
             }
