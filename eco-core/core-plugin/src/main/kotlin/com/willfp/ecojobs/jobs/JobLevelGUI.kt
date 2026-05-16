@@ -1,5 +1,6 @@
 package com.willfp.ecojobs.jobs
 
+import com.willfp.eco.core.Prerequisite
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
 import com.willfp.eco.core.gui.menu.MenuLayer
@@ -17,6 +18,7 @@ import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.plugin
 import com.willfp.ecomponent.components.LevelComponent
 import com.willfp.ecomponent.components.LevelState
+import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -52,10 +54,17 @@ class JobLevelGUI(
                             forceLevel = level
                         )
                     )
-                    .setAmount(
-                        if (plugin.configYml.getBool("level-gui.progression-slots.level-as-amount")) level else 1
-                    )
                     .build()
+                    .also {
+                        if (plugin.configYml.getBool("level-gui.progression-slots.level-as-amount")) {
+                            if (Prerequisite.HAS_PAPER.isMet) {
+                                it.setData(DataComponentTypes.MAX_STACK_SIZE, 99)
+                                it.amount = level.coerceIn(1, 99)
+                            } else {
+                                it.amount = level.coerceIn(1, 64)
+                            }
+                        }
+                    }
             }
 
             override fun getLevelState(player: Player, level: Int): LevelState {
