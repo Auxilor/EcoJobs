@@ -1,5 +1,6 @@
 package com.willfp.ecojobs
 
+import com.willfp.eco.core.bstats.EcoMetricsChart
 import com.willfp.eco.core.command.impl.PluginCommand
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.ecojobs.api.activeJobs
@@ -107,5 +108,16 @@ class EcoJobsPlugin : LibreforgePlugin() {
             PriceHandler
         )
     }
+
+    override fun getCustomCharts() = listOf(
+        EcoMetricsChart.SingleLine("total_jobs") { Jobs.values().size },
+        EcoMetricsChart.SingleLine("job_limit") { configYml.getInt("jobs.limit") },
+        EcoMetricsChart.SimplePie("leaderboard_enabled") {
+            if (configYml.getBool("leaderboard.enabled")) "enabled" else "disabled"
+        },
+        EcoMetricsChart.SimplePie("prevent_afk_levelling") {
+            if (configYml.getBool("jobs.prevent-levelling-while-afk")) "enabled" else "disabled"
+        }
+    )
 }
 
