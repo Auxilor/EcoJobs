@@ -80,6 +80,7 @@ xp-gain-methods:
     multiplier: 0.5
     conditions: [ ]
     filters:
+      fully_grown: true
       blocks:
         - "wheat"
         - "potatoes"
@@ -87,13 +88,19 @@ xp-gain-methods:
         - "carrots"
         - "melon"
         - "pumpkin"
-        - "cactus"
-        - "sugar_cane"
         - "cocoa"
         - "nether_wart"
-        - "bamboo"
         - "sweet_berries"
         - "glow_berries"
+
+  - trigger: mine_block_cascade
+    multiplier: 0.5
+    conditions: [ ]
+    filters:
+      blocks:
+        - "cactus"
+        - "sugar_cane"
+        - "bamboo"
 
 level-placeholders:
   - id: "money"
@@ -118,6 +125,7 @@ effects:
     args:
       amount: "%level% * 0.25"
     filters:
+      fully_grown: true
       blocks:
         - "wheat"
         - "potatoes"
@@ -134,6 +142,18 @@ effects:
         - "glow_berries"
     triggers:
       - mine_block
+
+  - id: give_money
+    args:
+      amount: "%level% * 0.25"
+    filters:
+      blocks:
+        - "cactus"
+        - "sugar_cane"
+        - "bamboo"
+    triggers:
+      - mine_block_cascade
+
 
 conditions: [ ]
 
