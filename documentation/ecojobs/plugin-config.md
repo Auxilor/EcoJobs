@@ -1,0 +1,296 @@
+---
+title: "Plugin Config"
+sidebar_position: 5
+---
+
+## Default config.yml
+
+```yaml
+# Even if eco is set up to use a database, you can
+# force EcoJobs to save to local storage to disable
+# cross-server sync.
+use-local-storage: false
+
+leaderboard:
+  # You can disable the top leaderboard if you don't want it
+  # Please note that it will require a full server restart to take into effect
+  enabled: true
+
+  # Time in seconds for the lifetime of the leaderboard cache
+  cache-lifetime: 60
+
+jobs:
+  limit: 3 # The most jobs a player can have at once.
+  # You can set custom limits with the ecojobs.limit.<number> permission
+  prevent-levelling-while-afk: true # If the player is AFK then don't give xp
+
+gui:
+  rows: 6
+
+  mask:
+    # The way the mask works is by having a list of materials
+    # And then a pattern to use those materials.
+
+    # The pattern is the rows in the GUI
+    # Each line must be 9 long, and the amount of rows should be the amount of rows in the GUI
+    # A zero represents nothing
+    # A 1 represents the first material
+    # A 2 represents the second material
+    # And so on, you can add up to 9.
+
+    materials:
+      - black_stained_glass_pane
+    pattern:
+      - "111101111"
+      - "111111111"
+      - "100000001"
+      - "100000001"
+      - "100000001"
+      - "111101111"
+
+  job-area:
+    top-left:
+      row: 3
+      column: 2
+    bottom-right:
+      row: 5
+      column: 8
+
+  player-info:
+    row: 1
+    column: 5
+
+    name: "&r%player%&f's Jobs:"
+
+    no-jobs:
+      - ""
+      - "&cYou do not currently have a job active"
+      - "&fPick one from the options below!"
+      - ""
+      - "&fYou can have up to &a%ecojobs_limit% &fjobs at once!"
+      - ""
+
+    has-jobs:
+      - ""
+      - "%jobs%"
+      - ""
+      - "&fJob slots in use: &a%ecojobs_in_jobs%&8/&a%ecojobs_limit%"
+
+    job-line:
+      - " %job% &fLvl. &a%level%"
+
+  job-icon:
+    name: "%job% &fLvl. &a%level%"
+    lore:
+      - "%description%"
+      - "&f"
+      - "&fJob Rewards:"
+      - "%effects%"
+      - ""
+      - "&fProgress:"
+      - "&8» &e%percentage_progress%%"
+      - "&8» &e%current_xp%&8/&7%required_xp% &fXP"
+
+    # %join_price% and %leave_price% are also available as placeholders
+
+    active-lore:
+      - ""
+      - "&eClick to view Level Progression!"
+      - "&eRight-click to leave this job!"
+
+    too-many-jobs-lore:
+      - ""
+      - "&cYou have too many jobs already!"
+
+    join-lore:
+      - ""
+      - "&eClick to join this job!"
+
+    click:
+      enabled: true
+      sound: ui_button_click
+      pitch: 1
+      volume: 1
+      category: MASTER
+
+  prev-page:
+    item: arrow
+    name: "&fPrevious Page"
+    location:
+      row: 6
+      column: 4
+
+  next-page:
+    item: arrow
+    name: "&fNext Page"
+    location:
+      row: 6
+      column: 6
+
+  close:
+    enabled: true
+    item: barrier
+    name: "&cClose"
+    location:
+      row: 6
+      column: 5
+
+  # Custom GUI slots; see here for a how-to: https://plugins.auxilor.io/all-plugins/custom-gui-slots
+  custom-slots: [ ]
+
+level-gui:
+  rows: 6
+  title: "%job%"
+
+  mask:
+    # The way the mask works is by having a list of materials
+    # And then a pattern to use those materials.
+
+    # The pattern is the rows in the GUI
+    # Each line must be 9 long, and the amount of rows should be the amount of rows in the GUI
+    # A zero represents nothing
+    # A 1 represents the first material
+    # A 2 represents the second material
+    # And so on, you can add up to 9.
+
+    materials:
+      - black_stained_glass_pane
+    pattern:
+      - "111111111"
+      - "111111111"
+      - "111111111"
+      - "111111111"
+      - "111111111"
+      - "111111111"
+
+  progression-slots:
+    # To set the order of the pattern,
+    # Use 1-9 and then a-z: a goes after 9.
+    pattern:
+      - "109ab0jkl"
+      - "2080c0i0m"
+      - "3070d0h0n"
+      - "4560efg0o"
+      - "00000000p"
+      - "00000000q"
+
+    # If the amount of the item should be the level
+    level-as-amount: true
+
+    prev-page:
+      material: arrow
+      name: "&fPrevious Page"
+      location:
+        row: 6
+        column: 4
+
+    next-page:
+      material: arrow
+      name: "&fNext Page"
+      location:
+        row: 6
+        column: 6
+
+    close:
+      enabled: true
+      material: barrier
+      name: "&cClose"
+      location:
+        row: 6
+        column: 5
+
+    unlocked:
+      item: lime_stained_glass_pane
+      name: "%job% &fLvl. &a%level%"
+      lore:
+        - "&f"
+        - "&fRewards:"
+        - "%rewards%"
+        - "&f"
+        - "&aUNLOCKED"
+    in-progress:
+      item: yellow_stained_glass_pane
+      name: "%job% &fLvl. &a%level%"
+      lore:
+        - "&f"
+        - "&fRewards:"
+        - "%rewards%"
+        - "&f"
+        - "&fProgress:"
+        - "&8» &e%percentage_progress%%"
+        - "&8» &e%current_xp%&8/&7%required_xp% &fXP"
+    locked:
+      item: red_stained_glass_pane
+      name: "%job% &fLvl. &a%level%"
+      lore:
+        - "&f"
+        - "&fRewards:"
+        - "%rewards%"
+
+  # Custom GUI slots; see here for a how-to: https://plugins.auxilor.io/all-plugins/custom-gui-slots
+  custom-slots: [ ]
+
+leave-gui:
+  rows: 3
+
+  title: "Confirm Leaving %job%"
+
+  mask:
+    # The way the mask works is by having a list of materials
+    # And then a pattern to use those materials.
+
+    # The pattern is the rows in the GUI
+    # Each line must be 9 long, and the amount of rows should be the amount of rows in the GUI
+    # A zero represents nothing
+    # A 1 represents the first material
+    # A 2 represents the second material
+    # And so on, you can add up to 9.
+
+    materials:
+      - black_stained_glass_pane
+    pattern:
+      - "111111111"
+      - "110111011"
+      - "111111111"
+
+  cancel:
+    item: arrow
+    name: "&eCancel"
+    lore:
+      - ""
+      - "&fGo back to the Jobs menu"
+    location:
+      row: 2
+      column: 3
+
+  confirm:
+    item: player_head texture:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTRiZDlhNDViOTY4MWNlYTViMjhjNzBmNzVhNjk1NmIxZjU5NGZlYzg0MGI5NjA3Nzk4ZmIxZTcwNzc2NDQzMCJ9fX0=
+    name: "&cLeave %job%"
+    lore:
+      - ""
+      - "&cAre you sure?"
+      - "%leave_lore%"
+    location:
+      row: 2
+      column: 7
+
+  # Custom GUI slots; see here for a how-to: https://plugins.auxilor.io/all-plugins/custom-gui-slots
+  custom-slots: [ ]
+
+level-up:
+  message:
+    enabled: true
+    message:
+      - "&f"
+      - " &#964B00You levelled up %job%&#964B00 to &eLevel %level%&#964B00!"
+      - "&f"
+      - " &#964B00&lREWARDS:"
+      - " %level_up_messages%"
+      - "&f"
+  sound:
+    enabled: true
+    sound: entity_player_levelup
+    pitch: 1.3
+    volume: 0.8
+    category: PLAYER
+```
