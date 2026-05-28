@@ -1,4 +1,4 @@
----
+﻿---
 title: How to make a Job
 sidebar_position: 1
 ---
@@ -264,7 +264,7 @@ level-up-effects:
 ```
 
 ### The Effects Section
-:::dangerEffects Section
+:::danger Effects Section
 
 The effects section is the core functionality of the job. You can configure effects, conditions, filters, mutators and triggers in this section to run whilst the job is active.
 
