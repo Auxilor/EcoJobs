@@ -1,6 +1,6 @@
 package com.willfp.ecojobs.jobs
 
-import com.github.benmanes.caffeine.cache.Caffeine
+import com.willfp.eco.core.cache.EcoCache
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.plugin
 import org.bukkit.Bukkit
@@ -9,13 +9,13 @@ import java.time.Duration
 import java.util.*
 
 object JobsLeaderboard {
-    private var leaderboardCache = Caffeine.newBuilder()
+    private var leaderboardCache = EcoCache.builder<Boolean, Map<Job, List<UUID>>>()
         .expireAfterWrite(
             Duration.ofSeconds(
                 plugin.configYml.getInt("leaderboard.cache-lifetime").toLong()
             )
         )
-        .build<Boolean, Map<Job, List<UUID>>> {
+        .build {
             if (!plugin.configYml.getBool("leaderboard.enabled"))
                 return@build emptyMap()
             val offlinePlayers = Bukkit.getOfflinePlayers()
