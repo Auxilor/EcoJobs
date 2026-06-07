@@ -3,6 +3,12 @@ title: "Plugin Config"
 sidebar_position: 5
 ---
 
+This is the main plugin config, `config.yml`, which lives at `/plugins/EcoJobs/config.yml`. It controls storage, the leaderboard, the job limit, and every GUI. Edit it, then run `/ecojobs reload` to apply your changes.
+
+:::warning
+The leaderboard `enabled` setting only takes effect after a full server restart, not a reload. A reload is enough for everything else.
+:::
+
 ## Default config.yml
 
 ```yaml
@@ -294,3 +300,11 @@ level-up:
     volume: 0.8
     category: PLAYER
 ```
+
+<hr/>
+
+## Where to go next
+
+- **Custom GUI slots:** the `custom-slots` options use the shared system at [Custom GUI Slots](https://plugins.auxilor.io/all-plugins/custom-gui-slots).
+- **Make a job:** [How to make a Job](how-to-make-a-custom-job) for the per-job config files.
+- **Commands:** [Commands and Permissions](commands-and-permissions) for reloading and managing jobs.
