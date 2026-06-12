@@ -33,6 +33,10 @@ jobs:
 gui:
   rows: 6
 
+  # The title of the jobs menu.
+  # Supports %page% and %max_page% placeholders.
+  title: "Jobs &7(&f%page%&7/&f%max_page%&7)"
+
   mask:
     # The way the mask works is by having a list of materials
     # And then a pattern to use those materials.
@@ -146,6 +150,8 @@ gui:
 
 level-gui:
   rows: 6
+  # Supports %page% and %max_page% placeholders.
+  # Can be overridden per-job with the job's own 'title' option.
   title: "%job%"
 
   mask:

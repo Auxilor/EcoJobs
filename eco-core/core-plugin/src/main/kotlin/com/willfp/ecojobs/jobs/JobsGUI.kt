@@ -47,6 +47,12 @@ object JobsGUI {
         menu = buildMenu()
     }
 
+    private fun renderTitle(page: Int, maxPage: Int): String =
+        plugin.configYml.getString("gui.title")
+            .replace("%page%", page.toString())
+            .replace("%max_page%", maxPage.toString())
+            .formatEco()
+
     private fun buildMenu(): Menu {
         val jobIconBuilder = { player: Player, menu: Menu, index: Int ->
             val page = menu.getPage(player)
@@ -60,7 +66,7 @@ object JobsGUI {
         }
 
         return menu(plugin.configYml.getInt("gui.rows")) {
-            title = plugin.langYml.getString("menu.title")
+            title = renderTitle(1, 1)
 
             setMask(
                 FillerMask(
@@ -68,6 +74,19 @@ object JobsGUI {
                     *plugin.configYml.getStrings("gui.mask.pattern").toTypedArray()
                 )
             )
+
+            // Per-player title so %page% / %max_page% resolve correctly on open and page change.
+            onRender { player, menu ->
+                val page = menu.getPage(player)
+                val maxPage = menu.getMaxPage(player).coerceAtLeast(1)
+
+                try {
+                    @Suppress("DEPRECATION")
+                    player.openInventory.setTitle(renderTitle(page, maxPage))
+                } catch (_: Exception) {
+                    // setTitle unavailable on this server version
+                }
+            }
 
             setSlot(
                 plugin.configYml.getInt("gui.player-info.row"),

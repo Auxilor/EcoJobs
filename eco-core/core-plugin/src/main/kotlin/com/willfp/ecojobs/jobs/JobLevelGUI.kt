@@ -76,12 +76,30 @@ class JobLevelGUI(
             }
         }
 
-        menu = menu(plugin.configYml.getInt("level-gui.rows")) {
-            title = (job.title ?: plugin.configYml.getString("leave-gui.title")
-                .replace("%job%", job.name))
-                .formatEco()
+        val totalPages = component.pages
 
-            maxPages(component.pages)
+        val baseTitle = job.title ?: plugin.configYml.getString("leave-gui.title")
+            .replace("%job%", job.name)
+
+        fun renderTitle(page: Int): String = baseTitle
+            .replace("%page%", page.toString())
+            .replace("%max_page%", totalPages.toString())
+            .formatEco()
+
+        menu = menu(plugin.configYml.getInt("level-gui.rows")) {
+            title = renderTitle(1)
+
+            maxPages(totalPages)
+
+            // Per-player title so %page% / %max_page% resolve on open and page change.
+            onRender { player, menu ->
+                try {
+                    @Suppress("DEPRECATION")
+                    player.openInventory.setTitle(renderTitle(menu.getPage(player)))
+                } catch (_: Exception) {
+                    // setTitle unavailable on this server version
+                }
+            }
 
             setMask(
                 FillerMask(
