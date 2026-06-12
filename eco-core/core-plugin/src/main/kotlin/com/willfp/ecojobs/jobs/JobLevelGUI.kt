@@ -91,14 +91,9 @@ class JobLevelGUI(
 
             maxPages(totalPages)
 
-            // Per-player title so %page% / %max_page% resolve on open and page change.
             onRender { player, menu ->
-                try {
-                    @Suppress("DEPRECATION")
-                    player.openInventory.setTitle(renderTitle(menu.getPage(player)))
-                } catch (_: Exception) {
-                    // setTitle unavailable on this server version
-                }
+                @Suppress("DEPRECATION")
+                player.openInventory.setTitle(renderTitle(menu.getPage(player)))
             }
 
             setMask(

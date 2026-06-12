@@ -75,17 +75,12 @@ object JobsGUI {
                 )
             )
 
-            // Per-player title so %page% / %max_page% resolve correctly on open and page change.
             onRender { player, menu ->
                 val page = menu.getPage(player)
                 val maxPage = menu.getMaxPage(player).coerceAtLeast(1)
 
-                try {
-                    @Suppress("DEPRECATION")
-                    player.openInventory.setTitle(renderTitle(page, maxPage))
-                } catch (_: Exception) {
-                    // setTitle unavailable on this server version
-                }
+                @Suppress("DEPRECATION")
+                player.openInventory.setTitle(renderTitle(page, maxPage))
             }
 
             setSlot(
