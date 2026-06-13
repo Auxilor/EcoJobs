@@ -24,6 +24,10 @@ jobs:
 gui:
   rows: 6
 
+  # The title of the jobs menu.
+  # Supports %page% and %max_page% placeholders.
+  title: "Jobs &7(&f%page%&7/&f%max_page%&7)"
+
   mask:
     # The way the mask works is by having a list of materials
     # And then a pattern to use those materials.
@@ -111,18 +115,25 @@ gui:
       category: MASTER
 
   prev-page:
-    item: arrow
-    name: "&fPrevious Page"
+    item: arrow name:"&fPrevious Page"
+    item-inactive: gray_dye name:"&7Previous Page"
     location:
       row: 6
       column: 4
 
   next-page:
-    item: arrow
-    name: "&fNext Page"
+    item: arrow name:"&fNext Page"
+    item-inactive: gray_dye name:"&7Next Page"
     location:
       row: 6
       column: 6
+
+  page-change-sound:
+    enabled: true
+    sound: ui_button_click
+    pitch: 1
+    volume: 1
+    category: MASTER
 
   close:
     enabled: true
@@ -137,7 +148,11 @@ gui:
 
 level-gui:
   rows: 6
-  title: "%job%"
+
+  # The title of the job level menu.
+  # Supports %job%, %page% and %max_page% placeholders.
+  # Can be overridden per-job with the job's own 'title' option.
+  title: "%job% &7(&f%page%&7/&f%max_page%&7)"
 
   mask:
     # The way the mask works is by having a list of materials
@@ -175,18 +190,24 @@ level-gui:
     level-as-amount: true
 
     prev-page:
-      material: arrow
-      name: "&fPrevious Page"
+      item: arrow name:"&fPrevious Page"
       location:
         row: 6
         column: 4
 
     next-page:
-      material: arrow
-      name: "&fNext Page"
+      item: arrow name:"&fNext Page"
+      item-inactive: gray_dye name:"&7Next Page"
       location:
         row: 6
         column: 6
+
+    page-change-sound:
+      enabled: true
+      sound: ui_button_click
+      pitch: 1
+      volume: 1
+      category: MASTER
 
     close:
       enabled: true

@@ -1,5 +1,6 @@
 package com.willfp.ecojobs.jobs
 
+import com.willfp.eco.core.gui.addPageChanger
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
 import com.willfp.eco.core.gui.onLeftClick
@@ -47,6 +48,24 @@ object JobsGUI {
         menu = buildMenu()
     }
 
+    private fun pageButtonItem(basePath: String, state: String): ItemStack? {
+        val materialKey = if (state == "active") "item" else "item-inactive"
+
+        val itemString = plugin.configYml.getStringOrNull("$basePath.$materialKey")
+            ?: return null
+
+        val builder = ItemStackBuilder(Items.lookup(itemString))
+
+        // Deprecated: use the item/item-inactive keys to set the name instead
+        val name = plugin.configYml.getStringOrNull("$basePath.name-$state")
+            ?: plugin.configYml.getStringOrNull("$basePath.name")
+        if (name != null) {
+            builder.setDisplayName(name)
+        }
+
+        return builder.build()
+    }
+
     private fun buildMenu(): Menu {
         val jobIconBuilder = { player: Player, menu: Menu, index: Int ->
             val page = menu.getPage(player)
@@ -59,8 +78,10 @@ object JobsGUI {
             job?.getIcon(player) ?: ItemStack(Material.AIR)
         }
 
+        val pageChangeSound = PlayableSound.create(plugin.configYml.getSubsection("gui.page-change-sound"))
+
         return menu(plugin.configYml.getInt("gui.rows")) {
-            title = plugin.langYml.getString("menu.title")
+            title = plugin.configYml.getString("gui.title").formatEco()
 
             setMask(
                 FillerMask(
@@ -161,27 +182,27 @@ object JobsGUI {
                 })
             }
 
-            addComponent(
-                plugin.configYml.getInt("gui.prev-page.location.row"),
-                plugin.configYml.getInt("gui.prev-page.location.column"),
-                PageChanger(
-                    ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.prev-page.item")))
-                        .setDisplayName(plugin.configYml.getString("gui.prev-page.name"))
-                        .build(),
-                    PageChanger.Direction.BACKWARDS
+            pageButtonItem("gui.prev-page", "active")?.let { active ->
+                addPageChanger(
+                    PageChanger.Direction.BACKWARDS,
+                    active,
+                    pageButtonItem("gui.prev-page", "inactive"),
+                    pageChangeSound,
+                    plugin.configYml.getInt("gui.prev-page.location.row"),
+                    plugin.configYml.getInt("gui.prev-page.location.column")
                 )
-            )
+            }
 
-            addComponent(
-                plugin.configYml.getInt("gui.next-page.location.row"),
-                plugin.configYml.getInt("gui.next-page.location.column"),
-                PageChanger(
-                    ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.next-page.item")))
-                        .setDisplayName(plugin.configYml.getString("gui.next-page.name"))
-                        .build(),
-                    PageChanger.Direction.FORWARDS
+            pageButtonItem("gui.next-page", "active")?.let { active ->
+                addPageChanger(
+                    PageChanger.Direction.FORWARDS,
+                    active,
+                    pageButtonItem("gui.next-page", "inactive"),
+                    pageChangeSound,
+                    plugin.configYml.getInt("gui.next-page.location.row"),
+                    plugin.configYml.getInt("gui.next-page.location.column")
                 )
-            )
+            }
 
             maxPages { player ->
                 ceil(

@@ -1,6 +1,7 @@
 package com.willfp.ecojobs.jobs
 
 import com.willfp.eco.core.Prerequisite
+import com.willfp.eco.core.gui.addPageChanger
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
 import com.willfp.eco.core.gui.menu.MenuLayer
@@ -12,6 +13,7 @@ import com.willfp.eco.core.gui.slot.FillerMask
 import com.willfp.eco.core.gui.slot.MaskItems
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
+import com.willfp.eco.core.sound.PlayableSound
 import com.willfp.eco.util.NumberUtils
 import com.willfp.eco.util.formatEco
 import com.willfp.ecojobs.api.getJobLevel
@@ -76,10 +78,33 @@ class JobLevelGUI(
             }
         }
 
+        fun pageButtonItem(basePath: String, state: String): ItemStack? {
+            val itemKey = if (state == "active") "item" else "item-inactive"
+            val materialKey = if (state == "active") "material" else "material-inactive"
+
+            val itemString = plugin.configYml.getStringOrNull("$basePath.$itemKey")
+                ?: plugin.configYml.getStringOrNull("$basePath.$materialKey")
+                ?: return null
+
+            val builder = ItemStackBuilder(Items.lookup(itemString))
+
+            // Deprecated: use the item/item-inactive keys to set the name instead
+            val name = plugin.configYml.getStringOrNull("$basePath.name-$state")
+                ?: plugin.configYml.getStringOrNull("$basePath.name")
+            if (name != null) {
+                builder.setDisplayName(name)
+            }
+
+            return builder.build()
+        }
+
+        val pageChangeSound = PlayableSound.create(plugin.configYml.getSubsection("level-gui.progression-slots.page-change-sound"))
+
+        val baseTitle = (job.title ?: plugin.configYml.getString("level-gui.title"))
+            .replace("%job%", job.name)
+
         menu = menu(plugin.configYml.getInt("level-gui.rows")) {
-            title = (job.title ?: plugin.configYml.getString("leave-gui.title")
-                .replace("%job%", job.name))
-                .formatEco()
+            title = baseTitle.formatEco()
 
             maxPages(component.pages)
 
@@ -92,41 +117,44 @@ class JobLevelGUI(
 
             addComponent(1, 1, component)
 
-            // Instead of the page changer, this will show up when on the first page
+            val prevRow = plugin.configYml.getInt("level-gui.progression-slots.prev-page.location.row")
+            val prevColumn = plugin.configYml.getInt("level-gui.progression-slots.prev-page.location.column")
+            val nextRow = plugin.configYml.getInt("level-gui.progression-slots.next-page.location.row")
+            val nextColumn = plugin.configYml.getInt("level-gui.progression-slots.next-page.location.column")
+
             addComponent(
                 MenuLayer.LOWER,
-                plugin.configYml.getInt("level-gui.progression-slots.prev-page.location.row"),
-                plugin.configYml.getInt("level-gui.progression-slots.prev-page.location.column"),
+                prevRow,
+                prevColumn,
                 slot(
-                    ItemStackBuilder(Items.lookup(plugin.configYml.getString("level-gui.progression-slots.prev-page.material")))
-                        .setDisplayName(plugin.configYml.getString("level-gui.progression-slots.prev-page.name"))
-                        .build()
+                    pageButtonItem("level-gui.progression-slots.prev-page", "active")
+                        ?: ItemStackBuilder(Items.lookup("arrow")).build()
                 ) {
                     onLeftClick { player, _, _, _ -> JobsGUI.open(player) }
                 }
             )
 
-            addComponent(
-                plugin.configYml.getInt("level-gui.progression-slots.prev-page.location.row"),
-                plugin.configYml.getInt("level-gui.progression-slots.prev-page.location.column"),
-                PageChanger(
-                    ItemStackBuilder(Items.lookup(plugin.configYml.getString("level-gui.progression-slots.prev-page.material")))
-                        .setDisplayName(plugin.configYml.getString("level-gui.progression-slots.prev-page.name"))
-                        .build(),
-                    PageChanger.Direction.BACKWARDS
+            pageButtonItem("level-gui.progression-slots.prev-page", "active")?.let { active ->
+                addPageChanger(
+                    PageChanger.Direction.BACKWARDS,
+                    active,
+                    null,
+                    pageChangeSound,
+                    prevRow,
+                    prevColumn
                 )
-            )
+            }
 
-            addComponent(
-                plugin.configYml.getInt("level-gui.progression-slots.next-page.location.row"),
-                plugin.configYml.getInt("level-gui.progression-slots.next-page.location.column"),
-                PageChanger(
-                    ItemStackBuilder(Items.lookup(plugin.configYml.getString("level-gui.progression-slots.next-page.material")))
-                        .setDisplayName(plugin.configYml.getString("level-gui.progression-slots.next-page.name"))
-                        .build(),
-                    PageChanger.Direction.FORWARDS
+            pageButtonItem("level-gui.progression-slots.next-page", "active")?.let { active ->
+                addPageChanger(
+                    PageChanger.Direction.FORWARDS,
+                    active,
+                    pageButtonItem("level-gui.progression-slots.next-page", "inactive"),
+                    pageChangeSound,
+                    nextRow,
+                    nextColumn
                 )
-            )
+            }
 
             val closeEnabled = plugin.configYml.getBoolOrNull("level-gui.progression-slots.close.enabled") ?: true
             if (closeEnabled) {
