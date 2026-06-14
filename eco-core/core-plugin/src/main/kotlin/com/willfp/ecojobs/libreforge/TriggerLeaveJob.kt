@@ -10,9 +10,18 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 
 object TriggerLeaveJob : Trigger("leave_job") {
+    override val description = "Fires when the player leaves a job."
+
+    override val categories = setOf("player")
+
     override val parameters = setOf(
         TriggerParameter.PLAYER,
         TriggerParameter.LOCATION,
+        TriggerParameter.VALUE
+    )
+
+    override val parameterDescriptions = mapOf(
+        TriggerParameter.VALUE to "The player's level in the job they left"
     )
 
     @EventHandler(ignoreCancelled = true)

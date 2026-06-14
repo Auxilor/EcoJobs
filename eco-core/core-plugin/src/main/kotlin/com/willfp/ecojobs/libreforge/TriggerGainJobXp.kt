@@ -8,10 +8,19 @@ import com.willfp.libreforge.triggers.TriggerParameter
 import org.bukkit.event.EventHandler
 
 object TriggerGainJobXp : Trigger("gain_job_xp") {
+    override val description = "Fires when the player gains experience in a job."
+
+    override val categories = setOf("economy", "player")
+
     override val parameters = setOf(
         TriggerParameter.PLAYER,
         TriggerParameter.LOCATION,
-        TriggerParameter.EVENT
+        TriggerParameter.EVENT,
+        TriggerParameter.VALUE
+    )
+
+    override val parameterDescriptions = mapOf(
+        TriggerParameter.VALUE to "The amount of job experience gained"
     )
 
     @EventHandler(ignoreCancelled = true)
