@@ -17,7 +17,12 @@ object TriggerJoinJob : Trigger("join_job") {
     override val parameters = setOf(
         TriggerParameter.PLAYER,
         TriggerParameter.LOCATION,
-        TriggerParameter.EVENT
+        TriggerParameter.EVENT,
+        TriggerParameter.VALUE
+    )
+
+    override val parameterDescriptions = mapOf(
+        TriggerParameter.VALUE to "The player's level in the job they joined"
     )
 
     @EventHandler(ignoreCancelled = true)

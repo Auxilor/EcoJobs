@@ -15,7 +15,12 @@ object TriggerGainJobXp : Trigger("gain_job_xp") {
     override val parameters = setOf(
         TriggerParameter.PLAYER,
         TriggerParameter.LOCATION,
-        TriggerParameter.EVENT
+        TriggerParameter.EVENT,
+        TriggerParameter.VALUE
+    )
+
+    override val parameterDescriptions = mapOf(
+        TriggerParameter.VALUE to "The amount of job experience gained"
     )
 
     @EventHandler(ignoreCancelled = true)

@@ -17,6 +17,11 @@ object TriggerLeaveJob : Trigger("leave_job") {
     override val parameters = setOf(
         TriggerParameter.PLAYER,
         TriggerParameter.LOCATION,
+        TriggerParameter.VALUE
+    )
+
+    override val parameterDescriptions = mapOf(
+        TriggerParameter.VALUE to "The player's level in the job they left"
     )
 
     @EventHandler(ignoreCancelled = true)

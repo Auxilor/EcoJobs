@@ -15,7 +15,12 @@ object TriggerLevelUpJob : Trigger("level_up_job") {
     override val parameters = setOf(
         TriggerParameter.PLAYER,
         TriggerParameter.LOCATION,
-        TriggerParameter.EVENT
+        TriggerParameter.EVENT,
+        TriggerParameter.VALUE
+    )
+
+    override val parameterDescriptions = mapOf(
+        TriggerParameter.VALUE to "The new job level the player reached"
     )
 
     @EventHandler(ignoreCancelled = true)
