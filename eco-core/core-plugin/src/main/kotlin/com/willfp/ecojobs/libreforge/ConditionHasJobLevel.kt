@@ -32,7 +32,7 @@ object ConditionHasJobLevel : Condition<NoCompileData>("has_job_level") {
         require(
             "level",
             "You must specify the level!",
-            description = "The minimum level required in the job. Supports expressions.",
+            description = "The minimum level required in the job.",
             type = ArgType.EXPRESSION
         )
     }
