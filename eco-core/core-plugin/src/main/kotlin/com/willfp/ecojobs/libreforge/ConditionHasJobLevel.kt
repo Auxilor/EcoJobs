@@ -4,6 +4,7 @@ import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.jobs.Jobs
+import com.willfp.libreforge.ArgType
 import com.willfp.libreforge.Dispatcher
 import com.willfp.libreforge.NoCompileData
 import com.willfp.libreforge.ProvidedHolder
@@ -17,9 +18,23 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 
 object ConditionHasJobLevel : Condition<NoCompileData>("has_job_level") {
+    override val description = "Passes when the player's level in the specified job is at or above the given level."
+
+    override val categories = setOf("player")
+
     override val arguments = arguments {
-        require("job", "You must specify the job!")
-        require("level", "You must specify the level!")
+        require(
+            "job",
+            "You must specify the job!",
+            description = "The id of the job to check the player's level in.",
+            type = ArgType.STRING
+        )
+        require(
+            "level",
+            "You must specify the level!",
+            description = "The minimum level required in the job. Supports expressions.",
+            type = ArgType.EXPRESSION
+        )
     }
 
     override fun isMet(

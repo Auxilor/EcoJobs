@@ -8,6 +8,10 @@ import com.willfp.libreforge.triggers.TriggerParameter
 import org.bukkit.event.EventHandler
 
 object TriggerLevelUpJob : Trigger("level_up_job") {
+    override val description = "Fires when the player levels up in a job."
+
+    override val categories = setOf("player")
+
     override val parameters = setOf(
         TriggerParameter.PLAYER,
         TriggerParameter.LOCATION,
