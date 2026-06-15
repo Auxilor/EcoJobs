@@ -78,26 +78,6 @@ class JobLevelGUI(
             }
         }
 
-        fun pageButtonItem(basePath: String, state: String): ItemStack? {
-            val itemKey = if (state == "active") "item" else "item-inactive"
-            val materialKey = if (state == "active") "material" else "material-inactive"
-
-            val itemString = plugin.configYml.getStringOrNull("$basePath.$itemKey")
-                ?: plugin.configYml.getStringOrNull("$basePath.$materialKey")
-                ?: return null
-
-            val builder = ItemStackBuilder(Items.lookup(itemString))
-
-            // Deprecated: use the item/item-inactive keys to set the name instead
-            val name = plugin.configYml.getStringOrNull("$basePath.name-$state")
-                ?: plugin.configYml.getStringOrNull("$basePath.name")
-            if (name != null) {
-                builder.setDisplayName(name)
-            }
-
-            return builder.build()
-        }
-
         val pageChangeSound = PlayableSound.create(plugin.configYml.getSubsection("level-gui.progression-slots.page-change-sound"))
 
         val baseTitle = (job.title ?: plugin.configYml.getString("level-gui.title"))
@@ -117,44 +97,21 @@ class JobLevelGUI(
 
             addComponent(1, 1, component)
 
-            val prevRow = plugin.configYml.getInt("level-gui.progression-slots.prev-page.location.row")
-            val prevColumn = plugin.configYml.getInt("level-gui.progression-slots.prev-page.location.column")
-            val nextRow = plugin.configYml.getInt("level-gui.progression-slots.next-page.location.row")
-            val nextColumn = plugin.configYml.getInt("level-gui.progression-slots.next-page.location.column")
-
             addComponent(
                 MenuLayer.LOWER,
-                prevRow,
-                prevColumn,
+                plugin.configYml.getInt("level-gui.progression-slots.prev-page.location.row"),
+                plugin.configYml.getInt("level-gui.progression-slots.prev-page.location.column"),
                 slot(
-                    pageButtonItem("level-gui.progression-slots.prev-page", "active")
+                    plugin.configYml.getStringOrNull("level-gui.progression-slots.prev-page.item")
+                        ?.let { Items.lookup(it).item }
                         ?: ItemStackBuilder(Items.lookup("arrow")).build()
                 ) {
                     onLeftClick { player, _, _, _ -> JobsGUI.open(player) }
                 }
             )
 
-            pageButtonItem("level-gui.progression-slots.prev-page", "active")?.let { active ->
-                addPageChanger(
-                    PageChanger.Direction.BACKWARDS,
-                    active,
-                    null,
-                    pageChangeSound,
-                    prevRow,
-                    prevColumn
-                )
-            }
-
-            pageButtonItem("level-gui.progression-slots.next-page", "active")?.let { active ->
-                addPageChanger(
-                    PageChanger.Direction.FORWARDS,
-                    active,
-                    pageButtonItem("level-gui.progression-slots.next-page", "inactive"),
-                    pageChangeSound,
-                    nextRow,
-                    nextColumn
-                )
-            }
+            addPageChanger(plugin.configYml, "level-gui.progression-slots.prev-page", PageChanger.Direction.BACKWARDS, pageChangeSound)
+            addPageChanger(plugin.configYml, "level-gui.progression-slots.next-page", PageChanger.Direction.FORWARDS, pageChangeSound)
 
             val closeEnabled = plugin.configYml.getBoolOrNull("level-gui.progression-slots.close.enabled") ?: true
             if (closeEnabled) {

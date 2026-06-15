@@ -48,24 +48,6 @@ object JobsGUI {
         menu = buildMenu()
     }
 
-    private fun pageButtonItem(basePath: String, state: String): ItemStack? {
-        val materialKey = if (state == "active") "item" else "item-inactive"
-
-        val itemString = plugin.configYml.getStringOrNull("$basePath.$materialKey")
-            ?: return null
-
-        val builder = ItemStackBuilder(Items.lookup(itemString))
-
-        // Deprecated: use the item/item-inactive keys to set the name instead
-        val name = plugin.configYml.getStringOrNull("$basePath.name-$state")
-            ?: plugin.configYml.getStringOrNull("$basePath.name")
-        if (name != null) {
-            builder.setDisplayName(name)
-        }
-
-        return builder.build()
-    }
-
     private fun buildMenu(): Menu {
         val jobIconBuilder = { player: Player, menu: Menu, index: Int ->
             val page = menu.getPage(player)
@@ -182,27 +164,8 @@ object JobsGUI {
                 })
             }
 
-            pageButtonItem("gui.prev-page", "active")?.let { active ->
-                addPageChanger(
-                    PageChanger.Direction.BACKWARDS,
-                    active,
-                    pageButtonItem("gui.prev-page", "inactive"),
-                    pageChangeSound,
-                    plugin.configYml.getInt("gui.prev-page.location.row"),
-                    plugin.configYml.getInt("gui.prev-page.location.column")
-                )
-            }
-
-            pageButtonItem("gui.next-page", "active")?.let { active ->
-                addPageChanger(
-                    PageChanger.Direction.FORWARDS,
-                    active,
-                    pageButtonItem("gui.next-page", "inactive"),
-                    pageChangeSound,
-                    plugin.configYml.getInt("gui.next-page.location.row"),
-                    plugin.configYml.getInt("gui.next-page.location.column")
-                )
-            }
+            addPageChanger(plugin.configYml, "gui.prev-page", PageChanger.Direction.BACKWARDS, pageChangeSound)
+            addPageChanger(plugin.configYml, "gui.next-page", PageChanger.Direction.FORWARDS, pageChangeSound)
 
             maxPages { player ->
                 ceil(
