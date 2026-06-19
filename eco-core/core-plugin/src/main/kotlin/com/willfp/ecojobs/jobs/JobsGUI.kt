@@ -1,5 +1,6 @@
 package com.willfp.ecojobs.jobs
 
+import com.willfp.eco.core.gui.addPageChanger
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
 import com.willfp.eco.core.gui.onLeftClick
@@ -59,8 +60,10 @@ object JobsGUI {
             job?.getIcon(player) ?: ItemStack(Material.AIR)
         }
 
+        val pageChangeSound = PlayableSound.create(plugin.configYml.getSubsection("gui.page-change-sound"))
+
         return menu(plugin.configYml.getInt("gui.rows")) {
-            title = plugin.langYml.getString("menu.title")
+            title = plugin.configYml.getString("gui.title").formatEco()
 
             setMask(
                 FillerMask(
@@ -161,27 +164,8 @@ object JobsGUI {
                 })
             }
 
-            addComponent(
-                plugin.configYml.getInt("gui.prev-page.location.row"),
-                plugin.configYml.getInt("gui.prev-page.location.column"),
-                PageChanger(
-                    ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.prev-page.item")))
-                        .setDisplayName(plugin.configYml.getString("gui.prev-page.name"))
-                        .build(),
-                    PageChanger.Direction.BACKWARDS
-                )
-            )
-
-            addComponent(
-                plugin.configYml.getInt("gui.next-page.location.row"),
-                plugin.configYml.getInt("gui.next-page.location.column"),
-                PageChanger(
-                    ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.next-page.item")))
-                        .setDisplayName(plugin.configYml.getString("gui.next-page.name"))
-                        .build(),
-                    PageChanger.Direction.FORWARDS
-                )
-            )
+            addPageChanger(plugin.configYml, "gui.prev-page", PageChanger.Direction.BACKWARDS, pageChangeSound)
+            addPageChanger(plugin.configYml, "gui.next-page", PageChanger.Direction.FORWARDS, pageChangeSound)
 
             maxPages { player ->
                 ceil(
