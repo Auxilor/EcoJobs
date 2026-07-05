@@ -20,7 +20,7 @@ A **job** is a config file that earns players rewards for doing something, like 
 
 ## Naming and IDs
 
-The file name without `.yml` is the job ID, and it's what you use in commands, placeholders, and effects (so `miner.yml` is the job `miner`). The `icon` field uses the [Item Lookup System](https://plugins.auxilor.io/the-item-lookup-system) for its item syntax.
+The file name without `.yml` is the job ID, and it's what you use in commands, placeholders, and effects (so `miner.yml` is the job `miner`). The `icon` field uses the [Item Lookup System](https://hub.auxilor.io/wiki/eco/the-item-lookup-system-the-item-lookup-system) for its item syntax.
 
 :::warning ID rules
 IDs may only contain lowercase letters, numbers, and underscores (a-z, 0-9, _). No spaces, capitals, or hyphens, or the job will not load.
@@ -158,7 +158,7 @@ leave-price:
 ```
 
 :::info
-Prices are their own shared system, so `type` can be coins, XP levels, items, or anything else eco supports. See [Prices](https://plugins.auxilor.io/all-plugins/prices).
+Prices are their own shared system, so `type` can be coins, XP levels, items, or anything else eco supports. See [Prices](https://hub.auxilor.io/wiki/eco/the-price-lookup-system).
 :::
 
 ### Progression
@@ -168,7 +168,7 @@ Progression has two parts: how much XP each level needs, and how players earn th
 There are two ways to set the XP curve. Use a formula for infinite levels:
 
 ```yaml
-xp-formula: (2 ^ %level%) * 25 # XP per level, where %level% is the level being calculated; see https://plugins.auxilor.io/all-plugins/math
+xp-formula: (2 ^ %level%) * 25 # XP per level, where %level% is the level being calculated; see https://hub.auxilor.io/wiki/eco/math
 max-level: 100 # Optional; with no max-level, levelling is infinite
 ```
 
@@ -249,8 +249,8 @@ conditions: [] # Conditions required for the effects to run
 :::danger Effects are their own system
 Effects, conditions, filters, and triggers are a shared eco system with its own documentation, far larger than this page can cover.
 
-- [Configuring an Effect](https://plugins.auxilor.io/effects/configuring-an-effect)
-- [Configuring an Effect Chain](https://plugins.auxilor.io/effects/configuring-a-chain)
+- [Configuring an Effect](https://hub.auxilor.io/wiki/libreforge/configuring-an-effect)
+- [Configuring an Effect Chain](https://hub.auxilor.io/wiki/libreforge/configuring-a-chain)
 :::
 
 ## Internal placeholders
@@ -275,7 +275,7 @@ These placeholders are available inside a job config:
 
 ## Where to go next
 
-- **Effects and conditions:** [Configuring an Effect](https://plugins.auxilor.io/effects/configuring-an-effect) is the deep dive on the `effects` section.
+- **Effects and conditions:** [Configuring an Effect](https://hub.auxilor.io/wiki/libreforge/configuring-an-effect) is the deep dive on the `effects` section.
 - **Plugin config:** [Plugin Config](plugin-config) covers the GUIs, leaderboard, and storage.
 - **Commands:** [Commands and Permissions](commands-and-permissions) for unlocking, resetting, and granting jobs.
 - **More jobs:** browse community configs on [lrcdb](https://lrcdb.auxilor.io/), or the [default jobs](https://github.com/Auxilor/EcoJobs/tree/master/eco-core/core-plugin/src/main/resources/jobs).

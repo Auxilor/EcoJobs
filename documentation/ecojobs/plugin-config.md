@@ -152,7 +152,7 @@ gui:
       row: 6
       column: 5
 
-  # Custom GUI slots; see here for a how-to: https://plugins.auxilor.io/all-plugins/custom-gui-slots
+  # Custom GUI slots; see here for a how-to: https://hub.auxilor.io/wiki/eco/pages
   custom-slots: [ ]
 
 level-gui:
@@ -254,7 +254,7 @@ level-gui:
         - "&fRewards:"
         - "%rewards%"
 
-  # Custom GUI slots; see here for a how-to: https://plugins.auxilor.io/all-plugins/custom-gui-slots
+  # Custom GUI slots; see here for a how-to: https://hub.auxilor.io/wiki/eco/pages
   custom-slots: [ ]
 
 leave-gui:
@@ -301,7 +301,7 @@ leave-gui:
       row: 2
       column: 7
 
-  # Custom GUI slots; see here for a how-to: https://plugins.auxilor.io/all-plugins/custom-gui-slots
+  # Custom GUI slots; see here for a how-to: https://hub.auxilor.io/wiki/eco/pages
   custom-slots: [ ]
 
 level-up:
@@ -326,6 +326,6 @@ level-up:
 
 ## Where to go next
 
-- **Custom GUI slots:** the `custom-slots` options use the shared system at [Custom GUI Slots](https://plugins.auxilor.io/all-plugins/custom-gui-slots).
+- **Custom GUI slots:** the `custom-slots` options use the shared system at [Custom GUI Slots](https://hub.auxilor.io/wiki/eco/pages).
 - **Make a job:** [How to make a Job](how-to-make-a-custom-job) for the per-job config files.
 - **Commands:** [Commands and Permissions](commands-and-permissions) for reloading and managing jobs.
