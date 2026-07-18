@@ -36,7 +36,7 @@ private val expMultiplierCache = EcoCache.builder<Player, Double>().expireAfterW
 }
 
 val Player.jobExperienceMultiplier: Double
-    get() = expMultiplierCache.get(this)
+    get() = expMultiplierCache.get(this) { it.cacheJobExperienceMultiplier() }
 
 private fun Player.cacheJobExperienceMultiplier(): Double {
     if (this.hasPermission("ecojobs.xpmultiplier.quadruple")) {

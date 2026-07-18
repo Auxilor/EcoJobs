@@ -2,11 +2,22 @@ package com.willfp.ecojobs.libreforge
 
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.ecojobs.api.event.JobEvent
+import com.willfp.libreforge.ArgType
 import com.willfp.libreforge.NoCompileData
 import com.willfp.libreforge.filters.Filter
 import com.willfp.libreforge.triggers.TriggerData
 
 object FilterJob : Filter<NoCompileData, Collection<String>>("job") {
+    override val description = "Matches when the job involved in the triggering event is one of the given job ids."
+
+    override val categories = setOf("player")
+
+    override val valueType = ArgType.STRING_LIST
+
+    override val additionalInfo = listOf(
+        "Passes automatically when the trigger event is not related to a job."
+    )
+
     override fun getValue(config: Config, data: TriggerData?, key: String): Collection<String> {
         return config.getStrings(key)
     }

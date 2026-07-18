@@ -21,7 +21,7 @@ unlocked-by-default: true
 reset-on-quit: false
 
 # The price to join this job (set to 0 to disable)
-# Read here for more: https://plugins.auxilor.io/all-plugins/prices
+# Read here for more: https://hub.auxilor.io/wiki/eco/the-price-lookup-system
 join-price:
   value: 0
   type: coins
@@ -32,14 +32,14 @@ join-price:
 join-lore: []
 
 # A list of effects to run when the player joins the job.
-# Read https://plugins.auxilor.io/effects/configuring-an-effect
+# Read https://hub.auxilor.io/wiki/libreforge/configuring-an-effect
 join-effects:
   - id: broadcast
     args:
       message: "&8» &a%player% &8joined the &6Miner &8job!"
 
 # The price to leave this job (set to 0 to disable)
-# Read here for more: https://plugins.auxilor.io/all-plugins/prices
+# Read here for more: https://hub.auxilor.io/wiki/eco/the-price-lookup-system
 leave-price:
   value: 20000
   type: coins
@@ -51,7 +51,7 @@ leave-lore:
   - " &8» This will cost %leave_price%"
 
 # A list of effects to run when the player leaves the job.
-# Read https://plugins.auxilor.io/effects/configuring-an-effect
+# Read https://hub.auxilor.io/wiki/libreforge/configuring-an-effect
 leave-effects:
   - id: send_message
     args:
