@@ -3,12 +3,6 @@ title: "Plugin Config"
 sidebar_position: 5
 ---
 
-This is the main plugin config, `config.yml`, which lives at `/plugins/EcoJobs/config.yml`. It controls storage, the leaderboard, the job limit, and every GUI. Edit it, then run `/ecojobs reload` to apply your changes.
-
-:::warning
-The leaderboard `enabled` setting only takes effect after a full server restart, not a reload. A reload is enough for everything else.
-:::
-
 ## Default config.yml
 
 ```yaml
@@ -32,10 +26,6 @@ jobs:
 
 gui:
   rows: 6
-
-  # The title of the jobs menu.
-  # Supports %page% and %max_page% placeholders.
-  title: "Jobs &7(&f%page%&7/&f%max_page%&7)"
 
   mask:
     # The way the mask works is by having a list of materials
@@ -124,25 +114,18 @@ gui:
       category: MASTER
 
   prev-page:
-    item: arrow name:"&fPrevious Page"
-    item-inactive: gray_dye name:"&7Previous Page"
+    item: arrow
+    name: "&fPrevious Page"
     location:
       row: 6
       column: 4
 
   next-page:
-    item: arrow name:"&fNext Page"
-    item-inactive: gray_dye name:"&7Next Page"
+    item: arrow
+    name: "&fNext Page"
     location:
       row: 6
       column: 6
-
-  page-change-sound:
-    enabled: true
-    sound: ui_button_click
-    pitch: 1
-    volume: 1
-    category: MASTER
 
   close:
     enabled: true
@@ -152,16 +135,12 @@ gui:
       row: 6
       column: 5
 
-  # Custom GUI slots; see here for a how-to: https://hub.auxilor.io/wiki/eco/pages
+  # Custom GUI slots; see here for a how-to: https://plugins.auxilor.io/all-plugins/custom-gui-slots
   custom-slots: [ ]
 
 level-gui:
   rows: 6
-
-  # The title of the job level menu.
-  # Supports %job%, %page% and %max_page% placeholders.
-  # Can be overridden per-job with the job's own 'title' option.
-  title: "%job% &7(&f%page%&7/&f%max_page%&7)"
+  title: "%job%"
 
   mask:
     # The way the mask works is by having a list of materials
@@ -199,24 +178,18 @@ level-gui:
     level-as-amount: true
 
     prev-page:
-      item: arrow name:"&fPrevious Page"
+      material: arrow
+      name: "&fPrevious Page"
       location:
         row: 6
         column: 4
 
     next-page:
-      item: arrow name:"&fNext Page"
-      item-inactive: gray_dye name:"&7Next Page"
+      material: arrow
+      name: "&fNext Page"
       location:
         row: 6
         column: 6
-
-    page-change-sound:
-      enabled: true
-      sound: ui_button_click
-      pitch: 1
-      volume: 1
-      category: MASTER
 
     close:
       enabled: true
@@ -254,7 +227,7 @@ level-gui:
         - "&fRewards:"
         - "%rewards%"
 
-  # Custom GUI slots; see here for a how-to: https://hub.auxilor.io/wiki/eco/pages
+  # Custom GUI slots; see here for a how-to: https://plugins.auxilor.io/all-plugins/custom-gui-slots
   custom-slots: [ ]
 
 leave-gui:
@@ -301,7 +274,7 @@ leave-gui:
       row: 2
       column: 7
 
-  # Custom GUI slots; see here for a how-to: https://hub.auxilor.io/wiki/eco/pages
+  # Custom GUI slots; see here for a how-to: https://plugins.auxilor.io/all-plugins/custom-gui-slots
   custom-slots: [ ]
 
 level-up:
@@ -321,11 +294,3 @@ level-up:
     volume: 0.8
     category: PLAYER
 ```
-
-<hr/>
-
-## Where to go next
-
-- **Custom GUI slots:** the `custom-slots` options use the shared system at [Custom GUI Slots](https://hub.auxilor.io/wiki/eco/pages).
-- **Make a job:** [How to make a Job](how-to-make-a-custom-job) for the per-job config files.
-- **Commands:** [Commands and Permissions](commands-and-permissions) for reloading and managing jobs.

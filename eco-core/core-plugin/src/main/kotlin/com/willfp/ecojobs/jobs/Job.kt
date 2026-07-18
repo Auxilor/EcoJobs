@@ -1,6 +1,6 @@
 package com.willfp.ecojobs.jobs
 
-import com.github.benmanes.caffeine.cache.Caffeine
+import com.willfp.eco.core.cache.EcoCache
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.core.data.keys.PersistentDataKey
 import com.willfp.eco.core.data.keys.PersistentDataKeyType
@@ -91,10 +91,10 @@ class Job(
     private val effects: EffectList
     private val conditions: ConditionList
 
-    private val levels = Caffeine.newBuilder().build<Int, JobLevel>()
-    private val effectsDescription = Caffeine.newBuilder().build<Int, List<String>>()
-    private val rewardsDescription = Caffeine.newBuilder().build<Int, List<String>>()
-    private val levelUpMessages = Caffeine.newBuilder().build<Int, List<String>>()
+    private val levels = EcoCache.builder<Int, JobLevel>().build()
+    private val effectsDescription = EcoCache.builder<Int, List<String>>().build()
+    private val rewardsDescription = EcoCache.builder<Int, List<String>>().build()
+    private val levelUpMessages = EcoCache.builder<Int, List<String>>().build()
 
     private val levelPlaceholders = config.getSubsections("level-placeholders").map { sub ->
         LevelPlaceholder(

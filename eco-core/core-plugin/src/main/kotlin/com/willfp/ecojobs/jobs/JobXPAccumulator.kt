@@ -1,6 +1,6 @@
 package com.willfp.ecojobs.jobs
 
-import com.github.benmanes.caffeine.cache.Caffeine
+import com.willfp.eco.core.cache.EcoCache
 import com.willfp.eco.core.integrations.afk.AFKManager
 import com.willfp.ecojobs.api.giveJobExperience
 import com.willfp.ecojobs.api.hasJobActive
@@ -8,8 +8,8 @@ import com.willfp.ecojobs.plugin
 import com.willfp.libreforge.counters.Accumulator
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
-import java.util.concurrent.TimeUnit
 import kotlin.math.max
+import java.time.Duration
 
 class JobXPAccumulator(
     private val job: Job
@@ -31,12 +31,12 @@ class JobXPAccumulator(
     }
 }
 
-private val expMultiplierCache = Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS).build<Player, Double> {
+private val expMultiplierCache = EcoCache.builder<Player, Double>().expireAfterWrite(Duration.ofSeconds(10)).build {
     it.cacheJobExperienceMultiplier()
 }
 
 val Player.jobExperienceMultiplier: Double
-    get() = expMultiplierCache.get(this)
+    get() = expMultiplierCache.get(this) { it.cacheJobExperienceMultiplier() }
 
 private fun Player.cacheJobExperienceMultiplier(): Double {
     if (this.hasPermission("ecojobs.xpmultiplier.quadruple")) {

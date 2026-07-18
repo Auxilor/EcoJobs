@@ -3,8 +3,6 @@ title: "Commands and Permissions"
 sidebar_position: 4
 ---
 
-These are every command and permission EcoJobs ships with. Use them to open the jobs GUI, join or leave jobs, and manage player progress as an admin.
-
 | Command                                   | Description                                          | Permission               |
 |-------------------------------------------|------------------------------------------------------|--------------------------|
 | `/ecojobs reload`                         | Reloads the plugin                                   | `ecojobs.command.reload` |
@@ -17,7 +15,7 @@ These are every command and permission EcoJobs ships with. Use them to open the 
 | `/ecojobs import <id>`                    | Import a job from [lrcdb](https://lrcdb.auxilor.io/) | `ecojobs.command.import` |
 | `/ecojobs export <id>`                    | Export a job to [lrcdb](https://lrcdb.auxilor.io/)   | `ecojobs.command.export` |
 
-### Additional permissions
+### Additional Permissions
 
 | Permission                         | Description                                                                                         |
 |------------------------------------|-----------------------------------------------------------------------------------------------------|
@@ -27,11 +25,3 @@ These are every command and permission EcoJobs ships with. Use them to open the 
 | `ecojobs.xpmultiplier.double`      | Gives double job XP (2x multiplier)                                                                 |
 | `ecojobs.xpmultiplier.triple`      | Gives triple job XP (3x multiplier)                                                                 |
 | `ecojobs.xpmultiplier.quadruple`   | Gives quadruple job XP (4x multiplier)                                                              |
-
-<hr/>
-
-## Where to go next
-
-- **Make a job:** [How to make a Job](how-to-make-a-custom-job) to create the jobs these commands act on.
-- **Plugin config:** [Plugin Config](plugin-config) to set the default job limit and GUIs.
-- **Placeholders:** [PlaceholderAPI](placeholderapi) to display job data elsewhere on your server.
