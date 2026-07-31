@@ -24,7 +24,8 @@ object EffectGiveJobXp : Effect<NoCompileData>("give_job_xp") {
             "amount",
             "You must specify the amount of xp to give!",
             description = "The amount of job experience to give to the player.",
-            type = ArgType.EXPRESSION
+            type = ArgType.EXPRESSION,
+            example = "%level% * 10"
         )
         require(
             "job",
