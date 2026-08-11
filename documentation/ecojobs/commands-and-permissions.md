@@ -1,6 +1,6 @@
 ---
 title: "Commands and Permissions"
-sidebar_position: 4
+sidebar_position: 3
 ---
 
 | Command                                   | Description                                          | Permission               |
