@@ -4,7 +4,6 @@ import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.placeholder.RegistrablePlaceholder
 import com.willfp.eco.core.placeholder.context.PlaceholderContext
 import com.willfp.eco.util.savedDisplayName
-import com.willfp.ecojobs.jobs.JobsLeaderboard.getTop
 import java.util.regex.Pattern
 
 object EcoJobsJobTopPlaceholder : RegistrablePlaceholder {
@@ -28,8 +27,8 @@ object EcoJobsJobTopPlaceholder : RegistrablePlaceholder {
         val job = Jobs.getByID(jobId) ?: return null
 
         return when (type) {
-            "name" -> job.getTop(place)?.player?.savedDisplayName ?: emptyPosition
-            "level", "amount" -> job.getTop(place)?.level?.toString() ?: emptyPosition
+            "name" -> job.leaderboard?.getTop(place)?.player?.savedDisplayName ?: emptyPosition
+            "level", "amount" -> job.leaderboard?.getTop(place)?.value?.toInt()?.toString() ?: emptyPosition
             else -> null
         }
     }

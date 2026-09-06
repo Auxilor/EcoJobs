@@ -2,6 +2,7 @@ package com.willfp.ecojobs
 
 import com.willfp.eco.core.bstats.EcoMetricsChart
 import com.willfp.eco.core.command.impl.PluginCommand
+import com.willfp.eco.core.leaderboard.Leaderboards
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.getJobLevel
@@ -91,6 +92,16 @@ class EcoJobsPlugin : LibreforgePlugin() {
     }
 
     override fun handleReload() {
+        // Config categories are loaded in an onReload(START) task, so every Job already exists
+        // by the time this runs: unregister first, then re-register from the live jobs.
+        Leaderboards.unregisterAll(this)
+
+        for (job in Jobs.values()) {
+            job.registerLeaderboard()
+        }
+
+        Jobs.registerTally()
+
         JobsGUI.update()
     }
 

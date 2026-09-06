@@ -13,8 +13,8 @@ leaderboard:
   # Please note that it will require a full server restart to take into effect
   enabled: true
 
-  # Time in seconds for the lifetime of the leaderboard cache
-  cache-lifetime: 60
+  # The leaderboard is refreshed by eco, on the schedule set by the
+  # leaderboards: section of eco's own config.yml.
 
 jobs:
   limit: 3 # The most jobs a player can have at once.
