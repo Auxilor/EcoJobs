@@ -34,6 +34,7 @@ import com.willfp.libreforge.registerSpecificHolderProvider
 import com.willfp.libreforge.triggers.Triggers
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
+import com.willfp.eco.util.formatEco
 
 internal lateinit var plugin: EcoJobsPlugin
     private set
@@ -71,7 +72,7 @@ class EcoJobsPlugin : LibreforgePlugin() {
             // placeholder is read, so a job added or renamed in a config needs nothing here.
             registerCategoryTopPlaceholders(
                 this,
-                this.langYml.getString("top.empty-position"),
+                this.langYml.getString("top.empty-position").formatEco(),
                 listOf("level", "amount")
             ) { Jobs.getByID(it)?.leaderboard }
         }

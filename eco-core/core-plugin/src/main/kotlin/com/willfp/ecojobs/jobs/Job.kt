@@ -236,7 +236,7 @@ class Job(
         board.registerStandardPlaceholders(
             plugin,
             "${id}_leaderboard",
-            plugin.langYml.getString("top.empty-position")
+            plugin.langYml.getString("top.empty-position").formatEco()
         ) {
             it.toInt().toString()
         }
@@ -337,7 +337,7 @@ class Job(
                 .replace(
                     "%rank%",
                     leaderboard?.getPosition(player.uniqueId)?.toString()
-                        ?: plugin.langYml.getString("top.empty-position")
+                        ?: plugin.langYml.getString("top.empty-position").formatEco()
                 )
 
             val level = forceLevel ?: player.getJobLevel(this)
