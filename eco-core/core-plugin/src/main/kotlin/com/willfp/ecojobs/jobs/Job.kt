@@ -10,6 +10,7 @@ import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.eco.core.placeholder.PlayerStaticPlaceholder
 import com.willfp.eco.core.placeholder.PlayerlessPlaceholder
 import com.willfp.eco.core.placeholder.context.placeholderContext
+import com.willfp.eco.core.progression.ProgressionPlaceholders
 import com.willfp.eco.core.price.ConfiguredPrice
 import com.willfp.eco.core.price.impl.PriceEconomy
 import com.willfp.eco.core.progression.LevelCurve
@@ -317,13 +318,13 @@ class Job(
 
     fun injectPlaceholdersInto(lore: List<String>, player: Player, forceLevel: Int? = null): List<String> {
         val withPlaceholders = lore.map { line ->
-            var result = line
+            val level = forceLevel ?: player.getJobLevel(this)
+
+            val result = line
                 .replace("%percentage_progress%", (player.getJobProgress(this) * 100).toNiceString())
                 .replace("%current_xp%", player.getJobXP(this).toNiceString())
                 .replace("%required_xp%", this.getFormattedExpForLevel(player.getJobLevel(this) + 1))
                 .replace("%description%", this.description).replace("%job%", this.name)
-                .replace("%level%", (forceLevel ?: player.getJobLevel(this)).toString())
-                .replace("%level_numeral%", NumberUtils.toNumeral(forceLevel ?: player.getJobLevel(this)))
                 .replace("%join_price%", this.joinPrice.getDisplay(player))
                 .replace("%leave_price%", this.leavePrice.getDisplay(player))
                 .replace(
@@ -331,19 +332,10 @@ class Job(
                     getPosition(player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position")
                 )
 
-            val level = forceLevel ?: player.getJobLevel(this)
-            val regex = Regex("%level_(-?\\d+)(_numeral)?%")
-
-            // Handle dynamic %level_X% and %level_X_numeral%
-            result = regex.replace(result) { match ->
-                val offset = match.groupValues[1].toIntOrNull() ?: return@replace match.value
-                val isNumeral = match.groupValues[2].isNotEmpty()
-                val newLevel = level + offset
-
-                if (isNumeral) newLevel.toNumeral() else newLevel.toString()
-            }
-
-            result
+            // %level%, %level_numeral%, %previous_level%, %previous_level_numeral% and the
+            // %level_N% / %level_N_numeral% offsets, resolved by the shared helper in eco so a
+            // lore line and an effect chain can never disagree about what %level_2% means.
+            ProgressionPlaceholders.inject(result, "level", level)
         }.toMutableList()
 
         val processed = mutableListOf<List<String>>()
