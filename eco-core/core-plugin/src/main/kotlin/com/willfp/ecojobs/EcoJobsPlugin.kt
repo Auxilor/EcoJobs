@@ -3,13 +3,13 @@ package com.willfp.ecojobs
 import com.willfp.eco.core.bstats.EcoMetricsChart
 import com.willfp.eco.core.command.impl.PluginCommand
 import com.willfp.eco.core.leaderboard.Leaderboards
+import com.willfp.eco.core.leaderboard.registerCategoryTopPlaceholders
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.api.jobLimit
 import com.willfp.ecojobs.commands.CommandEcoJobs
 import com.willfp.ecojobs.commands.CommandJobs
-import com.willfp.ecojobs.jobs.EcoJobsJobTopPlaceholder
 import com.willfp.ecojobs.jobs.JobLevelListener
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.jobs.JobsGUI
@@ -66,8 +66,15 @@ class EcoJobsPlugin : LibreforgePlugin() {
             }
         }
 
-        if (this.configYml.getBool("leaderboard.enabled"))
-            EcoJobsJobTopPlaceholder.register()
+        if (this.configYml.getBool("leaderboard.enabled")) {
+            // Registered once for every job at once: the lookup resolves the ID when the
+            // placeholder is read, so a job added or renamed in a config needs nothing here.
+            registerCategoryTopPlaceholders(
+                this,
+                this.langYml.getString("top.empty-position"),
+                listOf("level", "amount")
+            ) { Jobs.getByID(it)?.leaderboard }
+        }
 
         PlayerPlaceholder(
             this,
