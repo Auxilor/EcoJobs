@@ -263,6 +263,21 @@ level-up-effects:
       require: "%level% = 5" # Requires level 5 before receiving rewards
 ```
 
+#### Placeholders in `level-up-effects`
+
+These resolve inside the chain, and describe the level-up that just happened. The chain runs
+once per level gained, so an XP grant large enough to cross several levels runs it once for
+each level rather than once for the whole grant.
+
+| Placeholder | Resolves to |
+| --- | --- |
+| `%level%` | The level just reached. |
+| `%level_numeral%` | The level just reached, as a Roman numeral. |
+| `%previous_level%` | The level before this one, i.e. `%level%` minus 1. |
+| `%previous_level_numeral%` | The previous level, as a Roman numeral. |
+
+To react to a job level-up from an effect somewhere else, use the `level_up_job` trigger instead.
+
 ### The Effects Section
 :::danger Effects Section
 
