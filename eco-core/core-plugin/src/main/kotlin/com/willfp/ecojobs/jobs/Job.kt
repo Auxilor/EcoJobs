@@ -1,6 +1,5 @@
 package com.willfp.ecojobs.jobs
 
-import com.willfp.eco.core.Eco
 import com.willfp.eco.core.cache.EcoCache
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.core.data.keys.PersistentDataKey
@@ -218,32 +217,27 @@ class Job(
      * would be undone by the Leaderboards.unregisterAll that happens there.
      */
     internal fun registerLeaderboard() {
-        val emptyPosition = plugin.langYml.getString("top.empty-position")
-
+        // Nothing at all is registered when disabled -- no leaderboard, and no placeholders. The
+        // stub rank placeholder is deliberately gone: every plugin now leaves its placeholders
+        // unregistered when its leaderboard is off, rather than three of them disagreeing.
         if (!plugin.configYml.getBool("leaderboard.enabled")) {
             leaderboard = null
-
-            // Registered even when disabled, resolving to the empty position, exactly as it did
-            // when the leaderboard cache returned nothing.
-            PlayerPlaceholder(
-                plugin, "${id}_leaderboard_rank"
-            ) {
-                emptyPosition
-            }.register()
-
             return
         }
 
-        val board = Leaderboards.register(plugin, "${id}_leaderboard") { uuids ->
-            val levels = Eco.get().readAllProfileValues(uuids, levelKey)
-            val default = levelKey.defaultValue
-
-            uuids.associateWith { (levels[it] ?: default).toDouble() }
-        }
+        // Ranked by the level key directly: eco reads every ranked key on the server in one
+        // batched query and updates the values in memory as they are written, neither of which it
+        // can do through an opaque provider. Players at or below the key's default have not
+        // joined or levelled the job and are left unranked.
+        val board = Leaderboards.ofKey(plugin, "${id}_leaderboard", levelKey)
 
         leaderboard = board
 
-        board.registerStandardPlaceholders(plugin, "${id}_leaderboard", emptyPosition) {
+        board.registerStandardPlaceholders(
+            plugin,
+            "${id}_leaderboard",
+            plugin.langYml.getString("top.empty-position")
+        ) {
             it.toInt().toString()
         }
     }
