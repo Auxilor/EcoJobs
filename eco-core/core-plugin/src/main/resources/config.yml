@@ -16,6 +16,9 @@ leaderboard:
   # Time in seconds for the lifetime of the leaderboard cache
   cache-lifetime: 60
 
+# XP only applies to jobs a player has actually joined. Granting XP for a job a player has
+# not joined - through the give_job_xp effect or the API - does nothing and logs a warning;
+# it does not silently unlock the job.
 jobs:
   limit: 3 # The most jobs a player can have at once.
   # You can set custom limits with the ecojobs.limit.<number> permission

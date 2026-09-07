@@ -12,6 +12,8 @@ import com.willfp.eco.core.placeholder.PlayerlessPlaceholder
 import com.willfp.eco.core.placeholder.context.placeholderContext
 import com.willfp.eco.core.price.ConfiguredPrice
 import com.willfp.eco.core.price.impl.PriceEconomy
+import com.willfp.eco.core.progression.LevelCurve
+import com.willfp.eco.core.progression.LevelCurves
 import com.willfp.eco.core.registry.Registrable
 import com.willfp.eco.util.NumberUtils
 import com.willfp.eco.util.NumberUtils.evaluateExpression
@@ -38,7 +40,6 @@ import com.willfp.libreforge.effects.Effects
 import com.willfp.libreforge.effects.executors.impl.NormalExecutorFactory
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
-import org.bukkit.configuration.InvalidConfigurationException
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.Objects
@@ -76,11 +77,36 @@ class Job(
         plugin.namespacedKeyFactory.create("${id}_xp"), PersistentDataKeyType.DOUBLE, 0.0
     )
 
-    private val xpFormula = config.getStringOrNull("xp-formula")
+    private val parsedCurve = LevelCurves.parse(
+        config.getStringOrNull("xp-formula"),
+        config.getDoublesOrNull("level-xp-requirements"),
+        config.getIntOrNull("max-level"),
+        startLevel = 0,
+        // The `listOf(0) + ...` padding this replaces is preserved, not removed. joinJob adds
+        // the job to the player's active list without setting a level, so a joined player
+        // sits at level 0 and relies on the free 0 -> 1 transition. Dropping it would break
+        // the join flow for every job that is not unlocked by default. The auto-unlock defect
+        // it enabled is fixed by the ownership guard in EcoJobsAPI.kt instead.
+        freeFirstLevel = true
+    ) { expression, level ->
+        evaluateExpression(expression, placeholderContext(injectable = LevelInjectable(level - 1)))
+    }
 
-    private val levelXpRequirements = listOf(0) + config.getInts("level-xp-requirements")
+    val curve: LevelCurve = parsedCurve.curve
 
-    val maxLevel = config.getIntOrNull("max-level") ?: levelXpRequirements.size
+    val maxLevel: Int
+        get() = curve.maxLevel
+
+    private val warnedBrokenCurveLevels = mutableSetOf<Int>()
+
+    /**
+     * Log a broken-curve warning once per level, rather than on every XP gain that hits it.
+     */
+    fun warnBrokenCurveOnce(level: Int) {
+        if (warnedBrokenCurveLevels.add(level)) {
+            plugin.logger.warning("Job $id: xp requirement for level $level is not usable - progression stopped there")
+        }
+    }
 
     val levelGUI = JobLevelGUI(this)
 
@@ -111,8 +137,9 @@ class Job(
     }
 
     init {
-        if (xpFormula == null && levelXpRequirements == null) {
-            throw InvalidConfigurationException("Skill $id has no requirements or xp formula")
+        // Logged once at load, not per XP gain: a broken curve recurs on every grant.
+        for (problem in parsedCurve.problems) {
+            plugin.logger.warning("Job $id: ${problem.path} - ${problem.message}")
         }
 
         config.injectPlaceholders(
@@ -379,24 +406,14 @@ class Job(
     }
 
     /**
-     * Get the XP required to reach the next level, if currently at [level].
+     * Get the XP required to reach [level].
+     *
+     * Semantic change from the previous implementation: [level] == 1 now returns
+     * POSITIVE_INFINITY rather than 0.0, because the free 0 -> 1 transition is handled by
+     * [LevelCurve.freeLevel] via LevelProgression.progress rather than being priced as zero.
+     * Every other level is unchanged.
      */
-    fun getExpForLevel(level: Int): Double {
-        if (level !in 1..maxLevel) {
-            return Double.POSITIVE_INFINITY
-        }
-
-        if (xpFormula != null) {
-            return evaluateExpression(
-                xpFormula,
-                placeholderContext(
-                    injectable = LevelInjectable(level - 1)
-                )
-            )
-        }
-
-        return levelXpRequirements[level - 1].toDouble()
-    }
+    fun getExpForLevel(level: Int): Double = curve.xpToReach(level)
 
     fun getFormattedExpForLevel(level: Int): String {
         val required = getExpForLevel(level)
