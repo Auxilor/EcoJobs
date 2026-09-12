@@ -6,6 +6,9 @@ import com.willfp.eco.core.data.keys.PersistentDataKey
 import com.willfp.eco.core.data.keys.PersistentDataKeyType
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
+import com.willfp.eco.core.leaderboard.Leaderboard
+import com.willfp.eco.core.leaderboard.Leaderboards
+import com.willfp.eco.core.leaderboard.registerStandardPlaceholders
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.eco.core.placeholder.PlayerStaticPlaceholder
 import com.willfp.eco.core.placeholder.PlayerlessPlaceholder
@@ -26,7 +29,6 @@ import com.willfp.ecojobs.api.getJobXP
 import com.willfp.ecojobs.api.getJobXPRequired
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.jobLimit
-import com.willfp.ecojobs.jobs.JobsLeaderboard.getPosition
 import com.willfp.ecojobs.plugin
 import com.willfp.ecojobs.util.LevelInjectable
 import com.willfp.libreforge.ViolationContext
@@ -36,7 +38,6 @@ import com.willfp.libreforge.counters.Counters
 import com.willfp.libreforge.effects.EffectList
 import com.willfp.libreforge.effects.Effects
 import com.willfp.libreforge.effects.executors.impl.NormalExecutorFactory
-import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.configuration.InvalidConfigurationException
 import org.bukkit.entity.Player
@@ -177,15 +178,9 @@ class Job(
         PlayerPlaceholder(
             plugin, "${id}_total_players"
         ) {
-            Bukkit.getOfflinePlayers().count { this in it.activeJobs }.toString()
-        }.register()
-
-        PlayerPlaceholder(
-            plugin, "${id}_leaderboard_rank"
-        ) { player ->
-            val emptyPosition = plugin.langYml.getString("top.empty-position")
-            val position = getPosition(player.uniqueId)
-            position?.toString() ?: emptyPosition
+            // Backed by the plugin-wide tally, refreshed on eco's leaderboard cycle, rather
+            // than by scanning the entire playerbase on every read.
+            (Jobs.tally?.getCount(id) ?: 0).toString()
         }.register()
     }
 
@@ -206,6 +201,46 @@ class Job(
         NormalExecutorFactory.create(),
         ViolationContext(plugin, "Job $id leave-effects")
     )
+
+    /**
+     * The leaderboard ranking players by their level in this job, or null if leaderboards are
+     * disabled in the config.
+     */
+    var leaderboard: Leaderboard? = null
+        private set
+
+    /**
+     * Register the leaderboard and its placeholders.
+     *
+     * Called from [com.willfp.ecojobs.EcoJobsPlugin.handleReload] rather than from the
+     * constructor: config categories are loaded before handleReload runs, so registering here
+     * would be undone by the Leaderboards.unregisterAll that happens there.
+     */
+    internal fun registerLeaderboard() {
+        // Nothing at all is registered when disabled -- no leaderboard, and no placeholders. The
+        // stub rank placeholder is deliberately gone: every plugin now leaves its placeholders
+        // unregistered when its leaderboard is off, rather than three of them disagreeing.
+        if (!plugin.configYml.getBool("leaderboard.enabled")) {
+            leaderboard = null
+            return
+        }
+
+        // Ranked by the level key directly: eco reads every ranked key on the server in one
+        // batched query and updates the values in memory as they are written, neither of which it
+        // can do through an opaque provider. Players at or below the key's default have not
+        // joined or levelled the job and are left unranked.
+        val board = Leaderboards.ofKey(plugin, "${id}_leaderboard", levelKey)
+
+        leaderboard = board
+
+        board.registerStandardPlaceholders(
+            plugin,
+            "${id}_leaderboard",
+            plugin.langYml.getString("top.empty-position").formatEco()
+        ) {
+            it.toInt().toString()
+        }
+    }
 
     override fun onRegister() {
         jobXpGains.forEach { it.bind(JobXPAccumulator(this)) }
@@ -301,7 +336,8 @@ class Job(
                 .replace("%leave_price%", this.leavePrice.getDisplay(player))
                 .replace(
                     "%rank%",
-                    getPosition(player.uniqueId)?.toString() ?: plugin.langYml.getString("top.empty-position")
+                    leaderboard?.getPosition(player.uniqueId)?.toString()
+                        ?: plugin.langYml.getString("top.empty-position").formatEco()
                 )
 
             val level = forceLevel ?: player.getJobLevel(this)

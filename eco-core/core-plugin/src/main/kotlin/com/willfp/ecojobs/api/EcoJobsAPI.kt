@@ -25,11 +25,11 @@ The old key is around for backwards compatibility with 1.x.x.
 
  */
 
-private val legacyActiveJobKey: PersistentDataKey<String> = PersistentDataKey(
+internal val legacyActiveJobKey: PersistentDataKey<String> = PersistentDataKey(
     plugin.namespacedKeyFactory.create("active_job"), PersistentDataKeyType.STRING, ""
 )
 
-private val activeJobsKey: PersistentDataKey<List<String>> = PersistentDataKey(
+internal val activeJobsKey: PersistentDataKey<List<String>> = PersistentDataKey(
     plugin.namespacedKeyFactory.create("active_jobs"), PersistentDataKeyType.STRING_LIST, listOf()
 )
 

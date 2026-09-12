@@ -2,13 +2,14 @@ package com.willfp.ecojobs
 
 import com.willfp.eco.core.bstats.EcoMetricsChart
 import com.willfp.eco.core.command.impl.PluginCommand
+import com.willfp.eco.core.leaderboard.Leaderboards
+import com.willfp.eco.core.leaderboard.registerCategoryTopPlaceholders
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.api.jobLimit
 import com.willfp.ecojobs.commands.CommandEcoJobs
 import com.willfp.ecojobs.commands.CommandJobs
-import com.willfp.ecojobs.jobs.EcoJobsJobTopPlaceholder
 import com.willfp.ecojobs.jobs.JobLevelListener
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.jobs.JobsGUI
@@ -33,6 +34,7 @@ import com.willfp.libreforge.registerSpecificHolderProvider
 import com.willfp.libreforge.triggers.Triggers
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
+import com.willfp.eco.util.formatEco
 
 internal lateinit var plugin: EcoJobsPlugin
     private set
@@ -65,8 +67,15 @@ class EcoJobsPlugin : LibreforgePlugin() {
             }
         }
 
-        if (this.configYml.getBool("leaderboard.enabled"))
-            EcoJobsJobTopPlaceholder.register()
+        if (this.configYml.getBool("leaderboard.enabled")) {
+            // Registered once for every job at once: the lookup resolves the ID when the
+            // placeholder is read, so a job added or renamed in a config needs nothing here.
+            registerCategoryTopPlaceholders(
+                this,
+                this.langYml.getString("top.empty-position").formatEco(),
+                listOf("level", "amount")
+            ) { Jobs.getByID(it)?.leaderboard }
+        }
 
         PlayerPlaceholder(
             this,
@@ -91,6 +100,16 @@ class EcoJobsPlugin : LibreforgePlugin() {
     }
 
     override fun handleReload() {
+        // Config categories are loaded in an onReload(START) task, so every Job already exists
+        // by the time this runs: unregister first, then re-register from the live jobs.
+        Leaderboards.unregisterAll(this)
+
+        for (job in Jobs.values()) {
+            job.registerLeaderboard()
+        }
+
+        Jobs.registerTally()
+
         JobsGUI.update()
     }
 
