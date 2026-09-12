@@ -11,7 +11,8 @@ import com.willfp.libreforge.triggers.TriggerData
 import com.willfp.libreforge.triggers.TriggerParameter
 
 object EffectGiveJobXp : Effect<NoCompileData>("give_job_xp") {
-    override val description = "Gives the player experience in the specified job."
+    override val description = "Gives the player experience in the specified job. " +
+        "Does nothing if the player has not joined the job."
 
     override val categories = setOf("economy", "player")
 
@@ -38,6 +39,8 @@ object EffectGiveJobXp : Effect<NoCompileData>("give_job_xp") {
     override fun onTrigger(config: Config, data: TriggerData, compileData: NoCompileData): Boolean {
         val player = data.player ?: return false
 
+        // giveJobExperience already guards on the player having joined the job - do not add a
+        // second check here.
         player.giveJobExperience(
             Jobs.getByID(config.getString("job")) ?: return false,
             config.getDoubleFromExpression("amount", player)
