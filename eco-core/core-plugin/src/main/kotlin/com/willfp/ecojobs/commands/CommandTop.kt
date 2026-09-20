@@ -1,11 +1,11 @@
 package com.willfp.ecojobs.commands
 
 import com.willfp.eco.core.command.impl.Subcommand
+import com.willfp.eco.core.leaderboard.Leaderboards
 import com.willfp.eco.core.placeholder.context.placeholderContext
 import com.willfp.eco.util.formatEco
 import com.willfp.eco.util.savedDisplayName
 import com.willfp.ecojobs.jobs.Jobs
-import com.willfp.ecojobs.jobs.JobsLeaderboard.getTop
 import com.willfp.ecojobs.plugin
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -36,7 +36,7 @@ object CommandTop : Subcommand(
             val offset = (page - 1) * 10
             val positions = (offset + 1..offset + 10).toList()
 
-            val top = positions.mapNotNull { job.getTop(it) }
+            val top = positions.mapNotNull { job.leaderboard?.getTop(it) }
 
             val messages = plugin.langYml.getStrings("top.format").toMutableList()
             val lines = mutableListOf<String>()
@@ -44,12 +44,18 @@ object CommandTop : Subcommand(
             top.forEachIndexed { index, entry ->
                 val line = plugin.langYml.getString("top-line-format")
                     .replace("%rank%", (offset + index + 1).toString())
-                    .replace("%level%", entry.level.toString())
+                    .replace("%level%", entry.value.toInt().toString())
                     .replace("%player%", entry.player.savedDisplayName)
                 lines.add(line)
             }
 
-            val linesIndex = messages.indexOf("%lines%")
+            // An empty leaderboard still shows its header and footer, with the universal
+        // "no records" message standing in for the entries.
+        if (lines.isEmpty()) {
+            lines.add(Leaderboards.getNoRecordsMessage(plugin))
+        }
+
+        val linesIndex = messages.indexOf("%lines%")
             if (linesIndex != -1) {
                 messages.removeAt(linesIndex)
                 messages.addAll(linesIndex, lines)
