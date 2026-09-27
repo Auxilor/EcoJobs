@@ -5,6 +5,8 @@ package com.willfp.ecojobs.api
 import com.willfp.eco.core.data.keys.PersistentDataKey
 import com.willfp.eco.core.data.keys.PersistentDataKeyType
 import com.willfp.eco.core.data.profile
+import com.willfp.eco.core.progression.LevelProgression
+import com.willfp.eco.core.progression.StopReason
 import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
 import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
 import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
@@ -17,7 +19,6 @@ import com.willfp.ecojobs.plugin
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
-import kotlin.math.abs
 
 /*
 
@@ -144,20 +145,48 @@ fun OfflinePlayer.getJobXPRequired(job: Job) = job.getFormattedExpForLevel(this.
  * Get progress to next level between 0 and 1, where 0 is none and 1 is complete.
  */
 fun OfflinePlayer.getJobProgress(job: Job): Double {
-    val currentXP = this.getJobXP(job)
-    val requiredXP = job.getExpForLevel(this.getJobLevel(job) + 1)
-    return currentXP / requiredXP
+    val level = this.getJobLevel(job)
+
+    return LevelProgression.progressFraction(
+        this.getJobXP(job),
+        job.curve.xpToReach(level + 1),
+        level >= job.maxLevel
+    )
+}
+
+/**
+ * Reject an XP amount that cannot be granted.
+ *
+ * Deliberately not `abs()`: wrapping a negative amount in abs() turned a misconfigured effect
+ * expression into a silent *gain*, which is the worst of both worlds - the mistake is hidden
+ * and its effect is inverted.
+ */
+private fun validateXpAmount(amount: Double, context: String): Boolean {
+    if (!amount.isFinite() || amount <= 0.0) {
+        plugin.logger.warning("Refused a non-positive xp grant of $amount for $context")
+        return false
+    }
+
+    return true
 }
 
 /**
  * Give job experience.
+ *
+ * XP only applies to a job the player has actually joined; see the config comment above the
+ * `jobs` section for the decision this implements.
  */
 @JvmOverloads
 fun Player.giveJobExperience(job: Job, experience: Double, withMultipliers: Boolean = true) {
-    val exp = abs(
-        if (withMultipliers) experience * this.jobExperienceMultiplier
-        else experience
-    )
+    if (!this.hasJobActive(job)) {
+        return
+    }
+
+    val exp = if (withMultipliers) experience * this.jobExperienceMultiplier else experience
+
+    if (!validateXpAmount(exp, "job ${job.id}")) {
+        return
+    }
 
     val gainEvent = PlayerJobExpGainEvent(this, job, exp, !withMultipliers)
     Bukkit.getPluginManager().callEvent(gainEvent)
@@ -171,20 +200,35 @@ fun Player.giveJobExperience(job: Job, experience: Double, withMultipliers: Bool
 
 /**
  * Give exact job experience, without calling PlayerJobExpGainEvent.
+ *
+ * Guarded the same as [giveJobExperience]: this function's documented purpose is to skip the
+ * gain event, and it is reachable directly from commands and the API.
  */
 fun Player.giveExactJobExperience(job: Job, experience: Double) {
-    val level = this.getJobLevel(job)
+    if (!this.hasJobActive(job)) {
+        return
+    }
 
-    val progress = this.getJobXP(job) + experience
+    if (!validateXpAmount(experience, "job ${job.id}")) {
+        return
+    }
 
-    if (progress >= job.getExpForLevel(level + 1) && level + 1 <= job.maxLevel) {
-        val overshoot = progress - job.getExpForLevel(level + 1)
-        this.setJobXP(job, 0.0)
-        this.setJobLevel(job, level + 1)
-        val levelUpEvent = PlayerJobLevelUpEvent(this, job, level + 1)
-        Bukkit.getPluginManager().callEvent(levelUpEvent)
-        this.giveExactJobExperience(job, overshoot)
-    } else {
-        this.setJobXP(job, progress)
+    val startLevel = this.getJobLevel(job)
+    val change = LevelProgression.progress(job.curve, startLevel, this.getJobXP(job), experience)
+
+    if (change.stopReason == StopReason.INVALID_REQUIREMENT) {
+        job.warnBrokenCurveOnce(startLevel + 1)
+    }
+
+    this.setJobXP(job, change.newXp)
+
+    val gained = change.levelsGained ?: return
+
+    this.setJobLevel(job, change.newLevel)
+
+    // One event per level crossed: a single grant spanning five levels must not swallow four
+    // of the level-up rewards.
+    for (level in gained) {
+        Bukkit.getPluginManager().callEvent(PlayerJobLevelUpEvent(this, job, level))
     }
 }
