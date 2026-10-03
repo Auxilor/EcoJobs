@@ -62,9 +62,10 @@ class EcoJobsPlugin : LibreforgePlugin() {
         Filters.register(FilterJob)
 
         registerSpecificHolderProvider<Player> { player ->
-            player.activeJobs.map { it.getLevel(player.getJobLevel(it)) }.map {
-                SimpleProvidedHolder(it)
-            }
+            if (isDisabledIn(player.world)) emptyList() else
+                player.activeJobs.map { it.getLevel(player.getJobLevel(it)) }.map {
+                    SimpleProvidedHolder(it)
+                }
         }
 
         if (this.configYml.getBool("leaderboard.enabled")) {

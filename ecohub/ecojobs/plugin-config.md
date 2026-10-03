@@ -19,6 +19,9 @@ leaderboard:
   # Time in seconds for the lifetime of the leaderboard cache
   cache-lifetime: 60
 
+# Worlds that EcoJobs should be disabled in
+disabled-in-worlds: []
+
 jobs:
   limit: 3 # The most jobs a player can have at once.
   # You can set custom limits with the ecojobs.limit.<number> permission
