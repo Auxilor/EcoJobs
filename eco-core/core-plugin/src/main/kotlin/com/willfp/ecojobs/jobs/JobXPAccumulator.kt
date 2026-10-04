@@ -15,6 +15,10 @@ class JobXPAccumulator(
     private val job: Job
 ) : Accumulator {
     override fun accept(player: Player, count: Double) {
+        if (plugin.isDisabledIn(player.world)) {
+            return
+        }
+
         if (!player.hasJobActive(job)) {
             return
         }

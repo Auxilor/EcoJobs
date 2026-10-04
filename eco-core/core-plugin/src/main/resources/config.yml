@@ -16,6 +16,9 @@ leaderboard:
   # The leaderboard is refreshed by eco, on the schedule set by the
   # leaderboards: section of eco's own config.yml.
 
+# Worlds that EcoJobs should be disabled in
+disabled-in-worlds: []
+
 # XP only applies to jobs a player has actually joined. Granting XP for a job a player has
 # not joined - through the give_job_xp effect or the API - does nothing and logs a warning;
 # it does not silently unlock the job.
