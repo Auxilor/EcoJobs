@@ -67,6 +67,12 @@ gui:
     row: 1
     column: 5
 
+    # Set to false to hide the player info icon.
+    enabled: true
+
+    # The item to show, as an item lookup. %player% is the player viewing the menu.
+    icon: player_head head:%player%
+
     name: "&r%player%&f's Jobs:"
 
     no-jobs:
