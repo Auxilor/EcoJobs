@@ -12,7 +12,6 @@ import com.willfp.eco.core.gui.slot.FillerMask
 import com.willfp.eco.core.gui.slot.MaskItems
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
-import com.willfp.eco.core.items.builder.SkullBuilder
 import com.willfp.eco.core.sound.PlayableSound
 import com.willfp.eco.util.formatEco
 import com.willfp.ecojobs.api.activeJobs
@@ -25,7 +24,6 @@ import com.willfp.ecojobs.plugin
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.SkullMeta
 import kotlin.math.ceil
 
 object JobsGUI {
@@ -72,25 +70,18 @@ object JobsGUI {
                 )
             )
 
-            setSlot(
-                plugin.configYml.getInt("gui.player-info.row"),
-                plugin.configYml.getInt("gui.player-info.column"),
-                slot { player, _ ->
-                    @Suppress("DEPRECATION")
-                    val skullBuilder = SkullBuilder()
-                        .setDisplayName(
-                            plugin.configYml.getString("gui.player-info.name")
-                                .replace("%player%", player.displayName)
-                                .formatEco(player, true)
-                        )
+            if (plugin.configYml.getBoolOrNull("gui.player-info.enabled") ?: true) {
+                setSlot(
+                    plugin.configYml.getInt("gui.player-info.row"),
+                    plugin.configYml.getInt("gui.player-info.column"),
+                    slot { player, _ ->
+                        val name = plugin.configYml.getString("gui.player-info.name")
+                            .replace("%player%", player.displayName)
+                            .formatEco(player, true)
 
-                    if (player.activeJobs.isEmpty()) {
-                        skullBuilder.addLoreLines(
+                        val lore = if (player.activeJobs.isEmpty()) {
                             plugin.configYml.getStrings("gui.player-info.no-jobs")
-                                .formatEco(player, true)
-                        )
-                    } else {
-                        skullBuilder.addLoreLines(
+                        } else {
                             plugin.configYml.getStrings("gui.player-info.has-jobs")
                                 .flatMap {
                                     if (it == "%jobs%") {
@@ -104,18 +95,20 @@ object JobsGUI {
                                         listOf(it)
                                     }
                                 }
-                                .formatEco(player, true)
+                        }.formatEco(player, true)
+
+                        ItemStackBuilder(
+                            Items.lookup(
+                                plugin.configYml.getString("gui.player-info.icon")
+                                    .replace("%player%", player.name)
+                            )
                         )
+                            .setDisplayName(name)
+                            .addLoreLines(lore)
+                            .build()
                     }
-
-                    val skull = skullBuilder.build()
-
-                    val meta = skull.itemMeta as SkullMeta
-                    meta.owningPlayer = player
-                    skull.itemMeta = meta
-                    skull
-                }
-            )
+                )
+            }
 
             for ((index, pair) in jobAreaSlots.withIndex()) {
                 val (row, column) = pair
