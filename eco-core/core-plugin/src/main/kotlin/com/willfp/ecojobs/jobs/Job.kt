@@ -45,6 +45,7 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.Objects
+import java.util.concurrent.ConcurrentHashMap
 
 class Job(
     val id: String,
@@ -99,7 +100,7 @@ class Job(
     val maxLevel: Int
         get() = curve.maxLevel
 
-    private val warnedBrokenCurveLevels = mutableSetOf<Int>()
+    private val warnedBrokenCurveLevels = ConcurrentHashMap.newKeySet<Int>()
 
     /**
      * Log a broken-curve warning once per level, rather than on every XP gain that hits it.
@@ -234,6 +235,7 @@ class Job(
      * The leaderboard ranking players by their level in this job, or null if leaderboards are
      * disabled in the config.
      */
+    @Volatile
     var leaderboard: Leaderboard? = null
         private set
 

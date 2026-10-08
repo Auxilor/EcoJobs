@@ -8,6 +8,7 @@ import com.willfp.ecojobs.api.hasJob
 import com.willfp.ecojobs.api.resetJob
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.plugin
+import com.willfp.ecojobs.runOwned
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.util.StringUtil
@@ -35,10 +36,12 @@ object CommandReset : Subcommand(
         // Reset all jobs for all players
         if (playerName.equals("all", ignoreCase = true) && jobName.equals("all", ignoreCase = true)) {
             Bukkit.getOnlinePlayers().forEach { player ->
-                Jobs.values().forEach { job ->
-                    if (player.hasJob(job)) {
-                        player.forceLeaveJob(job)
-                        player.resetJob(job)
+                player.runOwned {
+                    Jobs.values().forEach { job ->
+                        if (player.hasJob(job)) {
+                            player.forceLeaveJob(job)
+                            player.resetJob(job)
+                        }
                     }
                 }
             }
@@ -55,9 +58,11 @@ object CommandReset : Subcommand(
             }
 
             Bukkit.getOnlinePlayers().forEach { player ->
-                if (player.hasJob(job)) {
-                    player.forceLeaveJob(job)
-                    player.resetJob(job)
+                player.runOwned {
+                    if (player.hasJob(job)) {
+                        player.forceLeaveJob(job)
+                        player.resetJob(job)
+                    }
                 }
             }
 
@@ -76,17 +81,19 @@ object CommandReset : Subcommand(
         }
 
         if (jobName.equals("all", ignoreCase = true)) {
-            Jobs.values().forEach { job ->
-                if (player.hasJob(job)) {
-                    player.forceLeaveJob(job)
-                    player.resetJob(job)
+            player.runOwned {
+                Jobs.values().forEach { job ->
+                    if (player.hasJob(job)) {
+                        player.forceLeaveJob(job)
+                        player.resetJob(job)
+                    }
                 }
-            }
 
-            sender.sendMessage(
-                plugin.langYml.getMessage("reset-all-jobs")
-                    .replace("%player%", player.savedDisplayName)
-            )
+                sender.sendMessage(
+                    plugin.langYml.getMessage("reset-all-jobs")
+                        .replace("%player%", player.savedDisplayName)
+                )
+            }
             return
         }
 
@@ -102,14 +109,16 @@ object CommandReset : Subcommand(
             return
         }
 
-        player.forceLeaveJob(job)
-        player.resetJob(job)
+        player.runOwned {
+            player.forceLeaveJob(job)
+            player.resetJob(job)
 
-        sender.sendMessage(
-            plugin.langYml.getMessage("reset-xp", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
-                .replace("%player%", player.savedDisplayName)
-                .replace("%job%", job.name)
-        )
+            sender.sendMessage(
+                plugin.langYml.getMessage("reset-xp", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
+                    .replace("%player%", player.savedDisplayName)
+                    .replace("%job%", job.name)
+            )
+        }
     }
 
     override fun tabComplete(sender: CommandSender, args: List<String>): List<String> {

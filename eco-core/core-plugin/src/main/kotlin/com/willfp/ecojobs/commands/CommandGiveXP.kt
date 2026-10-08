@@ -8,6 +8,7 @@ import com.willfp.ecojobs.api.giveExactJobExperience
 import com.willfp.ecojobs.api.hasJob
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.plugin
+import com.willfp.ecojobs.runOwned
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 
@@ -61,17 +62,19 @@ object CommandGiveXP : Subcommand(
             return
         }
 
-        player.giveExactJobExperience(
-            job,
-            amount
-        )
+        player.runOwned {
+            player.giveExactJobExperience(
+                job,
+                amount
+            )
 
-        sender.sendMessage(
-            plugin.langYml.getMessage("gave-xp", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
-                .replace("%player%", player.savedDisplayName)
-                .replace("%xp%", amount.toNiceString())
-                .replace("%job%", job.name)
-        )
+            sender.sendMessage(
+                plugin.langYml.getMessage("gave-xp", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
+                    .replace("%player%", player.savedDisplayName)
+                    .replace("%xp%", amount.toNiceString())
+                    .replace("%job%", job.name)
+            )
+        }
     }
 
     override fun tabComplete(sender: CommandSender, args: List<String>): List<String> {

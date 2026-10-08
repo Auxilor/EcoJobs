@@ -27,8 +27,11 @@ import org.bukkit.inventory.ItemStack
 import kotlin.math.ceil
 
 object JobsGUI {
+    @Volatile
     private lateinit var menu: Menu
-    private val jobAreaSlots = mutableListOf<Pair<Int, Int>>()
+
+    @Volatile
+    private var jobAreaSlots = emptyList<Pair<Int, Int>>()
 
     internal fun update() {
         val topLeftRow = plugin.configYml.getInt("gui.job-area.top-left.row")
@@ -36,11 +39,8 @@ object JobsGUI {
         val bottomRightRow = plugin.configYml.getInt("gui.job-area.bottom-right.row")
         val bottomRightColumn = plugin.configYml.getInt("gui.job-area.bottom-right.column")
 
-        jobAreaSlots.clear()
-        for (row in topLeftRow..bottomRightRow) {
-            for (column in topLeftColumn..bottomRightColumn) {
-                jobAreaSlots.add(Pair(row, column))
-            }
+        jobAreaSlots = (topLeftRow..bottomRightRow).flatMap { row ->
+            (topLeftColumn..bottomRightColumn).map { column -> Pair(row, column) }
         }
 
         menu = buildMenu()
