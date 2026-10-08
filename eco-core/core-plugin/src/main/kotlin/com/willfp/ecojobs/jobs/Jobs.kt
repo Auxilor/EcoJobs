@@ -41,6 +41,7 @@ object Jobs : ConfigCategory("job", "jobs") {
     /**
      * The tally counting how many players have each job active, keyed by job ID.
      */
+    @Volatile
     var tally: PlayerbaseTally? = null
         private set
 

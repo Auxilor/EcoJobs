@@ -5,9 +5,12 @@ import com.willfp.eco.util.StringUtils
 import com.willfp.eco.util.savedDisplayName
 import com.willfp.ecojobs.api.hasJob
 import com.willfp.ecojobs.api.setJobLevel
+import com.willfp.ecojobs.jobs.Job
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.plugin
+import com.willfp.ecojobs.runOwned
 import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.util.StringUtil
 
@@ -50,6 +53,10 @@ object CommandUnlock : Subcommand(
             return
         }
 
+        player.player?.runOwned { unlock(sender, player, job) } ?: unlock(sender, player, job)
+    }
+
+    private fun unlock(sender: CommandSender, player: OfflinePlayer, job: Job) {
         player.setJobLevel(job, 1)
         sender.sendMessage(
             plugin.langYml.getMessage("unlocked-job", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
