@@ -130,9 +130,12 @@ fun OfflinePlayer.setJobXP(job: Job, xp: Double) = this.profile.write(job.xpKey,
 
 /**
  * Reset a job.
+ *
+ * With [relock], a job that is not unlocked by default goes back to locked.
  */
-fun OfflinePlayer.resetJob(job: Job) {
-    this.setJobLevel(job, 1)
+@JvmOverloads
+fun OfflinePlayer.resetJob(job: Job, relock: Boolean = true) {
+    this.setJobLevel(job, if (relock && !job.isUnlockedByDefault) 0 else 1)
     this.setJobXP(job, 0.0)
 }
 
