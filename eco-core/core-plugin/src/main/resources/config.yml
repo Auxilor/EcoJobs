@@ -26,6 +26,7 @@ jobs:
   limit: 3 # The most jobs a player can have at once.
   # You can set custom limits with the ecojobs.limit.<number> permission
   prevent-levelling-while-afk: true # If the player is AFK then don't give xp
+  reset-on-quit-relocks: false # If reset-on-quit puts a job that is not unlocked by default back to locked
 
 gui:
   rows: 6
