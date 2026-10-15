@@ -1,15 +1,18 @@
 package com.willfp.ecojobs.commands
 
 import com.willfp.eco.core.command.impl.Subcommand
+import com.willfp.eco.core.data.forEachSavedProfile
 import com.willfp.eco.util.StringUtils
 import com.willfp.eco.util.savedDisplayName
 import com.willfp.ecojobs.api.forceLeaveJob
 import com.willfp.ecojobs.api.hasJob
 import com.willfp.ecojobs.api.resetJob
+import com.willfp.ecojobs.jobs.Job
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.plugin
 import com.willfp.ecojobs.runOwned
 import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.util.StringUtil
 
@@ -35,17 +38,7 @@ object CommandReset : Subcommand(
 
         // Reset all jobs for all players
         if (playerName.equals("all", ignoreCase = true) && jobName.equals("all", ignoreCase = true)) {
-            Bukkit.getOnlinePlayers().forEach { player ->
-                player.runOwned {
-                    Jobs.values().forEach { job ->
-                        if (player.hasJob(job)) {
-                            player.forceLeaveJob(job)
-                            player.resetJob(job)
-                        }
-                    }
-                }
-            }
-            sender.sendMessage(plugin.langYml.getMessage("reset-all-players-all-jobs"))
+            resetAllPlayers(sender, Jobs.values(), plugin.langYml.getMessage("reset-all-players-all-jobs"))
             return
         }
 
@@ -57,18 +50,10 @@ object CommandReset : Subcommand(
                 return
             }
 
-            Bukkit.getOnlinePlayers().forEach { player ->
-                player.runOwned {
-                    if (player.hasJob(job)) {
-                        player.forceLeaveJob(job)
-                        player.resetJob(job)
-                    }
-                }
-            }
-
-            sender.sendMessage(
-                plugin.langYml.getMessage("reset-all-players")
-                    .replace("%job%", job.name)
+            resetAllPlayers(
+                sender,
+                listOf(job),
+                plugin.langYml.getMessage("reset-all-players").replace("%job%", job.name)
             )
             return
         }
@@ -82,12 +67,7 @@ object CommandReset : Subcommand(
 
         if (jobName.equals("all", ignoreCase = true)) {
             player.runOwned {
-                Jobs.values().forEach { job ->
-                    if (player.hasJob(job)) {
-                        player.forceLeaveJob(job)
-                        player.resetJob(job)
-                    }
-                }
+                resetJobs(player, Jobs.values())
 
                 sender.sendMessage(
                     plugin.langYml.getMessage("reset-all-jobs")
@@ -118,6 +98,25 @@ object CommandReset : Subcommand(
                     .replace("%player%", player.savedDisplayName)
                     .replace("%job%", job.name)
             )
+        }
+    }
+
+    private fun resetAllPlayers(sender: CommandSender, jobs: Collection<Job>, message: String) {
+        forEachSavedProfile(plugin) { uuid ->
+            val player = Bukkit.getOfflinePlayer(uuid)
+
+            player.player?.runOwned { resetJobs(player, jobs) } ?: resetJobs(player, jobs)
+        }.thenRun {
+            plugin.scheduler.global().run { sender.sendMessage(message) }
+        }
+    }
+
+    private fun resetJobs(player: OfflinePlayer, jobs: Collection<Job>) {
+        for (job in jobs) {
+            if (player.hasJob(job)) {
+                player.forceLeaveJob(job)
+                player.resetJob(job)
+            }
         }
     }
 
