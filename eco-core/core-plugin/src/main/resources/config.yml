@@ -108,6 +108,11 @@ gui:
 
     # %join_price% and %leave_price% are also available as placeholders
 
+    # The click that opens the leave menu on an active job: left, right, shift-left or shift-right.
+    # The other plain click opens the level progression. Bedrock (Geyser) players cannot right-click in menus.
+    # Change the hint in active-lore to match.
+    leave-click: right
+
     active-lore:
       - ""
       - "&eClick to view Level Progression!"
