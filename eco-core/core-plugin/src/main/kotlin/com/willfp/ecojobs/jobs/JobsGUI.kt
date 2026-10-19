@@ -2,6 +2,8 @@ package com.willfp.ecojobs.jobs
 
 import com.willfp.eco.core.gui.addCustomSlots
 import com.willfp.eco.core.gui.addPageChanger
+import com.willfp.eco.core.gui.component.addComponent
+import com.willfp.eco.core.gui.component.closeButton
 import com.willfp.eco.core.gui.getSlotLocations
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
@@ -21,10 +23,10 @@ import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.joinJob
 import com.willfp.ecojobs.jobs.Jobs.unlockedJobs
 import com.willfp.ecojobs.plugin
+import kotlin.math.ceil
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import kotlin.math.ceil
 
 object JobsGUI {
     @Volatile
@@ -164,22 +166,7 @@ object JobsGUI {
                         .size.toDouble() / jobAreaSlots.size).toInt()
             }
 
-            val closeEnabled = plugin.configYml.getBoolOrNull("gui.close.enabled") ?: true
-            if (closeEnabled) {
-                for (location in plugin.configYml.getSlotLocations("gui.close")) {
-                    setSlot(
-                        location.row,
-                        location.column,
-                        slot(
-                            ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.close.item")))
-                                .setDisplayName(plugin.configYml.getString("gui.close.name"))
-                                .build()
-                        ) {
-                            onLeftClick { event, _ -> event.whoClicked.closeInventory() }
-                        }
-                    )
-                }
-            }
+            addComponent(closeButton(plugin.configYml.getSubsection("gui.close")))
 
             addCustomSlots(plugin.configYml, "gui")
         }
