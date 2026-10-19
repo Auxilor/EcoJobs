@@ -4,12 +4,16 @@ import com.willfp.eco.core.bstats.EcoMetricsChart
 import com.willfp.eco.core.command.impl.PluginCommand
 import com.willfp.eco.core.leaderboard.Leaderboards
 import com.willfp.eco.core.leaderboard.registerCategoryTopPlaceholders
+import com.willfp.eco.core.placeholder.PlayerDynamicPlaceholder
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.ecojobs.api.activeJobs
+import com.willfp.ecojobs.api.getActiveJobs
 import com.willfp.ecojobs.api.getJobLevel
+import com.willfp.ecojobs.api.getJobLimit
 import com.willfp.ecojobs.api.jobLimit
 import com.willfp.ecojobs.commands.CommandEcoJobs
 import com.willfp.ecojobs.commands.CommandJobs
+import com.willfp.ecojobs.jobs.JobCategories
 import com.willfp.ecojobs.jobs.JobLevelListener
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.jobs.JobsGUI
@@ -32,6 +36,7 @@ import com.willfp.libreforge.loader.LibreforgePlugin
 import com.willfp.libreforge.loader.configs.ConfigCategory
 import com.willfp.libreforge.registerSpecificHolderProvider
 import com.willfp.libreforge.triggers.Triggers
+import java.util.regex.Pattern
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import com.willfp.eco.util.formatEco
@@ -46,6 +51,7 @@ class EcoJobsPlugin : LibreforgePlugin() {
 
     override fun loadConfigCategories(): List<ConfigCategory> {
         return listOf(
+            JobCategories,
             Jobs
         )
     }
@@ -86,7 +92,15 @@ class EcoJobsPlugin : LibreforgePlugin() {
         PlayerPlaceholder(
             this,
             "in_jobs"
-        ) { it.activeJobs.size.toString() }.register()
+        ) { it.getActiveJobs(null).size.toString() }.register()
+
+        PlayerDynamicPlaceholder(this, Pattern.compile("limit_.+")) { args, player ->
+            JobCategories.getByID(args.removePrefix("limit_"))?.let { player.getJobLimit(it).toString() }
+        }.register()
+
+        PlayerDynamicPlaceholder(this, Pattern.compile("in_jobs_.+")) { args, player ->
+            JobCategories.getByID(args.removePrefix("in_jobs_"))?.let { player.getActiveJobs(it).size.toString() }
+        }.register()
 
         PlayerPlaceholder(
             this,

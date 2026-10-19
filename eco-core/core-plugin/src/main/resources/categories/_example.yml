@@ -1,0 +1,23 @@
+# The ID of the category is the name of the .yml file,
+# for example classes.yml has the ID of classes
+# You can place categories anywhere in this folder,
+# including in subfolders if you want to organize your category configs
+# _example.yml is not loaded.
+
+# Jobs join a category with category: <id> in their own config.
+# Jobs with no category stay in /jobs and count towards jobs.limit in config.yml.
+
+# The display name of the category
+name: "&6Classes"
+
+# The most jobs in this category a player can have active at once
+# You can set custom limits with the ecojobs.limit.<category>.<number> permission
+limit: 1
+
+# (Optional) A command that opens this category's jobs GUI, for example /classes
+command: classes
+
+# (Optional) Replaces sections of the gui section in config.yml for this category's GUI
+# Each key replaces the whole matching section, so copy the full section you want to change
+gui:
+  title: "Classes &7(&f%page%&7/&f%max_page%&7)"

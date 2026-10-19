@@ -15,12 +15,11 @@ import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.core.sound.PlayableSound
 import com.willfp.eco.util.formatEco
-import com.willfp.ecojobs.api.activeJobs
+import com.willfp.ecojobs.api.getActiveJobs
 import com.willfp.ecojobs.api.canJoinJob
-import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.joinJob
-import com.willfp.ecojobs.jobs.Jobs.unlockedJobs
+import com.willfp.ecojobs.jobs.Jobs.getUnlockedJobs
 import com.willfp.ecojobs.plugin
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -31,27 +30,36 @@ object JobsGUI {
     @Volatile
     private lateinit var menu: Menu
 
-    @Volatile
-    private var jobAreaSlots = emptyList<Pair<Int, Int>>()
-
     internal fun update() {
-        val topLeftRow = plugin.configYml.getInt("gui.job-area.top-left.row")
-        val topLeftColumn = plugin.configYml.getInt("gui.job-area.top-left.column")
-        val bottomRightRow = plugin.configYml.getInt("gui.job-area.bottom-right.row")
-        val bottomRightColumn = plugin.configYml.getInt("gui.job-area.bottom-right.column")
+        menu = buildMenu(null)
+    }
 
-        jobAreaSlots = (topLeftRow..bottomRightRow).flatMap { row ->
+    /**
+     * Build the jobs menu for the jobs in [category], or for the jobs with no category when null.
+     *
+     * Keys in the category's own `gui` section replace the matching keys of the main `gui` section.
+     */
+    internal fun buildMenu(category: JobCategory?): Menu {
+        val gui = plugin.configYml.getSubsection("gui").clone().apply {
+            val overrides = category?.config?.getSubsectionOrNull("gui") ?: return@apply
+            for (key in overrides.getKeys(false)) {
+                set(key, overrides.get(key))
+            }
+        }
+
+        val topLeftRow = gui.getInt("job-area.top-left.row")
+        val topLeftColumn = gui.getInt("job-area.top-left.column")
+        val bottomRightRow = gui.getInt("job-area.bottom-right.row")
+        val bottomRightColumn = gui.getInt("job-area.bottom-right.column")
+
+        val jobAreaSlots = (topLeftRow..bottomRightRow).flatMap { row ->
             (topLeftColumn..bottomRightColumn).map { column -> Pair(row, column) }
         }
 
-        menu = buildMenu()
-    }
-
-    private fun buildMenu(): Menu {
         val jobIconBuilder = { player: Player, menu: Menu, index: Int ->
             val page = menu.getPage(player)
 
-            val unlockedJobs = player.unlockedJobs
+            val unlockedJobs = player.getUnlockedJobs(category)
 
             val pagedIndex = ((page - 1) * jobAreaSlots.size) + index
 
@@ -59,37 +67,37 @@ object JobsGUI {
             job?.getIcon(player) ?: ItemStack(Material.AIR)
         }
 
-        val pageChangeSound = PlayableSound.create(plugin.configYml.getSubsection("gui.page-change-sound"))
+        val pageChangeSound = PlayableSound.create(gui.getSubsection("page-change-sound"))
 
-        return menu(plugin.configYml.getInt("gui.rows")) {
-            title = plugin.configYml.getString("gui.title").formatEco()
+        return menu(gui.getInt("rows")) {
+            title = gui.getString("title").formatEco()
 
             setMask(
                 FillerMask(
-                    MaskItems.fromItemNames(plugin.configYml.getStrings("gui.mask.materials")),
-                    *plugin.configYml.getStrings("gui.mask.pattern").toTypedArray()
+                    MaskItems.fromItemNames(gui.getStrings("mask.materials")),
+                    *gui.getStrings("mask.pattern").toTypedArray()
                 )
             )
 
-            if (plugin.configYml.getBoolOrNull("gui.player-info.enabled") ?: true) {
-                for (location in plugin.configYml.getSlotLocations("gui.player-info")) {
+            if (gui.getBoolOrNull("player-info.enabled") ?: true) {
+                for (location in gui.getSlotLocations("player-info")) {
                     setSlot(
                         location.row,
                         location.column,
                         slot { player, _ ->
-                            val name = plugin.configYml.getString("gui.player-info.name")
+                            val name = gui.getString("player-info.name")
                                 .replace("%player%", player.displayName)
                                 .formatEco(player, true)
 
-                            val lore = if (player.activeJobs.isEmpty()) {
-                                plugin.configYml.getStrings("gui.player-info.no-jobs")
+                            val lore = if (player.getActiveJobs(category).isEmpty()) {
+                                gui.getStrings("player-info.no-jobs")
                             } else {
-                                plugin.configYml.getStrings("gui.player-info.has-jobs")
+                                gui.getStrings("player-info.has-jobs")
                                     .flatMap {
                                         if (it == "%jobs%") {
-                                            player.activeJobs.flatMap { job ->
+                                            player.getActiveJobs(category).flatMap { job ->
                                                 job.injectPlaceholdersInto(
-                                                    plugin.configYml.getStrings("gui.player-info.job-line"),
+                                                    gui.getStrings("player-info.job-line"),
                                                     player
                                                 )
                                             }
@@ -101,7 +109,7 @@ object JobsGUI {
 
                             ItemStackBuilder(
                                 Items.lookup(
-                                    plugin.configYml.getString("gui.player-info.icon")
+                                    gui.getString("player-info.icon")
                                         .replace("%player%", player.name)
                                 )
                             )
@@ -119,7 +127,7 @@ object JobsGUI {
                 setSlot(row, column, slot({ p, m -> jobIconBuilder(p, m, index) }) {
                     onLeftClick { player, _, _, menu ->
                         val page = menu.getPage(player)
-                        val unlockedJobs = player.unlockedJobs
+                        val unlockedJobs = player.getUnlockedJobs(category)
                         val pagedIndex = ((page - 1) * jobAreaSlots.size) + index
 
                         val job = unlockedJobs.getOrNull(pagedIndex) ?: return@onLeftClick
@@ -142,43 +150,41 @@ object JobsGUI {
                             }
                         }
 
-                        PlayableSound.create(plugin.configYml.getSubsection("gui.job-icon.click"))?.playTo(player)
+                        PlayableSound.create(gui.getSubsection("job-icon.click"))?.playTo(player)
                     }
 
                     onRightClick { player, _, _, menu ->
                         val page = menu.getPage(player)
-                        val unlockedJobs = player.unlockedJobs
+                        val unlockedJobs = player.getUnlockedJobs(category)
                         val pagedIndex = ((page - 1) * jobAreaSlots.size) + index
 
                         val job = unlockedJobs.getOrNull(pagedIndex) ?: return@onRightClick
 
                         if (player.hasJobActive(job)) {
                             job.leaveGUI.open(player)
-                            PlayableSound.create(plugin.configYml.getSubsection("gui.job-icon.click"))?.playTo(player)
+                            PlayableSound.create(gui.getSubsection("job-icon.click"))?.playTo(player)
                         }
                     }
                 })
             }
 
-            addPageChanger(plugin.configYml, "gui.prev-page", PageChanger.Direction.BACKWARDS, pageChangeSound)
-            addPageChanger(plugin.configYml, "gui.next-page", PageChanger.Direction.FORWARDS, pageChangeSound)
+            addPageChanger(gui, "prev-page", PageChanger.Direction.BACKWARDS, pageChangeSound)
+            addPageChanger(gui, "next-page", PageChanger.Direction.FORWARDS, pageChangeSound)
 
             maxPages { player ->
                 ceil(
-                    Jobs.values()
-                        .filter { player.getJobLevel(it) > 0 }
-                        .size.toDouble() / jobAreaSlots.size).toInt()
+                    player.getUnlockedJobs(category).size.toDouble() / jobAreaSlots.size).toInt()
             }
 
-            val closeEnabled = plugin.configYml.getBoolOrNull("gui.close.enabled") ?: true
+            val closeEnabled = gui.getBoolOrNull("close.enabled") ?: true
             if (closeEnabled) {
-                for (location in plugin.configYml.getSlotLocations("gui.close")) {
+                for (location in gui.getSlotLocations("close")) {
                     setSlot(
                         location.row,
                         location.column,
                         slot(
-                            ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.close.item")))
-                                .setDisplayName(plugin.configYml.getString("gui.close.name"))
+                            ItemStackBuilder(Items.lookup(gui.getString("close.item")))
+                                .setDisplayName(gui.getString("close.name"))
                                 .build()
                         ) {
                             onLeftClick { event, _ -> event.whoClicked.closeInventory() }
@@ -187,7 +193,7 @@ object JobsGUI {
                 }
             }
 
-            for (config in plugin.configYml.getSubsections("gui.custom-slots")) {
+            for (config in gui.getSubsections("custom-slots")) {
                 for (location in config.getSlotLocations()) {
                     setSlot(location.row, location.column, ConfigSlot(config))
                 }

@@ -12,6 +12,7 @@ import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
 import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
 import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
 import com.willfp.ecojobs.jobs.Job
+import com.willfp.ecojobs.jobs.JobCategory
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.jobs.getNumericalPermission
 import com.willfp.ecojobs.jobs.jobExperienceMultiplier
@@ -43,10 +44,28 @@ val Player.jobLimit: Int
     }
 
 /**
+ * The job limit in [category], or the job limit for jobs with no category when null.
+ */
+fun Player.getJobLimit(category: JobCategory?): Int {
+    if (category == null) {
+        return this.jobLimit
+    }
+
+    return this.getNumericalPermission("ecojobs.limit.${category.id}", category.limit.toDouble()).toInt()
+}
+
+/**
+ * A player's active jobs in [category], or with no category when null.
+ */
+fun OfflinePlayer.getActiveJobs(category: JobCategory?): List<Job> =
+    this.activeJobs.filter { it.category == category }
+
+/**
  * If a player can join a job.
  */
 fun Player.canJoinJob(job: Job): Boolean {
-    return this.activeJobs.size < this.jobLimit && job !in this.activeJobs && this.hasJob(job)
+    return this.getActiveJobs(job.category).size < this.getJobLimit(job.category)
+            && job !in this.activeJobs && this.hasJob(job)
 }
 
 /**

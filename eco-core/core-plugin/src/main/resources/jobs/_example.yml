@@ -14,6 +14,10 @@ description: "&8&oLevel up by mining blocks"
 # If not specified, uses the default from config.yml level-gui.title with %job% placeholder
 # title: "&6&lMiner Job Progression"
 
+# (Optional) The ID of the category this job belongs to, from the categories folder
+# Jobs with a category show in that category's GUI and count towards its limit, not jobs.limit
+# category: classes
+
 # If the job should be unlocked by default
 unlocked-by-default: true
 
