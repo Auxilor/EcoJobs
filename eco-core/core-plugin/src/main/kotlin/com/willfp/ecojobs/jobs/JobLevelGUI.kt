@@ -3,6 +3,8 @@ package com.willfp.ecojobs.jobs
 import com.willfp.eco.core.Prerequisite
 import com.willfp.eco.core.gui.addCustomSlots
 import com.willfp.eco.core.gui.addPageChanger
+import com.willfp.eco.core.gui.component.LevelComponent
+import com.willfp.eco.core.gui.component.LevelState
 import com.willfp.eco.core.gui.getSlotLocations
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
@@ -18,8 +20,6 @@ import com.willfp.eco.util.NumberUtils
 import com.willfp.eco.util.formatEco
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.plugin
-import com.willfp.ecomponent.components.LevelComponent
-import com.willfp.ecomponent.components.LevelState
 import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -67,11 +67,7 @@ class JobLevelGUI(
             }
 
             override fun getLevelState(player: Player, level: Int): LevelState {
-                return when {
-                    level <= player.getJobLevel(job) -> LevelState.UNLOCKED
-                    level == player.getJobLevel(job) + 1 -> LevelState.IN_PROGRESS
-                    else -> LevelState.LOCKED
-                }
+                return LevelState.of(level, player.getJobLevel(job))
             }
         }
 
