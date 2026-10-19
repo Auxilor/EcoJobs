@@ -1,6 +1,6 @@
 ---
 title: "Commands and Permissions"
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 | Command                                   | Description                                          | Permission               |
@@ -12,6 +12,7 @@ sidebar_position: 3
 | `/jobs`                                   | Opens the jobs GUI                                   | `ecojobs.command.jobs`   |
 | `/jobs join <job>`                        | Joins a job                                          | `ecojobs.command.join`   |
 | `/jobs leave <job>`                       | Leaves a job                                         | `ecojobs.command.leave`  |
+| `/<category command>`                     | Opens a job category's GUI                           | `ecojobs.command.jobs`   |
 | `/ecojobs import <id>`                    | Import a job from [lrcdb](https://lrcdb.auxilor.io/) | `ecojobs.command.import` |
 | `/ecojobs export <id>`                    | Export a job to [lrcdb](https://lrcdb.auxilor.io/)   | `ecojobs.command.export` |
 
@@ -19,7 +20,8 @@ sidebar_position: 3
 
 | Permission                         | Description                                                                                         |
 |------------------------------------|-----------------------------------------------------------------------------------------------------|
-| `ecojobs.limit.<limit>`            | Limit the amount of jobs a player can join at once                                                  |
+| `ecojobs.limit.<limit>`            | Limit the amount of jobs with no category a player can join at once                                 |
+| `ecojobs.limit.<category>.<limit>` | Limit the amount of jobs in a category a player can join at once                                    |
 | `ecojobs.xpmultiplier.<%increase>` | Multiply job XP gain. The math is `1 + (<%increase> / 100)`. Example: `200` = 3x XP, `50` = 1.5x XP |
 | `ecojobs.xpmultiplier.50percent`   | Gives 50% more job XP (1.5x multiplier)                                                             |
 | `ecojobs.xpmultiplier.double`      | Gives double job XP (2x multiplier)                                                                 |
