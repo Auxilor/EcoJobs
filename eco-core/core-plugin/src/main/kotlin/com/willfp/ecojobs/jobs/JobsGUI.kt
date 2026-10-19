@@ -80,7 +80,7 @@ object JobsGUI {
                             val name = plugin.configYml.getString("gui.player-info.name")
                                 .replace("%player%", player.displayName)
                                 .formatEco(player, true)
-                        
+
                             val lore = if (player.activeJobs.isEmpty()) {
                                 plugin.configYml.getStrings("gui.player-info.no-jobs")
                             } else {
@@ -98,7 +98,7 @@ object JobsGUI {
                                         }
                                     }
                             }.formatEco(player, true)
-                        
+
                             ItemStackBuilder(
                                 Items.lookup(
                                     plugin.configYml.getString("gui.player-info.icon")

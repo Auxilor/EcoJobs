@@ -65,7 +65,7 @@ class JobLeaveGUI(
                 }) {
                     onLeftClick { player, _, _, _ ->
                         player.leaveJob(job)
-                
+
                         if (!player.hasJobActive(job)) {
                             player.sendMessage(
                                 plugin.langYml.getMessage("left-job")
@@ -77,7 +77,7 @@ class JobLeaveGUI(
                                     .replace("%job%", job.name)
                             )
                         }
-                
+
                         JobsGUI.open(player)
                     }
                 }
