@@ -1,5 +1,6 @@
 package com.willfp.ecojobs.jobs
 
+import com.willfp.eco.core.gui.getSlotLocations
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.onLeftClick
 import com.willfp.eco.core.gui.slot
@@ -31,53 +32,57 @@ class JobLeaveGUI(
             )
         )
 
-        setSlot(
-            plugin.configYml.getInt("leave-gui.cancel.location.row"),
-            plugin.configYml.getInt("leave-gui.cancel.location.column"),
-            slot({ player, _ ->
-                ItemStackBuilder(Items.lookup(plugin.configYml.getString("leave-gui.cancel.item")))
-                    .setDisplayName(plugin.configYml.getString("leave-gui.cancel.name").replace("%job%", job.name))
-                    .addLoreLines(
-                        job.injectPlaceholdersInto(plugin.configYml.getStrings("leave-gui.cancel.lore"), player)
-                    )
-                    .build()
-            }) {
-                onLeftClick { player, _, _, _ ->
-                    JobsGUI.open(player)
-                }
-            }
-        )
-
-        setSlot(
-            plugin.configYml.getInt("leave-gui.confirm.location.row"),
-            plugin.configYml.getInt("leave-gui.confirm.location.column"),
-            slot({ player, _ ->
-                ItemStackBuilder(Items.lookup(plugin.configYml.getString("leave-gui.confirm.item")))
-                    .setDisplayName(plugin.configYml.getString("leave-gui.confirm.name").replace("%job%", job.name))
-                    .addLoreLines(
-                        job.injectPlaceholdersInto(plugin.configYml.getStrings("leave-gui.confirm.lore"), player)
-                    )
-                    .build()
-            }) {
-                onLeftClick { player, _, _, _ ->
-                    player.leaveJob(job)
-
-                    if (!player.hasJobActive(job)) {
-                        player.sendMessage(
-                            plugin.langYml.getMessage("left-job")
-                                .replace("%job%", job.name)
+        for (location in plugin.configYml.getSlotLocations("leave-gui.cancel")) {
+            setSlot(
+                location.row,
+                location.column,
+                slot({ player, _ ->
+                    ItemStackBuilder(Items.lookup(plugin.configYml.getString("leave-gui.cancel.item")))
+                        .setDisplayName(plugin.configYml.getString("leave-gui.cancel.name").replace("%job%", job.name))
+                        .addLoreLines(
+                            job.injectPlaceholdersInto(plugin.configYml.getStrings("leave-gui.cancel.lore"), player)
                         )
-                    } else {
-                        player.sendMessage(
-                            plugin.langYml.getMessage("cant-leave-job")
-                                .replace("%job%", job.name)
-                        )
+                        .build()
+                }) {
+                    onLeftClick { player, _, _, _ ->
+                        JobsGUI.open(player)
                     }
-
-                    JobsGUI.open(player)
                 }
-            }
-        )
+            )
+        }
+
+        for (location in plugin.configYml.getSlotLocations("leave-gui.confirm")) {
+            setSlot(
+                location.row,
+                location.column,
+                slot({ player, _ ->
+                    ItemStackBuilder(Items.lookup(plugin.configYml.getString("leave-gui.confirm.item")))
+                        .setDisplayName(plugin.configYml.getString("leave-gui.confirm.name").replace("%job%", job.name))
+                        .addLoreLines(
+                            job.injectPlaceholdersInto(plugin.configYml.getStrings("leave-gui.confirm.lore"), player)
+                        )
+                        .build()
+                }) {
+                    onLeftClick { player, _, _, _ ->
+                        player.leaveJob(job)
+                
+                        if (!player.hasJobActive(job)) {
+                            player.sendMessage(
+                                plugin.langYml.getMessage("left-job")
+                                    .replace("%job%", job.name)
+                            )
+                        } else {
+                            player.sendMessage(
+                                plugin.langYml.getMessage("cant-leave-job")
+                                    .replace("%job%", job.name)
+                            )
+                        }
+                
+                        JobsGUI.open(player)
+                    }
+                }
+            )
+        }
     }
 
     fun open(player: Player) {

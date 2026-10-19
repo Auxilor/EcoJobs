@@ -1,6 +1,7 @@
 package com.willfp.ecojobs.jobs
 
 import com.willfp.eco.core.gui.addPageChanger
+import com.willfp.eco.core.gui.getSlotLocations
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
 import com.willfp.eco.core.gui.onLeftClick
@@ -71,43 +72,45 @@ object JobsGUI {
             )
 
             if (plugin.configYml.getBoolOrNull("gui.player-info.enabled") ?: true) {
-                setSlot(
-                    plugin.configYml.getInt("gui.player-info.row"),
-                    plugin.configYml.getInt("gui.player-info.column"),
-                    slot { player, _ ->
-                        val name = plugin.configYml.getString("gui.player-info.name")
-                            .replace("%player%", player.displayName)
-                            .formatEco(player, true)
-
-                        val lore = if (player.activeJobs.isEmpty()) {
-                            plugin.configYml.getStrings("gui.player-info.no-jobs")
-                        } else {
-                            plugin.configYml.getStrings("gui.player-info.has-jobs")
-                                .flatMap {
-                                    if (it == "%jobs%") {
-                                        player.activeJobs.flatMap { job ->
-                                            job.injectPlaceholdersInto(
-                                                plugin.configYml.getStrings("gui.player-info.job-line"),
-                                                player
-                                            )
+                for (location in plugin.configYml.getSlotLocations("gui.player-info")) {
+                    setSlot(
+                        location.row,
+                        location.column,
+                        slot { player, _ ->
+                            val name = plugin.configYml.getString("gui.player-info.name")
+                                .replace("%player%", player.displayName)
+                                .formatEco(player, true)
+                        
+                            val lore = if (player.activeJobs.isEmpty()) {
+                                plugin.configYml.getStrings("gui.player-info.no-jobs")
+                            } else {
+                                plugin.configYml.getStrings("gui.player-info.has-jobs")
+                                    .flatMap {
+                                        if (it == "%jobs%") {
+                                            player.activeJobs.flatMap { job ->
+                                                job.injectPlaceholdersInto(
+                                                    plugin.configYml.getStrings("gui.player-info.job-line"),
+                                                    player
+                                                )
+                                            }
+                                        } else {
+                                            listOf(it)
                                         }
-                                    } else {
-                                        listOf(it)
                                     }
-                                }
-                        }.formatEco(player, true)
-
-                        ItemStackBuilder(
-                            Items.lookup(
-                                plugin.configYml.getString("gui.player-info.icon")
-                                    .replace("%player%", player.name)
+                            }.formatEco(player, true)
+                        
+                            ItemStackBuilder(
+                                Items.lookup(
+                                    plugin.configYml.getString("gui.player-info.icon")
+                                        .replace("%player%", player.name)
+                                )
                             )
-                        )
-                            .setDisplayName(name)
-                            .addLoreLines(lore)
-                            .build()
-                    }
-                )
+                                .setDisplayName(name)
+                                .addLoreLines(lore)
+                                .build()
+                        }
+                    )
+                }
             }
 
             for ((index, pair) in jobAreaSlots.withIndex()) {
@@ -169,25 +172,25 @@ object JobsGUI {
 
             val closeEnabled = plugin.configYml.getBoolOrNull("gui.close.enabled") ?: true
             if (closeEnabled) {
-                setSlot(
-                    plugin.configYml.getInt("gui.close.location.row"),
-                    plugin.configYml.getInt("gui.close.location.column"),
-                    slot(
-                        ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.close.item")))
-                            .setDisplayName(plugin.configYml.getString("gui.close.name"))
-                            .build()
-                    ) {
-                        onLeftClick { event, _ -> event.whoClicked.closeInventory() }
-                    }
-                )
+                for (location in plugin.configYml.getSlotLocations("gui.close")) {
+                    setSlot(
+                        location.row,
+                        location.column,
+                        slot(
+                            ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.close.item")))
+                                .setDisplayName(plugin.configYml.getString("gui.close.name"))
+                                .build()
+                        ) {
+                            onLeftClick { event, _ -> event.whoClicked.closeInventory() }
+                        }
+                    )
+                }
             }
 
             for (config in plugin.configYml.getSubsections("gui.custom-slots")) {
-                setSlot(
-                    config.getInt("row"),
-                    config.getInt("column"),
-                    ConfigSlot(config)
-                )
+                for (location in config.getSlotLocations()) {
+                    setSlot(location.row, location.column, ConfigSlot(config))
+                }
             }
         }
     }
