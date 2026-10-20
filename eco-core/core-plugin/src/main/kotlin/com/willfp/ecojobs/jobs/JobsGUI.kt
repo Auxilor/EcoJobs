@@ -1,16 +1,17 @@
 package com.willfp.ecojobs.jobs
 
+import com.willfp.eco.core.gui.addCustomSlots
 import com.willfp.eco.core.gui.addPageChanger
+import com.willfp.eco.core.gui.component.addComponent
+import com.willfp.eco.core.gui.component.closeButton
 import com.willfp.eco.core.gui.getSlotLocations
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
 import com.willfp.eco.core.gui.onLeftClick
 import com.willfp.eco.core.gui.onRightClick
 import com.willfp.eco.core.gui.page.PageChanger
+import com.willfp.eco.core.gui.setMask
 import com.willfp.eco.core.gui.slot
-import com.willfp.eco.core.gui.slot.ConfigSlot
-import com.willfp.eco.core.gui.slot.FillerMask
-import com.willfp.eco.core.gui.slot.MaskItems
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.core.sound.PlayableSound
@@ -21,10 +22,10 @@ import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.joinJob
 import com.willfp.ecojobs.jobs.Jobs.getUnlockedJobs
 import com.willfp.ecojobs.plugin
+import kotlin.math.ceil
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import kotlin.math.ceil
 
 object JobsGUI {
     @Volatile
@@ -72,12 +73,7 @@ object JobsGUI {
         return menu(gui.getInt("rows")) {
             title = gui.getString("title").formatEco()
 
-            setMask(
-                FillerMask(
-                    MaskItems.fromItemNames(gui.getStrings("mask.materials")),
-                    *gui.getStrings("mask.pattern").toTypedArray()
-                )
-            )
+            setMask(gui)
 
             if (gui.getBoolOrNull("player-info.enabled") ?: true) {
                 for (location in gui.getSlotLocations("player-info")) {
@@ -176,28 +172,9 @@ object JobsGUI {
                     player.getUnlockedJobs(category).size.toDouble() / jobAreaSlots.size).toInt()
             }
 
-            val closeEnabled = gui.getBoolOrNull("close.enabled") ?: true
-            if (closeEnabled) {
-                for (location in gui.getSlotLocations("close")) {
-                    setSlot(
-                        location.row,
-                        location.column,
-                        slot(
-                            ItemStackBuilder(Items.lookup(gui.getString("close.item")))
-                                .setDisplayName(gui.getString("close.name"))
-                                .build()
-                        ) {
-                            onLeftClick { event, _ -> event.whoClicked.closeInventory() }
-                        }
-                    )
-                }
-            }
+            addComponent(closeButton(gui.getSubsection("close")))
 
-            for (config in gui.getSubsections("custom-slots")) {
-                for (location in config.getSlotLocations()) {
-                    setSlot(location.row, location.column, ConfigSlot(config))
-                }
-            }
+            addCustomSlots(gui, "")
         }
     }
 

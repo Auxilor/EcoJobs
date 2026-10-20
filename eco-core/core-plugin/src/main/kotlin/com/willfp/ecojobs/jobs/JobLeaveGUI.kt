@@ -3,9 +3,8 @@ package com.willfp.ecojobs.jobs
 import com.willfp.eco.core.gui.getSlotLocations
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.onLeftClick
+import com.willfp.eco.core.gui.setMask
 import com.willfp.eco.core.gui.slot
-import com.willfp.eco.core.gui.slot.FillerMask
-import com.willfp.eco.core.gui.slot.MaskItems
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.util.formatEco
@@ -18,19 +17,11 @@ class JobLeaveGUI(
     job: Job
 ) {
     private val menu = menu(plugin.configYml.getInt("leave-gui.rows")) {
-        val maskPattern = plugin.configYml.getStrings("leave-gui.mask.pattern").toTypedArray()
-        val maskItems = MaskItems.fromItemNames(plugin.configYml.getStrings("leave-gui.mask.materials"))
-
         title = (job.title ?: plugin.configYml.getString("leave-gui.title")
             .replace("%job%", job.name))
             .formatEco()
 
-        setMask(
-            FillerMask(
-                maskItems,
-                *maskPattern
-            )
-        )
+        setMask(plugin.configYml, "leave-gui")
 
         for (location in plugin.configYml.getSlotLocations("leave-gui.cancel")) {
             setSlot(
