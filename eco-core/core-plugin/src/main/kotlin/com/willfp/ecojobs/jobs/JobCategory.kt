@@ -32,9 +32,7 @@ class JobCategory(
         command?.unregister()
     }
 
-    override fun getID(): String {
-        return id
-    }
+    override fun getID(): String = id
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -48,7 +46,5 @@ class JobCategory(
         return this.id == other.id
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(this.id)
-    }
+    override fun hashCode(): Int = Objects.hash(this.id)
 }

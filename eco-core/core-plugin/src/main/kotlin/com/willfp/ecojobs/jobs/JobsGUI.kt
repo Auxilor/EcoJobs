@@ -1,5 +1,6 @@
 package com.willfp.ecojobs.jobs
 
+import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.core.gui.addCustomSlots
 import com.willfp.eco.core.gui.addPageChanger
 import com.willfp.eco.core.gui.component.addComponent
@@ -41,12 +42,7 @@ object JobsGUI {
      * Keys in the category's own `gui` section replace the matching keys of the main `gui` section.
      */
     internal fun buildMenu(category: JobCategory?): Menu {
-        val gui = plugin.configYml.getSubsection("gui").clone().apply {
-            val overrides = category?.config?.getSubsectionOrNull("gui") ?: return@apply
-            for (key in overrides.getKeys(false)) {
-                set(key, overrides.get(key))
-            }
-        }
+        val gui = getGuiConfig(category)
 
         val topLeftRow = gui.getInt("job-area.top-left.row")
         val topLeftColumn = gui.getInt("job-area.top-left.column")
@@ -57,17 +53,6 @@ object JobsGUI {
             (topLeftColumn..bottomRightColumn).map { column -> Pair(row, column) }
         }
 
-        val jobIconBuilder = { player: Player, menu: Menu, index: Int ->
-            val page = menu.getPage(player)
-
-            val unlockedJobs = player.getUnlockedJobs(category)
-
-            val pagedIndex = ((page - 1) * jobAreaSlots.size) + index
-
-            val job = unlockedJobs.getOrNull(pagedIndex)
-            job?.getIcon(player) ?: ItemStack(Material.AIR)
-        }
-
         val pageChangeSound = PlayableSound.create(gui.getSubsection("page-change-sound"))
 
         return menu(gui.getInt("rows")) {
@@ -75,90 +60,28 @@ object JobsGUI {
 
             setMask(gui)
 
-            if (gui.getBoolOrNull("player-info.enabled") ?: true) {
+            if (gui.getBoolOrNull("player-info.enabled") != false) {
                 for (location in gui.getSlotLocations("player-info")) {
-                    setSlot(
-                        location.row,
-                        location.column,
-                        slot { player, _ ->
-                            val name = gui.getString("player-info.name")
-                                .replace("%player%", player.displayName)
-                                .formatEco(player, true)
-
-                            val lore = if (player.getActiveJobs(category).isEmpty()) {
-                                gui.getStrings("player-info.no-jobs")
-                            } else {
-                                gui.getStrings("player-info.has-jobs")
-                                    .flatMap {
-                                        if (it == "%jobs%") {
-                                            player.getActiveJobs(category).flatMap { job ->
-                                                job.injectPlaceholdersInto(
-                                                    gui.getStrings("player-info.job-line"),
-                                                    player
-                                                )
-                                            }
-                                        } else {
-                                            listOf(it)
-                                        }
-                                    }
-                            }.formatEco(player, true)
-
-                            ItemStackBuilder(
-                                Items.lookup(
-                                    gui.getString("player-info.icon")
-                                        .replace("%player%", player.name)
-                                )
-                            )
-                                .setDisplayName(name)
-                                .addLoreLines(lore)
-                                .build()
-                        }
-                    )
+                    setSlot(location.row, location.column, slot { player, _ -> getPlayerInfo(gui, category, player) })
                 }
             }
 
             for ((index, pair) in jobAreaSlots.withIndex()) {
                 val (row, column) = pair
 
-                setSlot(row, column, slot({ p, m -> jobIconBuilder(p, m, index) }) {
+                setSlot(row, column, slot({ player, menu ->
+                    getJobAt(player, menu, category, jobAreaSlots.size, index)?.getIcon(player)
+                        ?: ItemStack(Material.AIR)
+                }) {
                     onLeftClick { player, _, _, menu ->
-                        val page = menu.getPage(player)
-                        val unlockedJobs = player.getUnlockedJobs(category)
-                        val pagedIndex = ((page - 1) * jobAreaSlots.size) + index
-
-                        val job = unlockedJobs.getOrNull(pagedIndex) ?: return@onLeftClick
-
-                        if (player.hasJobActive(job)) {
-                            job.levelGUI.open(player)
-                        } else {
-                            if (player.canJoinJob(job)) {
-                                player.joinJob(job)
-
-                                if (player.hasJobActive(job)) {
-                                    player.sendMessage(
-                                        plugin.langYml.getMessage("joined-job")
-                                            .replace("%job%", job.name)
-                                    )
-                                }
-                            } else {
-                                player.sendMessage(plugin.langYml.getMessage("cannot-join-job"))
-                                return@onLeftClick
-                            }
+                        getJobAt(player, menu, category, jobAreaSlots.size, index)?.let { job ->
+                            openJob(gui, player, job)
                         }
-
-                        PlayableSound.create(gui.getSubsection("job-icon.click"))?.playTo(player)
                     }
 
                     onRightClick { player, _, _, menu ->
-                        val page = menu.getPage(player)
-                        val unlockedJobs = player.getUnlockedJobs(category)
-                        val pagedIndex = ((page - 1) * jobAreaSlots.size) + index
-
-                        val job = unlockedJobs.getOrNull(pagedIndex) ?: return@onRightClick
-
-                        if (player.hasJobActive(job)) {
-                            job.leaveGUI.open(player)
-                            PlayableSound.create(gui.getSubsection("job-icon.click"))?.playTo(player)
+                        getJobAt(player, menu, category, jobAreaSlots.size, index)?.let { job ->
+                            openLeaveMenu(gui, player, job)
                         }
                     }
                 })
@@ -175,6 +98,85 @@ object JobsGUI {
             addComponent(closeButton(gui.getSubsection("close")))
 
             addCustomSlots(gui, "")
+        }
+    }
+
+    private fun getGuiConfig(category: JobCategory?): Config {
+        val gui = plugin.configYml.getSubsection("gui").clone()
+        val overrides = category?.run { config.getSubsectionOrNull("gui") } ?: return gui
+        for (key in overrides.getKeys(false)) {
+            gui.set(key, overrides.get(key))
+        }
+        return gui
+    }
+
+    private fun getJobAt(player: Player, menu: Menu, category: JobCategory?, slotsPerPage: Int, index: Int): Job? {
+        val pagedIndex = (menu.getPage(player) - 1) * slotsPerPage + index
+        return player.getUnlockedJobs(category).getOrNull(pagedIndex)
+    }
+
+    private fun getPlayerInfo(gui: Config, category: JobCategory?, player: Player): ItemStack {
+        val name = gui.getString("player-info.name")
+            .replace("%player%", player.displayName)
+            .formatEco(player, true)
+
+        val lore = if (player.getActiveJobs(category).isEmpty()) {
+            gui.getStrings("player-info.no-jobs")
+        } else {
+            gui.getStrings("player-info.has-jobs")
+                .flatMap { line ->
+                    if (line == "%jobs%") {
+                        player.getActiveJobs(category).flatMap { job ->
+                            job.injectPlaceholdersInto(
+                                gui.getStrings("player-info.job-line"),
+                                player
+                            )
+                        }
+                    } else {
+                        listOf(line)
+                    }
+                }
+        }.formatEco(player, true)
+
+        return ItemStackBuilder(
+            Items.lookup(
+                gui.getString("player-info.icon")
+                    .replace("%player%", player.name)
+            )
+        )
+            .setDisplayName(name)
+            .addLoreLines(lore)
+            .build()
+    }
+
+    private fun openJob(gui: Config, player: Player, job: Job) {
+        when {
+            player.hasJobActive(job) -> {
+                job.levelGUI.open(player)
+            }
+            player.canJoinJob(job) -> {
+                player.joinJob(job)
+
+                if (player.hasJobActive(job)) {
+                    player.sendMessage(
+                        plugin.langYml.getMessage("joined-job")
+                            .replace("%job%", job.name)
+                    )
+                }
+            }
+            else -> {
+                player.sendMessage(plugin.langYml.getMessage("cannot-join-job"))
+                return
+            }
+        }
+
+        PlayableSound.create(gui.getSubsection("job-icon.click"))?.playTo(player)
+    }
+
+    private fun openLeaveMenu(gui: Config, player: Player, job: Job) {
+        if (player.hasJobActive(job)) {
+            job.leaveGUI.open(player)
+            PlayableSound.create(gui.getSubsection("job-icon.click"))?.playTo(player)
         }
     }
 
