@@ -15,9 +15,7 @@ object JobCategories : ConfigCategory("category", "categories") {
      * @return A list of all [JobCategory]s.
      */
     @JvmStatic
-    fun values(): List<JobCategory> {
-        return ImmutableList.copyOf(registry.values())
-    }
+    fun values(): List<JobCategory> = ImmutableList.copyOf(registry.values())
 
     /**
      * Get [JobCategory] matching ID.
@@ -26,9 +24,7 @@ object JobCategories : ConfigCategory("category", "categories") {
      * @return The matching [JobCategory], or null if not found.
      */
     @JvmStatic
-    fun getByID(id: String?): JobCategory? {
-        return id?.let { registry[it] }
-    }
+    fun getByID(id: String?): JobCategory? = id?.let { registry[it] }
 
     override fun clear(plugin: LibreforgePlugin) {
         for (category in registry.values()) {

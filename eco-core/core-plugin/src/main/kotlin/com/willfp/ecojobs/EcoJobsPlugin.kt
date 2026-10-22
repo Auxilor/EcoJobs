@@ -44,6 +44,10 @@ import com.willfp.eco.util.formatEco
 internal lateinit var plugin: EcoJobsPlugin
     private set
 
+private val limitPlaceholderPattern = Pattern.compile("limit_.+")
+
+private val inJobsPlaceholderPattern = Pattern.compile("in_jobs_.+")
+
 class EcoJobsPlugin : LibreforgePlugin() {
     init {
         plugin = this
@@ -94,11 +98,11 @@ class EcoJobsPlugin : LibreforgePlugin() {
             "in_jobs"
         ) { it.getActiveJobs(null).size.toString() }.register()
 
-        PlayerDynamicPlaceholder(this, Pattern.compile("limit_.+")) { args, player ->
+        PlayerDynamicPlaceholder(this, limitPlaceholderPattern) { args, player ->
             JobCategories.getByID(args.removePrefix("limit_"))?.let { player.getJobLimit(it).toString() }
         }.register()
 
-        PlayerDynamicPlaceholder(this, Pattern.compile("in_jobs_.+")) { args, player ->
+        PlayerDynamicPlaceholder(this, inJobsPlaceholderPattern) { args, player ->
             JobCategories.getByID(args.removePrefix("in_jobs_"))?.let { player.getActiveJobs(it).size.toString() }
         }.register()
 
