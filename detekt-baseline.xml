@@ -1,0 +1,129 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>BracesOnIfStatements:CommandJobs.kt:CommandJobs$if</ID>
+    <ID>BracesOnIfStatements:EcoJobsPlugin.kt:EcoJobsPlugin$if</ID>
+    <ID>C002:CommandReset.kt:CommandReset$forEachSavedProfile(plugin) { uuid -&gt; val player = Bukkit.getOfflinePlayer(uuid) player.player?.runOwned { resetJobs(player, jobs) } ?: resetJobs(player, jobs) }.thenRun { plugin.scheduler.global().run { sender.sendMessage(message) } }</ID>
+    <ID>CascadingCallWrapping:Job.kt:Job$replace("%job%", this.name)</ID>
+    <ID>CascadingCallWrapping:JobsGUI.kt:JobsGUI$toDouble()</ID>
+    <ID>CognitiveComplexMethod:JobsGUI.kt:JobsGUI$private fun buildMenu: Menu</ID>
+    <ID>CyclomaticComplexMethod:JobsGUI.kt:JobsGUI$private fun buildMenu: Menu</ID>
+    <ID>DocumentationOverPrivateFunction:EcoJobsAPI.kt:private fun validateXpAmount: Boolean</ID>
+    <ID>ExpressionBodySyntax:EcoJobsAPI.kt:return this.activeJobs.size &lt; this.jobLimit &amp;&amp; job !in this.activeJobs &amp;&amp; this.hasJob(job)</ID>
+    <ID>ExpressionBodySyntax:EcoJobsAPI.kt:return this.getNumericalPermission("ecojobs.limit", plugin.configYml.getDouble("jobs.limit")).toInt()</ID>
+    <ID>ExpressionBodySyntax:EffectJobXpMultiplier.kt:EffectJobXpMultiplier$return Jobs.getByID(key)</ID>
+    <ID>ExpressionBodySyntax:EffectJobXpMultiplier.kt:EffectJobXpMultiplier$return Jobs.values()</ID>
+    <ID>ExpressionBodySyntax:FilterJob.kt:FilterJob$return config.getStrings(key)</ID>
+    <ID>ExpressionBodySyntax:Job.kt:Job$return Objects.hash(this.id)</ID>
+    <ID>ExpressionBodySyntax:Job.kt:Job$return this.id</ID>
+    <ID>ExpressionBodySyntax:Jobs.kt:Jobs$return ImmutableList.copyOf(registry.values())</ID>
+    <ID>ExpressionBodySyntax:Jobs.kt:Jobs$return name?.let { registry[it] }</ID>
+    <ID>ExpressionBodySyntax:LevelInjectable.kt:LevelInjectable$return</ID>
+    <ID>ExpressionBodySyntax:LevelInjectable.kt:LevelInjectable$return placeholders</ID>
+    <ID>ExpressionBodySyntax:PlayerJobExpGainEvent.kt:PlayerJobExpGainEvent$return cancelled</ID>
+    <ID>ExpressionBodySyntax:PlayerJobExpGainEvent.kt:PlayerJobExpGainEvent$return handlerList</ID>
+    <ID>ExpressionBodySyntax:PlayerJobJoinEvent.kt:PlayerJobJoinEvent$return handlerList</ID>
+    <ID>ExpressionBodySyntax:PlayerJobLeaveEvent.kt:PlayerJobLeaveEvent$return handlerList</ID>
+    <ID>ExpressionBodySyntax:PlayerJobLevelUpEvent.kt:PlayerJobLevelUpEvent$return handlerList</ID>
+    <ID>IC002:CommandReset.kt:CommandReset$// Reset a specific job for a specific player</ID>
+    <ID>IC002:CommandReset.kt:CommandReset$// Reset a specific job for all players</ID>
+    <ID>IC002:CommandReset.kt:CommandReset$// Reset all jobs for a specific player</ID>
+    <ID>IC002:CommandReset.kt:CommandReset$// Reset all jobs for all players</ID>
+    <ID>IC002:CommandTop.kt:CommandTop$// An empty leaderboard still shows its header and footer, with the universal</ID>
+    <ID>IC002:CommandUnlock.kt:CommandUnlock$// Currently, this case is not ever reached</ID>
+    <ID>IC002:EcoJobsAPI.kt:// One event per level crossed: a single grant spanning five levels must not swallow four</ID>
+    <ID>IC002:EcoJobsPlugin.kt:EcoJobsPlugin$// Config categories are loaded in an onReload(START) task, so every Job already exists</ID>
+    <ID>IC002:EcoJobsPlugin.kt:EcoJobsPlugin$// Registered once for every job at once: the lookup resolves the ID when the</ID>
+    <ID>IC002:EffectGiveJobXp.kt:EffectGiveJobXp$// giveJobExperience already guards on the player having joined the job - do not add a</ID>
+    <ID>IC002:Job.kt:Job$// %level%, %level_numeral%, %previous_level%, %previous_level_numeral% and the</ID>
+    <ID>IC002:Job.kt:Job$// Backed by the plugin-wide tally, refreshed on eco's leaderboard cycle, rather</ID>
+    <ID>IC002:Job.kt:Job$// Logged once at load, not per XP gain: a broken curve recurs on every grant.</ID>
+    <ID>IC002:Job.kt:Job$// Nothing at all is registered when disabled -- no leaderboard, and no placeholders. The</ID>
+    <ID>IC002:Job.kt:Job$// Ranked by the level key directly: eco reads every ranked key on the server in one</ID>
+    <ID>IC002:JobLevelListener.kt:JobLevelListener$// Routed through the shared dispatcher so the chain gets %level_numeral%,</ID>
+    <ID>IC002:JobXPAccumulator.kt:// Delegates to eco so the four copies of this loop cannot drift apart again. Two</ID>
+    <ID>ImplicitUnitReturnType:EcoJobsAPI.kt:fun OfflinePlayer.setJobLevel</ID>
+    <ID>ImplicitUnitReturnType:EcoJobsAPI.kt:fun OfflinePlayer.setJobXP</ID>
+    <ID>LabeledExpression:CommandTop.kt:CommandTop$@run</ID>
+    <ID>LabeledExpression:JobsGUI.kt:JobsGUI$@onLeftClick</ID>
+    <ID>LabeledExpression:JobsGUI.kt:JobsGUI$@onRightClick</ID>
+    <ID>LongMethod:CommandReset.kt:CommandReset$override fun onExecute</ID>
+    <ID>LongMethod:JobsGUI.kt:JobsGUI$private fun buildMenu: Menu</ID>
+    <ID>MagicNumber:CommandGiveXP.kt:CommandGiveXP$3</ID>
+    <ID>MagicNumber:Job.kt:Job$100</ID>
+    <ID>MagicNumber:JobXPAccumulator.kt:100</ID>
+    <ID>MaxLineLength:JobLevelGUI.kt:JobLevelGUI$ItemStackBuilder(Items.lookup(plugin.configYml.getString("level-gui.progression-slots.close.material")))</ID>
+    <ID>MaxLineLength:JobLevelGUI.kt:JobLevelGUI$addPageChanger(plugin.configYml, "level-gui.progression-slots.next-page", PageChanger.Direction.FORWARDS, pageChangeSound)</ID>
+    <ID>MaxLineLength:JobLevelGUI.kt:JobLevelGUI$addPageChanger(plugin.configYml, "level-gui.progression-slots.prev-page", PageChanger.Direction.BACKWARDS, pageChangeSound)</ID>
+    <ID>MaxLineLength:JobLevelGUI.kt:JobLevelGUI$val pageChangeSound = PlayableSound.create(plugin.configYml.getSubsection("level-gui.progression-slots.page-change-sound"))</ID>
+    <ID>MaxLineLength:JobLevelGUI.kt:JobLevelGUI.&lt;no name provided&gt;$return</ID>
+    <ID>MultilineLambdaItParameter:EcoJobsPlugin.kt:EcoJobsPlugin${ var level = 0 for (job in Jobs.values()) { level += it.getJobLevel(job) } level.toString() }</ID>
+    <ID>MultilineLambdaItParameter:Job.kt:Job${ evaluateExpression( sub.getString("value").replace("%level%", it.toString()) ).toNiceString() }</ID>
+    <ID>MultilineLambdaItParameter:JobLevelGUI.kt:JobLevelGUI.&lt;no name provided&gt;${ if (plugin.configYml.getBool("level-gui.progression-slots.level-as-amount")) { if (Prerequisite.HAS_PAPER.isMet) { it.setData(DataComponentTypes.MAX_STACK_SIZE, 99) it.amount = level.coerceIn(1, 99) } else { it.amount = level.coerceIn(1, 64) } } }</ID>
+    <ID>MultilineLambdaItParameter:JobsGUI.kt:JobsGUI${ if (it == "%jobs%") { player.activeJobs.flatMap { job -&gt; job.injectPlaceholdersInto( plugin.configYml.getStrings("gui.player-info.job-line"), player ) } } else { listOf(it) } }</ID>
+    <ID>NewLineAtEndOfFile:CommandGiveXP.kt:com.willfp.ecojobs.commands.CommandGiveXP.kt</ID>
+    <ID>NewLineAtEndOfFile:CommandReload.kt:com.willfp.ecojobs.commands.CommandReload.kt</ID>
+    <ID>NewLineAtEndOfFile:CommandReset.kt:com.willfp.ecojobs.commands.CommandReset.kt</ID>
+    <ID>NewLineAtEndOfFile:CommandTop.kt:com.willfp.ecojobs.commands.CommandTop.kt</ID>
+    <ID>NoNameShadowing:Job.kt:Job${ " ".repeat(whitespace) + it }</ID>
+    <ID>NoNameShadowing:Job.kt:Job${ it.toInt() }</ID>
+    <ID>NoNameShadowing:Job.kt:Job${ levelPlaceholders.format(it, level) }</ID>
+    <ID>NullableBooleanCheck:JobLevelGUI.kt:JobLevelGUI$plugin.configYml.getBoolOrNull("level-gui.progression-slots.close.enabled") ?: true</ID>
+    <ID>NullableBooleanCheck:JobsGUI.kt:JobsGUI$plugin.configYml.getBoolOrNull("gui.close.enabled") ?: true</ID>
+    <ID>NullableBooleanCheck:JobsGUI.kt:JobsGUI$plugin.configYml.getBoolOrNull("gui.player-info.enabled") ?: true</ID>
+    <ID>PF009:CommandTop.kt:CommandTop$toRegex()</ID>
+    <ID>PF012:EcoJobsPlugin.kt:EcoJobsPlugin$values()</ID>
+    <ID>ReturnCount:CommandGiveXP.kt:CommandGiveXP$override fun onExecute</ID>
+    <ID>ReturnCount:CommandGiveXP.kt:CommandGiveXP$override fun tabComplete: List&lt;String&gt;</ID>
+    <ID>ReturnCount:CommandJobs.kt:CommandJobs$override fun onExecute</ID>
+    <ID>ReturnCount:CommandJobs.kt:CommandJobs$override fun tabComplete: List&lt;String&gt;</ID>
+    <ID>ReturnCount:CommandJoin.kt:CommandJoin$override fun onExecute</ID>
+    <ID>ReturnCount:CommandJoin.kt:CommandJoin$override fun tabComplete: List&lt;String&gt;</ID>
+    <ID>ReturnCount:CommandLeave.kt:CommandLeave$override fun onExecute</ID>
+    <ID>ReturnCount:CommandLeave.kt:CommandLeave$override fun tabComplete: List&lt;String&gt;</ID>
+    <ID>ReturnCount:CommandReset.kt:CommandReset$override fun onExecute</ID>
+    <ID>ReturnCount:CommandReset.kt:CommandReset$override fun tabComplete: List&lt;String&gt;</ID>
+    <ID>ReturnCount:CommandTop.kt:CommandTop$override fun tabComplete: List&lt;String&gt;</ID>
+    <ID>ReturnCount:CommandUnlock.kt:CommandUnlock$override fun onExecute</ID>
+    <ID>ReturnCount:CommandUnlock.kt:CommandUnlock$override fun tabComplete: List&lt;String&gt;</ID>
+    <ID>ReturnCount:ConditionHasJobLevel.kt:ConditionHasJobLevel$override fun isMet: Boolean</ID>
+    <ID>ReturnCount:EcoJobsAPI.kt:@JvmOverloads fun Player.giveJobExperience</ID>
+    <ID>ReturnCount:EcoJobsAPI.kt:fun Player.giveExactJobExperience</ID>
+    <ID>ReturnCount:EffectGiveJobXp.kt:EffectGiveJobXp$override fun onTrigger: Boolean</ID>
+    <ID>ReturnCount:JobXPAccumulator.kt:JobXPAccumulator$override fun accept</ID>
+    <ID>ReturnCount:JobXPAccumulator.kt:private fun Player.cacheJobExperienceMultiplier: Double</ID>
+    <ID>SpreadOperator:JobLeaveGUI.kt:JobLeaveGUI$( maskItems, *maskPattern )</ID>
+    <ID>SpreadOperator:JobLevelGUI.kt:JobLevelGUI$( maskItems, *maskPattern )</ID>
+    <ID>SpreadOperator:JobsGUI.kt:JobsGUI$( MaskItems.fromItemNames(plugin.configYml.getStrings("gui.mask.materials")), *plugin.configYml.getStrings("gui.mask.pattern").toTypedArray() )</ID>
+    <ID>TooManyFunctions:EcoJobsAPI.kt:com.willfp.ecojobs.api.EcoJobsAPI.kt</ID>
+    <ID>TooManyFunctions:Job.kt:Job : Registrable</ID>
+    <ID>UnnamedParameterUse:CommandGiveXP.kt:CommandGiveXP$replace</ID>
+    <ID>UnnamedParameterUse:CommandJoin.kt:CommandJoin$replace</ID>
+    <ID>UnnamedParameterUse:CommandLeave.kt:CommandLeave$replace</ID>
+    <ID>UnnamedParameterUse:CommandReload.kt:CommandReload$replace</ID>
+    <ID>UnnamedParameterUse:CommandReset.kt:CommandReset$replace</ID>
+    <ID>UnnamedParameterUse:CommandTop.kt:CommandTop$replace</ID>
+    <ID>UnnamedParameterUse:CommandUnlock.kt:CommandUnlock$replace</ID>
+    <ID>UnnamedParameterUse:ConditionHasActiveJob.kt:ConditionHasActiveJob$require</ID>
+    <ID>UnnamedParameterUse:ConditionHasJobLevel.kt:ConditionHasJobLevel$require</ID>
+    <ID>UnnamedParameterUse:EcoJobsAPI.kt:progress</ID>
+    <ID>UnnamedParameterUse:EcoJobsAPI.kt:progressFraction</ID>
+    <ID>UnnamedParameterUse:EffectGiveJobXp.kt:EffectGiveJobXp$require</ID>
+    <ID>UnnamedParameterUse:EffectJobXpMultiplier.kt:EffectJobXpMultiplier$require</ID>
+    <ID>UnnamedParameterUse:Job.kt:Job$inject</ID>
+    <ID>UnnamedParameterUse:Job.kt:Job$registerStandardPlaceholders</ID>
+    <ID>UnnamedParameterUse:Job.kt:Job$replace</ID>
+    <ID>UnnamedParameterUse:Job.kt:replace</ID>
+    <ID>UnnamedParameterUse:JobLeaveGUI.kt:JobLeaveGUI$replace</ID>
+    <ID>UnnamedParameterUse:JobLevelGUI.kt:JobLevelGUI$replace</ID>
+    <ID>UnnamedParameterUse:JobLevelGUI.kt:JobLevelGUI.&lt;no name provided&gt;$coerceIn</ID>
+    <ID>UnnamedParameterUse:JobLevelGUI.kt:JobLevelGUI.&lt;no name provided&gt;$replace</ID>
+    <ID>UnnamedParameterUse:JobsGUI.kt:JobsGUI$Pair</ID>
+    <ID>UnnamedParameterUse:JobsGUI.kt:JobsGUI$replace</ID>
+    <ID>UnnecessaryFilter:JobsGUI.kt:JobsGUI$filter { player.getJobLevel(it) &gt; 0 }</ID>
+    <ID>UnnecessaryParentheses:JobsGUI.kt:JobsGUI$((page - 1) * jobAreaSlots.size)</ID>
+    <ID>UnusedImport:Job.kt:import com.willfp.eco.util.toNumeral</ID>
+    <ID>UseEmptyCounterpart:EcoJobsAPI.kt:listOf()</ID>
+  </CurrentIssues>
+</SmellBaseline>
