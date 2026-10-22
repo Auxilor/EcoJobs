@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "findings": [
+    {
+      "code": "U003",
+      "path": "eco-core/core-plugin/src/main/kotlin/com/willfp/ecojobs/api/event/PlayerJobExpGainEvent.kt",
+      "message": "Unused property `isMultiply`"
+    },
+    {
+      "code": "U002",
+      "path": "eco-core/core-plugin/src/main/kotlin/com/willfp/ecojobs/jobs/Job.kt",
+      "message": "Unused function `getJobLevelObject`"
+    }
+  ]
+}
