@@ -66,9 +66,8 @@ class JobLevelGUI(
                     }
             }
 
-            override fun getLevelState(player: Player, level: Int): LevelState {
-                return LevelState.of(level, player.getJobLevel(job))
-            }
+            override fun getLevelState(player: Player, level: Int): LevelState =
+                LevelState.of(level, player.getJobLevel(job))
         }
 
         val pageChangeSound = PlayableSound.create(plugin.configYml.getSubsection("level-gui.progression-slots.page-change-sound"))
