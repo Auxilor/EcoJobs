@@ -10,7 +10,7 @@ object ResetOnQuitListener : Listener {
     @EventHandler(
         ignoreCancelled = true
     )
-    fun onQuit(event: PlayerJobLeaveEvent) {
+    fun onJobLeave(event: PlayerJobLeaveEvent) {
         val player = event.player
         val job = event.job
 
