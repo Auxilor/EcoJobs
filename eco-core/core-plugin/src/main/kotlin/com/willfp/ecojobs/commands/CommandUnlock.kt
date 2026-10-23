@@ -34,9 +34,9 @@ object CommandUnlock : Subcommand(
         val playerName = args[0]
 
         @Suppress("DEPRECATION")
-        val player = Bukkit.getOfflinePlayer(playerName)
+        val player = Bukkit.getPlayer(playerName) ?: Bukkit.getOfflinePlayer(playerName)
 
-        if (!player.hasPlayedBefore()) {
+        if (!player.isOnline && !player.hasPlayedBefore()) {
             sender.sendMessage(plugin.langYml.getMessage("invalid-player"))
             return
         }

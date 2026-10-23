@@ -17,6 +17,7 @@ messages:
   invalid-job: "&cInvalid job!"
   already-has-job: "&cPlayer already has this job!"
   doesnt-have-job: "&cPlayer doesn't have this job!"
+  player-not-in-job: "&cPlayer is not in this job!"
   unlocked-job: "&fSuccessfully unlocked the %job%&f job for %player%!"
   cannot-spawn-job: "&cYou already have this job unlocked!"
   invalid-amount: "&cInvalid amount!"
