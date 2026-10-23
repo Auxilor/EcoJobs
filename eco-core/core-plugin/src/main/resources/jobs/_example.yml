@@ -17,7 +17,7 @@ description: "&8&oLevel up by mining blocks"
 # If the job should be unlocked by default
 unlocked-by-default: true
 
-# If job progress should be reset when quitting
+# If job progress should be reset when leaving the job
 reset-on-quit: false
 
 # The price to join this job (set to 0 to disable)
