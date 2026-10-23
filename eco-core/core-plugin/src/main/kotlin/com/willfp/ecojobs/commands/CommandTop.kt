@@ -21,17 +21,17 @@ object CommandTop : Subcommand(
         plugin.scheduler.async().run {
             val job = Jobs.getByID(args.getOrNull(0))
 
-            if (job == null) {
+            if (job == null || !plugin.configYml.getBool("leaderboard.enabled")) {
                 sender.sendMessage(plugin.langYml.getMessage("invalid-job"))
                 return@run
             }
-
-            val page = args.getOrNull(1)?.toIntOrNull() ?: 1
 
             if (args.getOrNull(1)?.let { it.isNotBlank() && !it.matches("\\d+".toRegex()) } == true) {
                 sender.sendMessage(plugin.langYml.getMessage("invalid-page"))
                 return@run
             }
+
+            val page = args.getOrNull(1)?.toIntOrNull() ?: 1
 
             val offset = (page - 1) * 10
             val positions = (offset + 1..offset + 10).toList()
@@ -41,9 +41,9 @@ object CommandTop : Subcommand(
             val messages = plugin.langYml.getStrings("top.format").toMutableList()
             val lines = mutableListOf<String>()
 
-            top.forEachIndexed { index, entry ->
+            top.forEach { entry ->
                 val line = plugin.langYml.getString("top-line-format")
-                    .replace("%rank%", (offset + index + 1).toString())
+                    .replace("%rank%", entry.position.toString())
                     .replace("%level%", entry.value.toInt().toString())
                     .replace("%player%", entry.player.savedDisplayName)
                 lines.add(line)
@@ -74,6 +74,10 @@ object CommandTop : Subcommand(
     }
 
     override fun tabComplete(sender: CommandSender, args: List<String>): List<String> {
+        if (!plugin.configYml.getBool("leaderboard.enabled")) {
+            return emptyList()
+        }
+
         val completions = mutableListOf<String>()
 
         if (args.size == 1) {

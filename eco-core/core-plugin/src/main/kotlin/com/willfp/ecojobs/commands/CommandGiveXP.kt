@@ -6,6 +6,7 @@ import com.willfp.eco.util.savedDisplayName
 import com.willfp.eco.util.toNiceString
 import com.willfp.ecojobs.api.giveExactJobExperience
 import com.willfp.ecojobs.api.hasJob
+import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.plugin
 import com.willfp.ecojobs.runOwned
@@ -52,6 +53,11 @@ object CommandGiveXP : Subcommand(
 
         if (!player.hasJob(job)) {
             sender.sendMessage(plugin.langYml.getMessage("doesnt-have-job"))
+            return
+        }
+
+        if (!player.hasJobActive(job)) {
+            sender.sendMessage(plugin.langYml.getMessage("player-not-in-job"))
             return
         }
 
