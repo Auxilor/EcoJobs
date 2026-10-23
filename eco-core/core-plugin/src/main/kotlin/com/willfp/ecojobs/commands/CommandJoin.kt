@@ -45,12 +45,14 @@ object CommandJoin : Subcommand(
             return
         }
 
-        player.sendMessage(
-            plugin.langYml.getMessage("joined-job", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
-                .replace("%job%", job.name)
-        )
-
         player.joinJob(job)
+
+        if (player.hasJobActive(job)) {
+            player.sendMessage(
+                plugin.langYml.getMessage("joined-job", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
+                    .replace("%job%", job.name)
+            )
+        }
     }
 
     override fun tabComplete(sender: CommandSender, args: List<String>): List<String> {
