@@ -15,15 +15,21 @@ object PriceHandler : Listener {
     )
     fun onJoin(event: PlayerJobJoinEvent) {
         val player = event.player as? Player ?: return
-        val job = event.job
-        val price = job.joinPrice
 
-        if (!price.canAfford(player)) {
+        if (!event.job.joinPrice.canAfford(player)) {
             event.isCancelled = true
-            return
         }
+    }
 
-        price.pay(player)
+    @EventHandler(
+        priority = EventPriority.MONITOR,
+        ignoreCancelled = true
+    )
+    fun onJoinComplete(event: PlayerJobJoinEvent) {
+        val player = event.player as? Player ?: return
+        val job = event.job
+
+        job.joinPrice.pay(player)
         job.joinEffects?.trigger(player.toDispatcher())
     }
 
