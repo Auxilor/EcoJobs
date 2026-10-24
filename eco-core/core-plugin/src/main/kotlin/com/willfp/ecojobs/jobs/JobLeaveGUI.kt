@@ -17,8 +17,8 @@ class JobLeaveGUI(
     job: Job
 ) {
     private val menu = menu(plugin.configYml.getInt("leave-gui.rows")) {
-        title = (job.title ?: plugin.configYml.getString("leave-gui.title")
-            .replace("%job%", job.name))
+        title = (job.title ?: plugin.configYml.getString("leave-gui.title"))
+            .replace("%job%", job.name)
             .formatEco()
 
         setMask(plugin.configYml, "leave-gui")

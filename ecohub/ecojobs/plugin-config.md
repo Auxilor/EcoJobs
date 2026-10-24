@@ -13,7 +13,6 @@ use-local-storage: false
 
 leaderboard:
   # You can disable the top leaderboard if you don't want it
-  # Please note that it will require a full server restart to take into effect
   enabled: true
 
   # Time in seconds for the lifetime of the leaderboard cache
