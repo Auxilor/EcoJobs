@@ -1,16 +1,18 @@
 package com.willfp.ecojobs.jobs
 
 import com.willfp.eco.core.Prerequisite
+import com.willfp.eco.core.gui.addCustomSlots
 import com.willfp.eco.core.gui.addPageChanger
+import com.willfp.eco.core.gui.component.ConfigButton
+import com.willfp.eco.core.gui.component.LevelComponent
+import com.willfp.eco.core.gui.component.LevelState
+import com.willfp.eco.core.gui.component.addComponent
+import com.willfp.eco.core.gui.component.closeButton
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
 import com.willfp.eco.core.gui.menu.MenuLayer
-import com.willfp.eco.core.gui.onLeftClick
 import com.willfp.eco.core.gui.page.PageChanger
-import com.willfp.eco.core.gui.slot
-import com.willfp.eco.core.gui.slot.ConfigSlot
-import com.willfp.eco.core.gui.slot.FillerMask
-import com.willfp.eco.core.gui.slot.MaskItems
+import com.willfp.eco.core.gui.setMask
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.core.sound.PlayableSound
@@ -18,8 +20,6 @@ import com.willfp.eco.util.NumberUtils
 import com.willfp.eco.util.formatEco
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.plugin
-import com.willfp.ecomponent.components.LevelComponent
-import com.willfp.ecomponent.components.LevelState
 import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -30,9 +30,6 @@ class JobLevelGUI(
     private val menu: Menu
 
     init {
-        val maskPattern = plugin.configYml.getStrings("level-gui.mask.pattern").toTypedArray()
-        val maskItems = MaskItems.fromItemNames(plugin.configYml.getStrings("level-gui.mask.materials"))
-
         val progressionPattern = plugin.configYml.getStrings("level-gui.progression-slots.pattern")
 
         val component = object : LevelComponent() {
@@ -69,13 +66,8 @@ class JobLevelGUI(
                     }
             }
 
-            override fun getLevelState(player: Player, level: Int): LevelState {
-                return when {
-                    level <= player.getJobLevel(job) -> LevelState.UNLOCKED
-                    level == player.getJobLevel(job) + 1 -> LevelState.IN_PROGRESS
-                    else -> LevelState.LOCKED
-                }
-            }
+            override fun getLevelState(player: Player, level: Int): LevelState =
+                LevelState.of(level, player.getJobLevel(job))
         }
 
         val pageChangeSound = PlayableSound.create(plugin.configYml.getSubsection("level-gui.progression-slots.page-change-sound"))
@@ -88,55 +80,24 @@ class JobLevelGUI(
 
             maxPages(component.pages)
 
-            setMask(
-                FillerMask(
-                    maskItems,
-                    *maskPattern
-                )
-            )
+            setMask(plugin.configYml, "level-gui")
 
             addComponent(1, 1, component)
 
             addComponent(
-                MenuLayer.LOWER,
-                plugin.configYml.getInt("level-gui.progression-slots.prev-page.location.row"),
-                plugin.configYml.getInt("level-gui.progression-slots.prev-page.location.column"),
-                slot(
-                    plugin.configYml.getStringOrNull("level-gui.progression-slots.prev-page.item")
-                        ?.let { Items.lookup(it).item }
-                        ?: ItemStackBuilder(Items.lookup("arrow")).build()
-                ) {
-                    onLeftClick { player, _, _, _ -> JobsGUI.open(player) }
-                }
+                ConfigButton(
+                    plugin.configYml.getSubsection("level-gui.progression-slots.prev-page"),
+                    defaultItem = "arrow",
+                    layer = MenuLayer.LOWER
+                ) { player, _, _, _ -> JobsGUI.open(player) }
             )
 
             addPageChanger(plugin.configYml, "level-gui.progression-slots.prev-page", PageChanger.Direction.BACKWARDS, pageChangeSound)
             addPageChanger(plugin.configYml, "level-gui.progression-slots.next-page", PageChanger.Direction.FORWARDS, pageChangeSound)
 
-            val closeEnabled = plugin.configYml.getBoolOrNull("level-gui.progression-slots.close.enabled") ?: true
-            if (closeEnabled) {
-                setSlot(
-                    plugin.configYml.getInt("level-gui.progression-slots.close.location.row"),
-                    plugin.configYml.getInt("level-gui.progression-slots.close.location.column"),
-                    slot(
-                        ItemStackBuilder(Items.lookup(plugin.configYml.getString("level-gui.progression-slots.close.material")))
-                            .setDisplayName(plugin.configYml.getString("level-gui.progression-slots.close.name"))
-                            .build()
-                    ) {
-                        onLeftClick { event, _ ->
-                            event.whoClicked.closeInventory()
-                        }
-                    }
-                )
-            }
+            addComponent(closeButton(plugin.configYml.getSubsection("level-gui.progression-slots.close")))
 
-            for (config in plugin.configYml.getSubsections("level-gui.custom-slots")) {
-                setSlot(
-                    config.getInt("row"),
-                    config.getInt("column"),
-                    ConfigSlot(config)
-                )
-            }
+            addCustomSlots(plugin.configYml, "level-gui")
         }
     }
 

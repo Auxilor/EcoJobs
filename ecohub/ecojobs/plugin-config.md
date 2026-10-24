@@ -62,6 +62,7 @@ gui:
   player-info:
     row: 1
     column: 5
+    locations: [ ] # Optional list of row/column slots; if set, the button shows in each of them instead of row/column
 
     # Set to false to hide the player info icon.
     enabled: true
@@ -128,6 +129,7 @@ gui:
     location:
       row: 6
       column: 4
+    locations: [ ] # Optional list of row/column slots; if set, the button shows in each of them instead of row/column
 
   next-page:
     item: arrow
@@ -135,6 +137,7 @@ gui:
     location:
       row: 6
       column: 6
+    locations: [ ] # Optional list of row/column slots; if set, the button shows in each of them instead of row/column
 
   close:
     enabled: true
@@ -143,6 +146,7 @@ gui:
     location:
       row: 6
       column: 5
+    locations: [ ] # Optional list of row/column slots; if set, the button shows in each of them instead of row/column
 
   # Custom GUI slots; see here for a how-to: https://plugins.auxilor.io/all-plugins/custom-gui-slots
   custom-slots: [ ]
@@ -192,6 +196,7 @@ level-gui:
       location:
         row: 6
         column: 4
+      locations: [ ] # Optional list of row/column slots; if set, the button shows in each of them instead of row/column
 
     next-page:
       material: arrow
@@ -199,6 +204,7 @@ level-gui:
       location:
         row: 6
         column: 6
+      locations: [ ] # Optional list of row/column slots; if set, the button shows in each of them instead of row/column
 
     close:
       enabled: true
@@ -207,6 +213,7 @@ level-gui:
       location:
         row: 6
         column: 5
+      locations: [ ] # Optional list of row/column slots; if set, the button shows in each of them instead of row/column
 
     unlocked:
       item: lime_stained_glass_pane
@@ -271,6 +278,7 @@ leave-gui:
     location:
       row: 2
       column: 3
+    locations: [ ] # Optional list of row/column slots; if set, the button shows in each of them instead of row/column
 
   confirm:
     item: player_head texture:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTRiZDlhNDViOTY4MWNlYTViMjhjNzBmNzVhNjk1NmIxZjU5NGZlYzg0MGI5NjA3Nzk4ZmIxZTcwNzc2NDQzMCJ9fX0=
@@ -282,6 +290,7 @@ leave-gui:
     location:
       row: 2
       column: 7
+    locations: [ ] # Optional list of row/column slots; if set, the button shows in each of them instead of row/column
 
   # Custom GUI slots; see here for a how-to: https://plugins.auxilor.io/all-plugins/custom-gui-slots
   custom-slots: [ ]

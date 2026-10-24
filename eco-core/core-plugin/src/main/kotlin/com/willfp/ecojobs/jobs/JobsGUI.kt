@@ -1,15 +1,17 @@
 package com.willfp.ecojobs.jobs
 
+import com.willfp.eco.core.gui.addCustomSlots
 import com.willfp.eco.core.gui.addPageChanger
+import com.willfp.eco.core.gui.component.addComponent
+import com.willfp.eco.core.gui.component.closeButton
+import com.willfp.eco.core.gui.getSlotLocations
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
 import com.willfp.eco.core.gui.onLeftClick
 import com.willfp.eco.core.gui.onRightClick
 import com.willfp.eco.core.gui.page.PageChanger
+import com.willfp.eco.core.gui.setMask
 import com.willfp.eco.core.gui.slot
-import com.willfp.eco.core.gui.slot.ConfigSlot
-import com.willfp.eco.core.gui.slot.FillerMask
-import com.willfp.eco.core.gui.slot.MaskItems
 import com.willfp.eco.core.items.Items
 import com.willfp.eco.core.items.builder.ItemStackBuilder
 import com.willfp.eco.core.sound.PlayableSound
@@ -21,10 +23,10 @@ import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.joinJob
 import com.willfp.ecojobs.jobs.Jobs.unlockedJobs
 import com.willfp.ecojobs.plugin
+import kotlin.math.ceil
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import kotlin.math.ceil
 
 object JobsGUI {
     @Volatile
@@ -63,51 +65,48 @@ object JobsGUI {
         return menu(plugin.configYml.getInt("gui.rows")) {
             title = plugin.configYml.getString("gui.title").formatEco()
 
-            setMask(
-                FillerMask(
-                    MaskItems.fromItemNames(plugin.configYml.getStrings("gui.mask.materials")),
-                    *plugin.configYml.getStrings("gui.mask.pattern").toTypedArray()
-                )
-            )
+            setMask(plugin.configYml, "gui")
 
             if (plugin.configYml.getBoolOrNull("gui.player-info.enabled") ?: true) {
-                setSlot(
-                    plugin.configYml.getInt("gui.player-info.row"),
-                    plugin.configYml.getInt("gui.player-info.column"),
-                    slot { player, _ ->
-                        val name = plugin.configYml.getString("gui.player-info.name")
-                            .replace("%player%", player.displayName)
-                            .formatEco(player, true)
+                for (location in plugin.configYml.getSlotLocations("gui.player-info")) {
+                    setSlot(
+                        location.row,
+                        location.column,
+                        slot { player, _ ->
+                            val name = plugin.configYml.getString("gui.player-info.name")
+                                .replace("%player%", player.displayName)
+                                .formatEco(player, true)
 
-                        val lore = if (player.activeJobs.isEmpty()) {
-                            plugin.configYml.getStrings("gui.player-info.no-jobs")
-                        } else {
-                            plugin.configYml.getStrings("gui.player-info.has-jobs")
-                                .flatMap {
-                                    if (it == "%jobs%") {
-                                        player.activeJobs.flatMap { job ->
-                                            job.injectPlaceholdersInto(
-                                                plugin.configYml.getStrings("gui.player-info.job-line"),
-                                                player
-                                            )
+                            val lore = if (player.activeJobs.isEmpty()) {
+                                plugin.configYml.getStrings("gui.player-info.no-jobs")
+                            } else {
+                                plugin.configYml.getStrings("gui.player-info.has-jobs")
+                                    .flatMap {
+                                        if (it == "%jobs%") {
+                                            player.activeJobs.flatMap { job ->
+                                                job.injectPlaceholdersInto(
+                                                    plugin.configYml.getStrings("gui.player-info.job-line"),
+                                                    player
+                                                )
+                                            }
+                                        } else {
+                                            listOf(it)
                                         }
-                                    } else {
-                                        listOf(it)
                                     }
-                                }
-                        }.formatEco(player, true)
+                            }.formatEco(player, true)
 
-                        ItemStackBuilder(
-                            Items.lookup(
-                                plugin.configYml.getString("gui.player-info.icon")
-                                    .replace("%player%", player.name)
+                            ItemStackBuilder(
+                                Items.lookup(
+                                    plugin.configYml.getString("gui.player-info.icon")
+                                        .replace("%player%", player.name)
+                                )
                             )
-                        )
-                            .setDisplayName(name)
-                            .addLoreLines(lore)
-                            .build()
-                    }
-                )
+                                .setDisplayName(name)
+                                .addLoreLines(lore)
+                                .build()
+                        }
+                    )
+                }
             }
 
             for ((index, pair) in jobAreaSlots.withIndex()) {
@@ -167,28 +166,9 @@ object JobsGUI {
                         .size.toDouble() / jobAreaSlots.size).toInt()
             }
 
-            val closeEnabled = plugin.configYml.getBoolOrNull("gui.close.enabled") ?: true
-            if (closeEnabled) {
-                setSlot(
-                    plugin.configYml.getInt("gui.close.location.row"),
-                    plugin.configYml.getInt("gui.close.location.column"),
-                    slot(
-                        ItemStackBuilder(Items.lookup(plugin.configYml.getString("gui.close.item")))
-                            .setDisplayName(plugin.configYml.getString("gui.close.name"))
-                            .build()
-                    ) {
-                        onLeftClick { event, _ -> event.whoClicked.closeInventory() }
-                    }
-                )
-            }
+            addComponent(closeButton(plugin.configYml.getSubsection("gui.close")))
 
-            for (config in plugin.configYml.getSubsections("gui.custom-slots")) {
-                setSlot(
-                    config.getInt("row"),
-                    config.getInt("column"),
-                    ConfigSlot(config)
-                )
-            }
+            addCustomSlots(plugin.configYml, "gui")
         }
     }
 
