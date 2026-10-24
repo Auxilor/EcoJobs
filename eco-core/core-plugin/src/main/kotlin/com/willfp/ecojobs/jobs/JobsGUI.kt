@@ -8,8 +8,7 @@ import com.willfp.eco.core.gui.component.closeButton
 import com.willfp.eco.core.gui.getSlotLocations
 import com.willfp.eco.core.gui.menu
 import com.willfp.eco.core.gui.menu.Menu
-import com.willfp.eco.core.gui.onLeftClick
-import com.willfp.eco.core.gui.onRightClick
+import com.willfp.eco.core.gui.onClick
 import com.willfp.eco.core.gui.page.PageChanger
 import com.willfp.eco.core.gui.setMask
 import com.willfp.eco.core.gui.slot
@@ -26,6 +25,7 @@ import com.willfp.ecojobs.plugin
 import kotlin.math.ceil
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 
 object JobsGUI {
@@ -53,6 +53,10 @@ object JobsGUI {
             (topLeftColumn..bottomRightColumn).map { column -> Pair(row, column) }
         }
 
+        val leaveClickName = gui.getString("job-icon.leave-click").uppercase().replace("-", "_")
+        val leaveClick = ClickType.entries.firstOrNull { it.name == leaveClickName } ?: ClickType.RIGHT
+        val openClick = if (leaveClick == ClickType.LEFT) ClickType.RIGHT else ClickType.LEFT
+
         val pageChangeSound = PlayableSound.create(gui.getSubsection("page-change-sound"))
 
         return menu(gui.getInt("rows")) {
@@ -73,13 +77,13 @@ object JobsGUI {
                     getJobAt(player, menu, category, jobAreaSlots.size, index)?.getIcon(player)
                         ?: ItemStack(Material.AIR)
                 }) {
-                    onLeftClick { player, _, _, menu ->
+                    onClick(openClick) { player, _, _, menu ->
                         getJobAt(player, menu, category, jobAreaSlots.size, index)?.let { job ->
                             openJob(gui, player, job)
                         }
                     }
 
-                    onRightClick { player, _, _, menu ->
+                    onClick(leaveClick) { player, _, _, menu ->
                         getJobAt(player, menu, category, jobAreaSlots.size, index)?.let { job ->
                             openLeaveMenu(gui, player, job)
                         }
