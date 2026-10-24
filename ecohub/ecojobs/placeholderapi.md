@@ -1,6 +1,6 @@
 ---
 title: "PlaceholderAPI"
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 | Placeholder                                        | Description                                            |
@@ -13,6 +13,8 @@ sidebar_position: 2
 | `%ecojobs_<id>_required_xp%`                       | Shows the job XP required for the next job             |
 | `%ecojobs_<id>_total_players%`                     | Shows the total amount of players with this job active |
 | `%ecojobs_total_job_level%`                        | Shows the level of all jobs combined                   |
-| `%ecojobs_limit%`                                  | Shows the max amount of jobs a player can join at once |
-| `%ecojobs_in_jobs%`                                | Shows the amount of jobs a player is currently in      |
+| `%ecojobs_limit%`                                  | Shows the max amount of jobs with no category a player can join at once |
+| `%ecojobs_in_jobs%`                                | Shows the amount of jobs with no category a player is currently in |
+| `%ecojobs_limit_<category>%`                       | Shows the max amount of jobs in a category a player can join at once |
+| `%ecojobs_in_jobs_<category>%`                     | Shows the amount of jobs in a category a player is currently in |
 | `%ecojobs_top_<id>_<position[0-9]>_<name/amount>%` | Leaderboard placeholder for job level                  |

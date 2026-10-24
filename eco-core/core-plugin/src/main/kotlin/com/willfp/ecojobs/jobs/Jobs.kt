@@ -91,4 +91,10 @@ object Jobs : ConfigCategory("job", "jobs") {
         get() = values()
             .sortedByDescending { this.getJobLevel(it) }
             .filter { this.getJobLevel(it) > 0 }
+
+    /**
+     * A players unlocked jobs in [category], or with no category when null.
+     */
+    fun OfflinePlayer.getUnlockedJobs(category: JobCategory?): List<Job> =
+        unlockedJobs.filter { it.category == category }
 }
