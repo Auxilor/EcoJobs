@@ -125,7 +125,7 @@ description: "&8&oLevel up by mining blocks" # The description of the job
 # The icon in GUIs: https://plugins.auxilor.io/the-item-lookup-system
 icon: player_head texture:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODU3MDVjZjg2NGRmMmMxODJlMzJjNDg2YjcxNDdjYmY3ODJhMGFhM2RmOGE2ZDYxNDUzOTM5MGJmODRmYjE1ZCJ9fX0="
 unlocked-by-default: true # If the job should be unlocked by default
-reset-on-quit: false # If job progress should be reset when quitting
+reset-on-quit: false # If job progress should be reset when leaving the job
 ```
 
 ### The Joining & Leaving Section

@@ -17,8 +17,7 @@ object CommandJobs : PluginCommand(
     init {
         this.addSubcommand(CommandJoin)
             .addSubcommand(CommandLeave)
-        if (plugin.configYml.getBool("leaderboard.enabled"))
-            this.addSubcommand(CommandTop)
+            .addSubcommand(CommandTop)
     }
 
     override fun onExecute(player: Player, args: List<String>) {
