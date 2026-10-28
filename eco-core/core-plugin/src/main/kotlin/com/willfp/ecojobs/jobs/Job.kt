@@ -12,6 +12,7 @@ import com.willfp.eco.core.leaderboard.registerStandardPlaceholders
 import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.eco.core.placeholder.PlayerStaticPlaceholder
 import com.willfp.eco.core.placeholder.PlayerlessPlaceholder
+import com.willfp.eco.core.placeholder.RegistrablePlaceholder
 import com.willfp.eco.core.placeholder.context.placeholderContext
 import com.willfp.eco.core.progression.ProgressionPlaceholders
 import com.willfp.eco.core.price.ConfiguredPrice
@@ -142,6 +143,8 @@ class Job(
         Counters.compile(it, ViolationContext(plugin, "Job $id"))
     }
 
+    private val placeholders: List<RegistrablePlaceholder>
+
     init {
         // Logged once at load, not per XP gain: a broken curve recurs on every grant.
         for (problem in parsedCurve.problems) {
@@ -165,55 +168,57 @@ class Job(
             ViolationContext(plugin, "Job $id")
         )
 
-        PlayerPlaceholder(
-            plugin, "${id}_percentage_progress"
-        ) {
-            (it.getJobProgress(this) * 100).toNiceString()
-        }.register()
+        placeholders = listOf(
+            PlayerPlaceholder(
+                plugin, "${id}_percentage_progress"
+            ) {
+                (it.getJobProgress(this) * 100).toNiceString()
+            },
 
-        PlayerPlaceholder(
-            plugin, id
-        ) {
-            it.getJobLevel(this).toString()
-        }.register()
+            PlayerPlaceholder(
+                plugin, id
+            ) {
+                it.getJobLevel(this).toString()
+            },
 
-        PlayerPlaceholder(
-            plugin, "${id}_current_xp"
-        ) {
-            NumberUtils.format(it.getJobXP(this))
-        }.register()
+            PlayerPlaceholder(
+                plugin, "${id}_current_xp"
+            ) {
+                NumberUtils.format(it.getJobXP(this))
+            },
 
-        PlayerPlaceholder(
-            plugin, "${id}_required_xp"
-        ) {
-            it.getJobXPRequired(this)
-        }.register()
+            PlayerPlaceholder(
+                plugin, "${id}_required_xp"
+            ) {
+                it.getJobXPRequired(this)
+            },
 
-        PlayerlessPlaceholder(
-            plugin, "${id}_name"
-        ) {
-            this.name
-        }.register()
+            PlayerlessPlaceholder(
+                plugin, "${id}_name"
+            ) {
+                this.name
+            },
 
-        PlayerPlaceholder(
-            plugin, "${id}_level"
-        ) {
-            it.getJobLevel(this).toString()
-        }.register()
+            PlayerPlaceholder(
+                plugin, "${id}_level"
+            ) {
+                it.getJobLevel(this).toString()
+            },
 
-        PlayerPlaceholder(
-            plugin, "${id}_active"
-        ) {
-            it.hasJobActive(this).toString()
-        }.register()
+            PlayerPlaceholder(
+                plugin, "${id}_active"
+            ) {
+                it.hasJobActive(this).toString()
+            },
 
-        PlayerPlaceholder(
-            plugin, "${id}_total_players"
-        ) {
-            // Backed by the plugin-wide tally, refreshed on eco's leaderboard cycle, rather
-            // than by scanning the entire playerbase on every read.
-            (Jobs.tally?.getCount(id) ?: 0).toString()
-        }.register()
+            PlayerPlaceholder(
+                plugin, "${id}_total_players"
+            ) {
+                // Backed by the plugin-wide tally, refreshed on eco's leaderboard cycle, rather
+                // than by scanning the entire playerbase on every read.
+                (Jobs.tally?.getCount(id) ?: 0).toString()
+            }
+        ).onEach { it.register() }
     }
 
     val levelUpEffects = Effects.compileChain(
@@ -281,6 +286,7 @@ class Job(
 
     override fun onRemove() {
         jobXpGains.forEach { it.unbind() }
+        placeholders.forEach { it.unregister() }
     }
 
     fun getLevel(level: Int): JobLevel = levels.get(level) {

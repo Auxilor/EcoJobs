@@ -27,7 +27,7 @@ class JobXPAccumulator(
             return
         }
 
-        if (player.gameMode in setOf(GameMode.CREATIVE, GameMode.SPECTATOR)) {
+        if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) {
             return
         }
 
