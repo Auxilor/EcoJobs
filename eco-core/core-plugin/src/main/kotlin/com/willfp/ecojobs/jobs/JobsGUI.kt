@@ -1,5 +1,6 @@
 package com.willfp.ecojobs.jobs
 
+import com.willfp.eco.core.cache.EcoCache
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.core.gui.addCustomSlots
 import com.willfp.eco.core.gui.addPageChanger
@@ -27,8 +28,13 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
+import java.time.Duration
 
 object JobsGUI {
+    private val playerInfoIcons = EcoCache.builder<String, ItemStack>()
+        .expireAfterWrite(Duration.ofSeconds(30))
+        .build()
+
     @Volatile
     private lateinit var menu: Menu
 
@@ -142,12 +148,9 @@ object JobsGUI {
                 }
         }.formatEco(player, true)
 
-        return ItemStackBuilder(
-            Items.lookup(
-                gui.getString("player-info.icon")
-                    .replace("%player%", player.name)
-            )
-        )
+        val icon = gui.getString("player-info.icon").replace("%player%", player.name)
+
+        return ItemStackBuilder(playerInfoIcons.get(icon) { Items.lookup(it).item }.clone())
             .setDisplayName(name)
             .addLoreLines(lore)
             .build()
