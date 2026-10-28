@@ -84,7 +84,10 @@ fun OfflinePlayer.hasJobActive(job: Job) = job in this.activeJobs
 val OfflinePlayer.activeJobs: Collection<Job>
     get() {
         if (this.profile.read(legacyActiveJobKey).isNotBlank()) {
-            this.profile.write(activeJobsKey, listOf(this.profile.read(legacyActiveJobKey)))
+            this.profile.write(
+                activeJobsKey,
+                (this.profile.read(activeJobsKey) + this.profile.read(legacyActiveJobKey)).distinct()
+            )
             this.profile.write(legacyActiveJobKey, "")
         }
 
