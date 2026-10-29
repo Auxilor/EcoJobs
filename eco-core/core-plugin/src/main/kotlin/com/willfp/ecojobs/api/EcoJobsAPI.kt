@@ -99,6 +99,10 @@ val OfflinePlayer.activeJobs: Collection<Job>
  * Join a job.
  */
 fun OfflinePlayer.joinJob(job: Job) {
+    if (this.hasJobActive(job)) {
+        return
+    }
+
     val event = PlayerJobJoinEvent(this, job)
     Bukkit.getPluginManager().callEvent(event)
 
