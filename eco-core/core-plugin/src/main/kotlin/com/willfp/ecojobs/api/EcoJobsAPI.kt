@@ -269,18 +269,22 @@ fun Player.giveExactJobExperience(job: Job, experience: Double) {
  * the amount.
  *
  * Money only applies to a job the player has actually joined, mirroring [giveJobExperience].
+ *
+ * @return true if the money was actually granted, false if the grant was skipped (player not
+ * in the job, event cancelled, or a non-finite amount after listeners).
  */
-fun Player.giveJobMoney(job: Job, amount: Double) {
+fun Player.giveJobMoney(job: Job, amount: Double): Boolean {
     if (!this.hasJobActive(job)) {
-        return
+        return false
     }
 
     val gainEvent = PlayerJobMoneyGainEvent(this, job, amount)
     Bukkit.getPluginManager().callEvent(gainEvent)
 
     if (gainEvent.isCancelled || !gainEvent.amount.isFinite()) {
-        return
+        return false
     }
 
     this.balance += gainEvent.amount
+    return true
 }

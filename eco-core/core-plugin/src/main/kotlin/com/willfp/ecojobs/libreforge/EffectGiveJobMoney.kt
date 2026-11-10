@@ -44,7 +44,8 @@ object EffectGiveJobMoney : Effect<NoCompileData>("give_job_money") {
             return false
         }
 
-        player.giveJobMoney(job, config.getDoubleFromExpression("amount", player))
-        return true
+        // Propagate the grant outcome: returning true when no money was paid would let
+        // Libreforge deduct a cost or start a cooldown for a failed grant.
+        return player.giveJobMoney(job, config.getDoubleFromExpression("amount", player))
     }
 }
