@@ -121,8 +121,9 @@ level-up-messages:
 level-up-effects: [ ]
 
 effects:
-  - id: give_money
+  - id: give_job_money
     args:
+      job: farmer
       amount: "%level% * 0.25"
     filters:
       fully_grown: true
@@ -143,8 +144,9 @@ effects:
     triggers:
       - mine_block
 
-  - id: give_money
+  - id: give_job_money
     args:
+      job: farmer
       amount: "%level% * 0.25"
     filters:
       blocks:

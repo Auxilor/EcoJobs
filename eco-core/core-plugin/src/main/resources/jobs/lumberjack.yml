@@ -111,8 +111,9 @@ level-up-messages:
 level-up-effects: [ ]
 
 effects:
-  - id: give_money
+  - id: give_job_money
     args:
+      job: lumberjack
       amount: "%level% * 3.0"
     triggers:
       - mine_block

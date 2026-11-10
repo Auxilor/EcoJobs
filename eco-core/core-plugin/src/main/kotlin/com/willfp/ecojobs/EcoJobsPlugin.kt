@@ -21,7 +21,9 @@ import com.willfp.ecojobs.jobs.PriceHandler
 import com.willfp.ecojobs.jobs.ResetOnQuitListener
 import com.willfp.ecojobs.libreforge.ConditionHasActiveJob
 import com.willfp.ecojobs.libreforge.ConditionHasJobLevel
+import com.willfp.ecojobs.libreforge.EffectGiveJobMoney
 import com.willfp.ecojobs.libreforge.EffectGiveJobXp
+import com.willfp.ecojobs.libreforge.EffectJobMoneyMultiplier
 import com.willfp.ecojobs.libreforge.EffectJobXpMultiplier
 import com.willfp.ecojobs.libreforge.FilterJob
 import com.willfp.ecojobs.libreforge.TriggerGainJobXp
@@ -64,7 +66,9 @@ class EcoJobsPlugin : LibreforgePlugin() {
         Conditions.register(ConditionHasJobLevel)
         Conditions.register(ConditionHasActiveJob)
         Effects.register(EffectJobXpMultiplier)
+        Effects.register(EffectJobMoneyMultiplier)
         Effects.register(EffectGiveJobXp)
+        Effects.register(EffectGiveJobMoney)
         Triggers.register(TriggerGainJobXp)
         Triggers.register(TriggerLevelUpJob)
         Triggers.register(TriggerJoinJob)

@@ -99,8 +99,9 @@ level-up-messages:
 level-up-effects: [ ]
 
 effects:
-  - id: give_money
+  - id: give_job_money
     args:
+      job: enchanter
       amount: "%level% * 0.25"
     triggers:
       - enchant_item
