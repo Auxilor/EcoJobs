@@ -102,8 +102,9 @@ level-up-messages:
 level-up-effects: [ ]
 
 effects:
-  - id: give_money
+  - id: give_job_money
     args:
+      job: slayer
       amount: "%v% * %level% * 0.1"
     triggers:
       - kill

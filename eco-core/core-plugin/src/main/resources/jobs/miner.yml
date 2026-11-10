@@ -111,8 +111,9 @@ level-up-messages:
 level-up-effects: [ ]
 
 effects:
-  - id: give_money
+  - id: give_job_money
     args:
+      job: miner
       every: "ceil(10 - %level% / 10)"
       amount: "0.4 * %level%"
     conditions:

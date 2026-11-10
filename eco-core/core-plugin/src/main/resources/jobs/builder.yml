@@ -101,8 +101,9 @@ level-up-messages:
 level-up-effects: [ ]
 
 effects:
-  - id: give_money
+  - id: give_job_money
     args:
+      job: builder
       every: "ceil(12 - %level% / 8)"
       amount: "1.2 * %level%"
     triggers:

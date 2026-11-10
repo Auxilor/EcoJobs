@@ -102,8 +102,9 @@ level-up-messages:
 level-up-effects: [ ]
 
 effects:
-  - id: give_money
+  - id: give_job_money
     args:
+      job: beekeeper
       amount: "%v% * %level% * 2.0"
     triggers:
       - breed

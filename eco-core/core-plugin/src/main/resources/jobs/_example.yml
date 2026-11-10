@@ -173,8 +173,9 @@ level-up-effects: [ ]
 
 # The effects for the job, has %level% as a placeholder
 effects:
-  - id: give_money
+  - id: give_job_money
     args:
+      job: miner
       every: "ceil(10 - %level% / 10)"
       amount: "0.4 * %level%"
     filters:
