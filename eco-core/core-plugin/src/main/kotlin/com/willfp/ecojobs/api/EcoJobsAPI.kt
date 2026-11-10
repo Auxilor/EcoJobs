@@ -5,7 +5,7 @@ package com.willfp.ecojobs.api
 import com.willfp.eco.core.data.keys.PersistentDataKey
 import com.willfp.eco.core.data.keys.PersistentDataKeyType
 import com.willfp.eco.core.data.profile
-import com.willfp.eco.core.integrations.economy.balance
+import com.willfp.eco.core.integrations.economy.EconomyManager
 import com.willfp.eco.core.progression.LevelProgression
 import com.willfp.eco.core.progression.StopReason
 import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
@@ -271,7 +271,8 @@ fun Player.giveExactJobExperience(job: Job, experience: Double) {
  * Money only applies to a job the player has actually joined, mirroring [giveJobExperience].
  *
  * @return true if the money was actually granted, false if the grant was skipped (player not
- * in the job, event cancelled, or a non-positive or non-finite amount after listeners).
+ * in the job, event cancelled, a non-positive or non-finite amount after listeners, or the
+ * economy integration rejected the deposit).
  */
 fun Player.giveJobMoney(job: Job, amount: Double): Boolean {
     if (!this.hasJobActive(job)) {
@@ -281,9 +282,6 @@ fun Player.giveJobMoney(job: Job, amount: Double): Boolean {
     val gainEvent = PlayerJobMoneyGainEvent(this, job, amount)
     Bukkit.getPluginManager().callEvent(gainEvent)
 
-    val granted = !gainEvent.isCancelled && gainEvent.amount.isFinite() && gainEvent.amount > 0.0
-    if (granted) {
-        this.balance += gainEvent.amount
-    }
-    return granted
+    val valid = !gainEvent.isCancelled && gainEvent.amount.isFinite() && gainEvent.amount > 0.0
+    return valid && EconomyManager.giveMoney(this, gainEvent.amount)
 }
