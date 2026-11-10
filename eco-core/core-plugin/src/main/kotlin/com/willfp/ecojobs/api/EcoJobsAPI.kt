@@ -278,7 +278,7 @@ fun Player.giveJobMoney(job: Job, amount: Double) {
     val gainEvent = PlayerJobMoneyGainEvent(this, job, amount)
     Bukkit.getPluginManager().callEvent(gainEvent)
 
-    if (gainEvent.isCancelled) {
+    if (gainEvent.isCancelled || !gainEvent.amount.isFinite()) {
         return
     }
 
