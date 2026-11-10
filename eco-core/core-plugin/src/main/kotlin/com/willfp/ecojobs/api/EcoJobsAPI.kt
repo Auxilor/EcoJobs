@@ -281,10 +281,9 @@ fun Player.giveJobMoney(job: Job, amount: Double): Boolean {
     val gainEvent = PlayerJobMoneyGainEvent(this, job, amount)
     Bukkit.getPluginManager().callEvent(gainEvent)
 
-    if (gainEvent.isCancelled || !gainEvent.amount.isFinite() || gainEvent.amount <= 0.0) {
-        return false
+    val granted = !gainEvent.isCancelled && gainEvent.amount.isFinite() && gainEvent.amount > 0.0
+    if (granted) {
+        this.balance += gainEvent.amount
     }
-
-    this.balance += gainEvent.amount
-    return true
+    return granted
 }
