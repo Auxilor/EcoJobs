@@ -12,7 +12,8 @@ import com.willfp.libreforge.triggers.TriggerParameter
 
 object EffectGiveJobMoney : Effect<NoCompileData>("give_job_money") {
     override val description = "Gives the player money for the specified job. " +
-        "Does nothing if the player has not joined the job."
+        "Does nothing if the player has not joined the job. Returns false when no money was " +
+        "granted, so a configured cost or cooldown is not applied for a failed grant."
 
     override val categories = setOf("economy", "player")
 
@@ -44,8 +45,6 @@ object EffectGiveJobMoney : Effect<NoCompileData>("give_job_money") {
             return false
         }
 
-        // Propagate the grant outcome: returning true when no money was paid would let
-        // Libreforge deduct a cost or start a cooldown for a failed grant.
         return player.giveJobMoney(job, config.getDoubleFromExpression("amount", player))
     }
 }
