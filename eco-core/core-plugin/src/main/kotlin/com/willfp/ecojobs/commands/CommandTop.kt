@@ -1,103 +1,75 @@
 package com.willfp.ecojobs.commands
 
-import com.willfp.eco.core.command.impl.Subcommand
-import com.willfp.eco.util.savedDisplayName
+import com.willfp.ecojobs.jobs.Job
 import com.willfp.ecojobs.jobs.Jobs
-import com.willfp.ecojobs.plugin
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.bukkit.util.StringUtil
+import wiki.ecohub.core.command.CommandBuilder
+import wiki.ecohub.core.command.CommandContext
 import wiki.ecohub.data.playerbase.leaderboard.Leaderboards
+import wiki.ecohub.game.entity.player.PlayerUtils
 import wiki.ecohub.ui.placeholder.placeholderContext
 import wiki.ecohub.ui.text.formatEco
 
-object CommandTop : Subcommand(
-    plugin,
-    "top",
-    "ecojobs.command.top",
-    false
+private val pageCompletions = listOf("1", "2", "3", "4", "5")
+
+private val digits = "\\d+".toRegex()
+
+private const val PAGE_SIZE = 10
+
+/**
+ * Reading the leaderboard can block, so the lookup and the reply run async.
+ */
+internal fun CommandBuilder<CommandSender>.topCommand() = subcommand(
+    name = "top",
+    permission = "ecojobs.command.top"
 ) {
-    override fun onExecute(sender: CommandSender, args: List<String>) {
-        plugin.scheduler.async().run {
-            val job = Jobs.getByID(args.getOrNull(0))
+    executes {
+        val job = Jobs.getByID(args.getOrNull(0))
 
-            if (job == null || !plugin.configYml.getBool("leaderboard.enabled")) {
-                sender.sendMessage(plugin.langYml.getMessage("invalid-job"))
-                return@run
-            }
-
-            if (args.getOrNull(1)?.let { it.isNotBlank() && !it.matches("\\d+".toRegex()) } == true) {
-                sender.sendMessage(plugin.langYml.getMessage("invalid-page"))
-                return@run
-            }
-
-            val page = args.getOrNull(1)?.toIntOrNull() ?: 1
-
-            val offset = (page - 1) * 10
-            val positions = (offset + 1..offset + 10).toList()
-
-            val top = positions.mapNotNull { job.leaderboard?.getTop(it) }
-
-            val messages = plugin.langYml.getStrings("top.format").toMutableList()
-            val lines = mutableListOf<String>()
-
-            top.forEach { entry ->
-                val line = plugin.langYml.getString("top-line-format")
-                    .replace("%rank%", entry.position.toString())
-                    .replace("%level%", entry.value.toInt().toString())
-                    .replace("%player%", entry.player.savedDisplayName)
-                lines.add(line)
-            }
-
-            // An empty leaderboard still shows its header and footer, with the universal
-        // "no records" message standing in for the entries.
-        if (lines.isEmpty()) {
-            lines.add(Leaderboards.getNoRecordsMessage(plugin))
+        if (job == null || !plugin.configYml.getBool("leaderboard.enabled")) {
+            fail("invalid-job")
         }
 
-        val linesIndex = messages.indexOf("%lines%")
-            if (linesIndex != -1) {
-                messages.removeAt(linesIndex)
-                messages.addAll(linesIndex, lines)
-            }
-
-            messages.forEach { message ->
-                sender.sendMessage(
-                    message.formatEco(
-                        placeholderContext(
-                            player = sender as? Player
-                        )
-                    )
-                )
-            }
+        if (args.getOrNull(1)?.let { it.isNotBlank() && !it.matches(digits) } == true) {
+            fail("invalid-page")
         }
+
+        val page = args.getOrNull(1)?.toIntOrNull() ?: 1
+
+        plugin.scheduler.async().run { sendTop(job, page) }
     }
 
-    override fun tabComplete(sender: CommandSender, args: List<String>): List<String> {
-        if (!plugin.configYml.getBool("leaderboard.enabled")) {
-            return emptyList()
+    completes {
+        when {
+            !plugin.configYml.getBool("leaderboard.enabled") -> emptyList()
+            args.size == 1 -> Jobs.values().map { it.id }
+            args.size == 2 && Jobs.getByID(args[0]) != null -> pageCompletions
+            else -> emptyList()
         }
-
-        val completions = mutableListOf<String>()
-
-        if (args.size == 1) {
-            StringUtil.copyPartialMatches(
-                args[0],
-                Jobs.values().map { it.id },
-                completions
-            )
-            return completions
-        }
-
-        if (args.size == 2 && Jobs.getByID(args[0]) != null) {
-            StringUtil.copyPartialMatches(
-                args[1],
-                listOf("1", "2", "3", "4", "5"),
-                completions
-            )
-            return completions
-        }
-
-        return emptyList()
     }
+}
+
+private fun CommandContext<CommandSender>.sendTop(job: Job, page: Int) {
+    val offset = (page - 1) * PAGE_SIZE
+    val top = (offset + 1..offset + PAGE_SIZE).mapNotNull { job.leaderboard?.getTop(it) }
+
+    val lines = top.map { entry ->
+        plugin.langYml.getString("top-line-format")
+            .replace(oldValue = "%rank%", newValue = entry.position.toString())
+            .replace(oldValue = "%level%", newValue = entry.value.toInt().toString())
+            .replace(oldValue = "%player%", newValue = PlayerUtils.getSavedDisplayName(entry.player))
+    }.ifEmpty { listOf(Leaderboards.getNoRecordsMessage(plugin)) }
+
+    val messages = plugin.langYml.getStrings("top.format").toMutableList()
+    val linesIndex = messages.indexOf("%lines%")
+
+    if (linesIndex != -1) {
+        messages.removeAt(linesIndex)
+        messages.addAll(linesIndex, lines)
+    }
+
+    val context = placeholderContext(player = sender as? Player)
+
+    messages.forEach { sender.sendMessage(it.formatEco(context)) }
 }
