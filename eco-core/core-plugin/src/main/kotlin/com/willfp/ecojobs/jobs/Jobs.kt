@@ -14,7 +14,7 @@ import wiki.ecohub.core.registry.Registry
 import wiki.ecohub.data.playerbase.PlayerbaseTally
 import wiki.ecohub.data.playerbase.leaderboard.Leaderboards
 
-object Jobs : ConfigCategory("job", "jobs") {
+object Jobs : NativeConfigCategory("jobs", "job") {
     private val registry = Registry<Job>()
 
     /**
@@ -76,11 +76,11 @@ object Jobs : ConfigCategory("job", "jobs") {
         }
     }
 
-    override fun clear(plugin: LibreforgePlugin) {
+    override fun clear(plugin: EcoPlugin) {
         registry.clear()
     }
 
-    override fun acceptConfig(plugin: LibreforgePlugin, id: String, config: Config) {
+    override fun acceptConfig(plugin: EcoPlugin, id: String, config: Config) {
         registry.register(Job(id, config))
     }
 

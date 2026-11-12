@@ -1,13 +1,12 @@
 package com.willfp.ecojobs
 
-import com.willfp.eco.core.command.impl.PluginCommand
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.getActiveJobs
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.api.getJobLimit
 import com.willfp.ecojobs.api.jobLimit
-import com.willfp.ecojobs.commands.CommandEcoJobs
-import com.willfp.ecojobs.commands.CommandJobs
+import com.willfp.ecojobs.commands.ecoJobsCommand
+import com.willfp.ecojobs.commands.jobsCommand
 import com.willfp.ecojobs.jobs.JobCategories
 import com.willfp.ecojobs.jobs.JobLevelListener
 import com.willfp.ecojobs.jobs.Jobs
@@ -28,6 +27,7 @@ import com.willfp.ecojobs.libreforge.TriggerLevelUpJob
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import wiki.ecohub.config.category.NativeConfigCategory
+import wiki.ecohub.core.command.EcoCommand
 import wiki.ecohub.core.plugin.EcoPlugin
 import wiki.ecohub.data.playerbase.leaderboard.Leaderboards
 import wiki.ecohub.data.playerbase.leaderboard.registerCategoryTopPlaceholders
@@ -50,12 +50,12 @@ private val limitPlaceholderPattern = Pattern.compile("limit_.+")
 
 private val inJobsPlaceholderPattern = Pattern.compile("in_jobs_.+")
 
-class EcoJobsPlugin : LibreforgePlugin() {
+class EcoJobsPlugin : EcoPlugin() {
     init {
         plugin = this
     }
 
-    override fun loadConfigCategories(): List<ConfigCategory> {
+    override fun loadConfigCategories(): List<NativeConfigCategory> {
         return listOf(
             JobCategories,
             Jobs
@@ -135,10 +135,10 @@ class EcoJobsPlugin : LibreforgePlugin() {
         JobsGUI.update()
     }
 
-    override fun loadPluginCommands(): List<PluginCommand> {
+    override fun loadPluginCommands(): List<EcoCommand> {
         return listOf(
-            CommandEcoJobs,
-            CommandJobs
+            ecoJobsCommand(),
+            jobsCommand()
         )
     }
 
