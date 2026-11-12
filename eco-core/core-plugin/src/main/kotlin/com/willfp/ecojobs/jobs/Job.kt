@@ -118,7 +118,7 @@ class Job(
 
     val leaveGUI = JobLeaveGUI(this)
 
-    private val baseItem: ItemStack = Items.lookup(config.getString("icon")).item
+    private val baseItem: ItemStack = Items.lookup(config.getString("icon")).getItem()
 
     private val effects: EffectList
     private val conditions: ConditionList

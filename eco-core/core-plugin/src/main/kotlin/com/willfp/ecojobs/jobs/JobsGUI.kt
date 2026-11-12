@@ -150,7 +150,7 @@ object JobsGUI {
 
         val icon = gui.getString("player-info.icon").replace("%player%", player.name)
 
-        return ItemStackBuilder(playerInfoIcons.get(icon) { Items.lookup(it).item }.clone())
+        return ItemStackBuilder(playerInfoIcons.get(icon) { Items.lookup(it).getItem() }.clone())
             .setDisplayName(name)
             .addLoreLines(lore)
             .build()
