@@ -76,7 +76,7 @@ class JobLevelGUI(
             .replace("%job%", job.name)
 
         menu = menu(plugin.configYml.getInt("level-gui.rows")) {
-            title = baseTitle.formatEco()
+            setTitle(baseTitle.formatEco())
 
             maxPages(component.pages)
 

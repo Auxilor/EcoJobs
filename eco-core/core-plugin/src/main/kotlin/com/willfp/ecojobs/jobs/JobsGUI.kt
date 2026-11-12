@@ -66,13 +66,17 @@ object JobsGUI {
         val pageChangeSound = PlayableSound.create(gui.getSubsection("page-change-sound"))
 
         return menu(gui.getInt("rows")) {
-            title = gui.getString("title").formatEco()
+            setTitle(gui.getString("title").formatEco())
 
             setMask(gui)
 
             if (gui.getBoolOrNull("player-info.enabled") != false) {
                 for (location in gui.getSlotLocations("player-info")) {
-                    setSlot(location.row, location.column, slot { player, _ -> getPlayerInfo(gui, category, player) })
+                    setSlot(
+                        row = location.row,
+                        column = location.column,
+                        slot = slot { player, _ -> getPlayerInfo(gui, category, player) }
+                    )
                 }
             }
 
@@ -115,7 +119,7 @@ object JobsGUI {
         val gui = plugin.configYml.getSubsection("gui").clone()
         val overrides = category?.run { config.getSubsectionOrNull("gui") } ?: return gui
         for (key in overrides.getKeys(false)) {
-            gui.set(key, overrides.get(key))
+            gui[key] = overrides[key]
         }
         return gui
     }

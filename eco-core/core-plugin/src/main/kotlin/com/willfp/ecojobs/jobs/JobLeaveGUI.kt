@@ -17,17 +17,19 @@ class JobLeaveGUI(
     job: Job
 ) {
     private val menu = menu(plugin.configYml.getInt("leave-gui.rows")) {
-        title = (job.title ?: plugin.configYml.getString("leave-gui.title"))
-            .replace("%job%", job.name)
-            .formatEco()
+        setTitle(
+            (job.title ?: plugin.configYml.getString("leave-gui.title"))
+                .replace("%job%", job.name)
+                .formatEco()
+        )
 
         setMask(plugin.configYml, "leave-gui")
 
         for (location in plugin.configYml.getSlotLocations("leave-gui.cancel")) {
             setSlot(
-                location.row,
-                location.column,
-                slot({ player, _ ->
+                row = location.row,
+                column = location.column,
+                slot = slot({ player, _ ->
                     ItemStackBuilder(Items.lookup(plugin.configYml.getString("leave-gui.cancel.item")))
                         .setDisplayName(plugin.configYml.getString("leave-gui.cancel.name").replace("%job%", job.name))
                         .addLoreLines(
@@ -44,9 +46,9 @@ class JobLeaveGUI(
 
         for (location in plugin.configYml.getSlotLocations("leave-gui.confirm")) {
             setSlot(
-                location.row,
-                location.column,
-                slot({ player, _ ->
+                row = location.row,
+                column = location.column,
+                slot = slot({ player, _ ->
                     ItemStackBuilder(Items.lookup(plugin.configYml.getString("leave-gui.confirm.item")))
                         .setDisplayName(plugin.configYml.getString("leave-gui.confirm.name").replace("%job%", job.name))
                         .addLoreLines(
