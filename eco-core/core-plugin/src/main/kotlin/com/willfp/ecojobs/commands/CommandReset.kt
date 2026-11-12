@@ -1,8 +1,6 @@
 package com.willfp.ecojobs.commands
 
 import com.willfp.eco.core.command.impl.Subcommand
-import com.willfp.eco.core.data.forEachSavedProfile
-import com.willfp.eco.util.StringUtils
 import com.willfp.eco.util.savedDisplayName
 import com.willfp.ecojobs.api.forceLeaveJob
 import com.willfp.ecojobs.api.hasJob
@@ -15,6 +13,8 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.util.StringUtil
+import wiki.ecohub.data.playerbase.forEachSavedProfile
+import wiki.ecohub.ui.text.StringUtils
 
 object CommandReset : Subcommand(
     plugin,

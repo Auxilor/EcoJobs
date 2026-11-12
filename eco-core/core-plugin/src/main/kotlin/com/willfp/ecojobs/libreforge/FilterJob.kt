@@ -1,11 +1,11 @@
 package com.willfp.ecojobs.libreforge
 
-import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.ecojobs.api.event.JobEvent
-import com.willfp.libreforge.ArgType
-import com.willfp.libreforge.NoCompileData
-import com.willfp.libreforge.filters.Filter
-import com.willfp.libreforge.triggers.TriggerData
+import wiki.ecohub.config.ArgType
+import wiki.ecohub.config.Config
+import wiki.ecohub.core.registry.NoCompileData
+import wiki.ecohub.rules.filter.Filter
+import wiki.ecohub.rules.trigger.TriggerData
 
 object FilterJob : Filter<NoCompileData, Collection<String>>("job") {
     override val description = "Matches when the job involved in the triggering event is one of the given job ids."

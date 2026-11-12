@@ -2,12 +2,6 @@
 
 package com.willfp.ecojobs.api
 
-import com.willfp.eco.core.data.keys.PersistentDataKey
-import com.willfp.eco.core.data.keys.PersistentDataKeyType
-import com.willfp.eco.core.data.profile
-import com.willfp.eco.core.integrations.economy.EconomyManager
-import com.willfp.eco.core.progression.LevelProgression
-import com.willfp.eco.core.progression.StopReason
 import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
 import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
 import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
@@ -22,6 +16,12 @@ import com.willfp.ecojobs.plugin
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
+import wiki.ecohub.data.PersistentDataKey
+import wiki.ecohub.data.PersistentDataKeyType
+import wiki.ecohub.game.entity.player.profile
+import wiki.ecohub.modules.progression.LevelProgression
+import wiki.ecohub.modules.progression.StopReason
+import wiki.ecohub.provider.economy.ExternalEconomyService
 
 /*
 
@@ -283,5 +283,5 @@ fun Player.giveJobMoney(job: Job, amount: Double): Boolean {
     Bukkit.getPluginManager().callEvent(gainEvent)
 
     val valid = !gainEvent.isCancelled && gainEvent.amount.isFinite() && gainEvent.amount > 0.0
-    return valid && EconomyManager.giveMoney(this, gainEvent.amount)
+    return valid && ExternalEconomyService.giveMoney(this, gainEvent.amount.toBigDecimal())
 }

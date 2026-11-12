@@ -1,7 +1,6 @@
 package com.willfp.ecojobs.commands
 
 import com.willfp.eco.core.command.impl.Subcommand
-import com.willfp.eco.util.StringUtils
 import com.willfp.ecojobs.api.canJoinJob
 import com.willfp.ecojobs.api.hasJob
 import com.willfp.ecojobs.api.hasJobActive
@@ -11,6 +10,7 @@ import com.willfp.ecojobs.plugin
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.util.StringUtil
+import wiki.ecohub.ui.text.StringUtils
 
 object CommandJoin : Subcommand(
     plugin,

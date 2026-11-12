@@ -1,11 +1,6 @@
 package com.willfp.ecojobs
 
-import com.willfp.eco.core.bstats.EcoMetricsChart
 import com.willfp.eco.core.command.impl.PluginCommand
-import com.willfp.eco.core.leaderboard.Leaderboards
-import com.willfp.eco.core.leaderboard.registerCategoryTopPlaceholders
-import com.willfp.eco.core.placeholder.PlayerDynamicPlaceholder
-import com.willfp.eco.core.placeholder.PlayerPlaceholder
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.getActiveJobs
 import com.willfp.ecojobs.api.getJobLevel
@@ -30,18 +25,23 @@ import com.willfp.ecojobs.libreforge.TriggerGainJobXp
 import com.willfp.ecojobs.libreforge.TriggerJoinJob
 import com.willfp.ecojobs.libreforge.TriggerLeaveJob
 import com.willfp.ecojobs.libreforge.TriggerLevelUpJob
-import com.willfp.libreforge.SimpleProvidedHolder
-import com.willfp.libreforge.conditions.Conditions
-import com.willfp.libreforge.effects.Effects
-import com.willfp.libreforge.filters.Filters
-import com.willfp.libreforge.loader.LibreforgePlugin
-import com.willfp.libreforge.loader.configs.ConfigCategory
-import com.willfp.libreforge.registerSpecificHolderProvider
-import com.willfp.libreforge.triggers.Triggers
-import java.util.regex.Pattern
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
-import com.willfp.eco.util.formatEco
+import wiki.ecohub.config.category.NativeConfigCategory
+import wiki.ecohub.core.plugin.EcoPlugin
+import wiki.ecohub.data.playerbase.leaderboard.Leaderboards
+import wiki.ecohub.data.playerbase.leaderboard.registerCategoryTopPlaceholders
+import wiki.ecohub.provider.metrics.EcoMetricsChart
+import wiki.ecohub.rules.condition.Conditions
+import wiki.ecohub.rules.effect.Effects
+import wiki.ecohub.rules.filter.Filters
+import wiki.ecohub.rules.holder.SimpleProvidedHolder
+import wiki.ecohub.rules.holder.registerSpecificHolderProvider
+import wiki.ecohub.rules.trigger.Triggers
+import wiki.ecohub.ui.placeholder.type.PlayerDynamicPlaceholder
+import wiki.ecohub.ui.placeholder.type.PlayerPlaceholder
+import wiki.ecohub.ui.text.formatEco
+import java.util.regex.Pattern
 
 internal lateinit var plugin: EcoJobsPlugin
     private set

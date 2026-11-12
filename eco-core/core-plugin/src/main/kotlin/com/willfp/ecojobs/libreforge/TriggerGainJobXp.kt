@@ -1,11 +1,11 @@
 package com.willfp.ecojobs.libreforge
 
 import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
-import com.willfp.libreforge.toDispatcher
-import com.willfp.libreforge.triggers.Trigger
-import com.willfp.libreforge.triggers.TriggerData
-import com.willfp.libreforge.triggers.TriggerParameter
 import org.bukkit.event.EventHandler
+import wiki.ecohub.game.entity.toDispatcher
+import wiki.ecohub.rules.trigger.Trigger
+import wiki.ecohub.rules.trigger.TriggerData
+import wiki.ecohub.rules.trigger.TriggerParameter
 
 object TriggerGainJobXp : Trigger("gain_job_xp") {
     override val description = "Fires when the player gains experience in a job."

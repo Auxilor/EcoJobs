@@ -1,12 +1,12 @@
 package com.willfp.ecojobs.commands
 
 import com.willfp.eco.core.command.impl.Subcommand
-import com.willfp.eco.util.StringUtils
-import com.willfp.eco.util.toNiceString
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.plugin
 import com.willfp.ecojobs.runGlobal
 import org.bukkit.command.CommandSender
+import wiki.ecohub.core.stdlib.toNiceString
+import wiki.ecohub.ui.text.StringUtils
 
 object CommandReload : Subcommand(
     plugin,

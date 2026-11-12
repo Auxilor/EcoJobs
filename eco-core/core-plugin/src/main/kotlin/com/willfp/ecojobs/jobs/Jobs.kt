@@ -1,18 +1,18 @@
 package com.willfp.ecojobs.jobs
 
 import com.google.common.collect.ImmutableList
-import com.willfp.eco.core.Eco
-import com.willfp.eco.core.config.interfaces.Config
-import com.willfp.eco.core.leaderboard.Leaderboards
-import com.willfp.eco.core.leaderboard.PlayerbaseTally
-import com.willfp.eco.core.registry.Registry
 import com.willfp.ecojobs.api.activeJobsKey
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.api.legacyActiveJobKey
 import com.willfp.ecojobs.plugin
-import com.willfp.libreforge.loader.LibreforgePlugin
-import com.willfp.libreforge.loader.configs.ConfigCategory
 import org.bukkit.OfflinePlayer
+import wiki.ecohub.config.Config
+import wiki.ecohub.config.category.NativeConfigCategory
+import wiki.ecohub.core.Eco
+import wiki.ecohub.core.plugin.EcoPlugin
+import wiki.ecohub.core.registry.Registry
+import wiki.ecohub.data.playerbase.PlayerbaseTally
+import wiki.ecohub.data.playerbase.leaderboard.Leaderboards
 
 object Jobs : ConfigCategory("job", "jobs") {
     private val registry = Registry<Job>()
