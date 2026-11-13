@@ -2,12 +2,12 @@ package com.willfp.ecojobs.jobs
 
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.plugin
-import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import wiki.ecohub.core.plugin.startup.Prerequisite
+import org.bukkit.inventory.meta.ItemMeta
 import wiki.ecohub.game.item.Items
 import wiki.ecohub.game.item.builder.ItemStackBuilder
+import wiki.ecohub.game.item.editItemMeta
 import wiki.ecohub.game.sound.PlayableSound
 import wiki.ecohub.math.NumberUtils
 import wiki.ecohub.modules.menus.addCustomSlots
@@ -54,14 +54,10 @@ class JobLevelGUI(
                         )
                     )
                     .build()
-                    .also {
+                    .also { item ->
                         if (plugin.configYml.getBool("level-gui.progression-slots.level-as-amount")) {
-                            if (Prerequisite.HAS_PAPER.isMet) {
-                                it.setData(DataComponentTypes.MAX_STACK_SIZE, 99)
-                                it.amount = level.coerceIn(1, 99)
-                            } else {
-                                it.amount = level.coerceIn(1, 64)
-                            }
+                            item.editItemMeta<ItemMeta> { meta -> meta.setMaxStackSize(99) }
+                            item.amount = level.coerceIn(1, 99)
                         }
                     }
             }
