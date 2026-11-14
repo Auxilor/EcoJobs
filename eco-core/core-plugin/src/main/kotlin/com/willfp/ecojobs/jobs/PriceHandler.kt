@@ -2,11 +2,11 @@ package com.willfp.ecojobs.jobs
 
 import com.willfp.ecojobs.api.event.PlayerJobJoinEvent
 import com.willfp.ecojobs.api.event.PlayerJobLeaveEvent
-import com.willfp.libreforge.toDispatcher
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import wiki.ecohub.game.entity.toDispatcher
 
 object PriceHandler : Listener {
     @EventHandler(

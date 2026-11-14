@@ -1,20 +1,13 @@
 package com.willfp.ecojobs.commands
 
-import com.willfp.eco.core.command.impl.PluginCommand
 import com.willfp.ecojobs.jobs.JobCategory
 import com.willfp.ecojobs.plugin
-import org.bukkit.entity.Player
+import wiki.ecohub.core.command.EcoCommand
+import wiki.ecohub.core.command.playerCommand
 
-class CommandJobCategory(
-    private val category: JobCategory,
-    name: String
-) : PluginCommand(
-    plugin,
-    name,
-    "ecojobs.command.jobs",
-    true
-) {
-    override fun onExecute(player: Player, args: List<String>) {
-        category.open(player)
+internal fun jobCategoryCommand(category: JobCategory, name: String): EcoCommand =
+    plugin.playerCommand(name = name, permission = "ecojobs.command.jobs") {
+        executes {
+            category.open(sender)
+        }
     }
-}

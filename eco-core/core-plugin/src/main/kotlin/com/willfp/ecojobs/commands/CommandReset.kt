@@ -1,145 +1,105 @@
 package com.willfp.ecojobs.commands
 
-import com.willfp.eco.core.command.impl.Subcommand
-import com.willfp.eco.core.data.forEachSavedProfile
-import com.willfp.eco.util.StringUtils
-import com.willfp.eco.util.savedDisplayName
 import com.willfp.ecojobs.api.forceLeaveJob
 import com.willfp.ecojobs.api.hasJob
 import com.willfp.ecojobs.api.resetJob
 import com.willfp.ecojobs.jobs.Job
 import com.willfp.ecojobs.jobs.Jobs
-import com.willfp.ecojobs.plugin
-import com.willfp.ecojobs.runOwned
+import com.willfp.ecojobs.runOwnedIfOnline
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
-import org.bukkit.util.StringUtil
+import org.bukkit.entity.Player
+import wiki.ecohub.core.command.CommandBuilder
+import wiki.ecohub.core.command.CommandContext
+import wiki.ecohub.data.playerbase.forEachSavedProfile
+import wiki.ecohub.game.entity.player.PlayerUtils
+import wiki.ecohub.game.entity.runOwned
+import java.util.logging.Level
 
-object CommandReset : Subcommand(
-    plugin,
-    "reset",
-    "ecojobs.command.reset",
-    false
+internal fun CommandBuilder<CommandSender>.resetCommand() = subcommand(
+    name = "reset",
+    permission = "ecojobs.command.reset"
 ) {
-    override fun onExecute(sender: CommandSender, args: List<String>) {
-        if (args.isEmpty()) {
-            sender.sendMessage(plugin.langYml.getMessage("needs-player"))
-            return
-        }
+    executes {
+        val playerName = argument(0, "needs-player")
+        val jobName = argument(1, "needs-job")
+        val allPlayers = playerName.equals("all", ignoreCase = true)
+        val allJobs = jobName.equals("all", ignoreCase = true)
 
-        if (args.size == 1) {
-            sender.sendMessage(plugin.langYml.getMessage("needs-job"))
-            return
-        }
-
-        val playerName = args[0]
-        val jobName = args[1]
-
-        // Reset all jobs for all players
-        if (playerName.equals("all", ignoreCase = true) && jobName.equals("all", ignoreCase = true)) {
-            resetAllPlayers(sender, Jobs.values(), plugin.langYml.getMessage("reset-all-players-all-jobs"))
-            return
-        }
-
-        // Reset a specific job for all players
-        if (playerName.equals("all", ignoreCase = true)) {
-            val job = Jobs.getByID(jobName)
-            if (job == null) {
-                sender.sendMessage(plugin.langYml.getMessage("invalid-job"))
-                return
+        when {
+            allPlayers && allJobs -> {
+                resetAllPlayers(Jobs.values(), plugin.langYml.getMessage("reset-all-players-all-jobs"))
             }
 
-            resetAllPlayers(
-                sender,
-                listOf(job),
-                plugin.langYml.getMessage("reset-all-players").replace("%job%", job.name)
-            )
-            return
-        }
-
-        // Reset all jobs for a specific player
-        val player = Bukkit.getPlayer(playerName)
-        if (player == null) {
-            sender.sendMessage(plugin.langYml.getMessage("invalid-player"))
-            return
-        }
-
-        if (jobName.equals("all", ignoreCase = true)) {
-            player.runOwned {
-                resetJobs(player, Jobs.values())
-
-                sender.sendMessage(
-                    plugin.langYml.getMessage("reset-all-jobs")
-                        .replace("%player%", player.savedDisplayName)
+            allPlayers -> {
+                val job = Jobs.getByID(jobName) ?: fail("invalid-job")
+                resetAllPlayers(
+                    listOf(job),
+                    plugin.langYml.getMessage("reset-all-players").replace(oldValue = "%job%", newValue = job.name)
                 )
             }
-            return
-        }
 
-        // Reset a specific job for a specific player
-        val job = Jobs.getByID(jobName)
-        if (job == null) {
-            sender.sendMessage(plugin.langYml.getMessage("invalid-job"))
-            return
-        }
-
-        if (!player.hasJob(job)) {
-            sender.sendMessage(plugin.langYml.getMessage("doesnt-have-job"))
-            return
-        }
-
-        player.runOwned {
-            player.forceLeaveJob(job)
-            player.resetJob(job)
-
-            sender.sendMessage(
-                plugin.langYml.getMessage("reset-xp", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
-                    .replace("%player%", player.savedDisplayName)
-                    .replace("%job%", job.name)
-            )
-        }
-    }
-
-    private fun resetAllPlayers(sender: CommandSender, jobs: Collection<Job>, message: String) {
-        forEachSavedProfile(plugin) { uuid ->
-            val player = Bukkit.getOfflinePlayer(uuid)
-
-            player.player?.runOwned { resetJobs(player, jobs) } ?: resetJobs(player, jobs)
-        }.thenRun {
-            plugin.scheduler.global().run { sender.sendMessage(message) }
-        }
-    }
-
-    private fun resetJobs(player: OfflinePlayer, jobs: Collection<Job>) {
-        for (job in jobs) {
-            if (player.hasJob(job)) {
-                player.forceLeaveJob(job)
-                player.resetJob(job)
+            else -> {
+                resetPlayer(Bukkit.getPlayer(playerName) ?: fail("invalid-player"), jobName, allJobs)
             }
         }
     }
 
-    override fun tabComplete(sender: CommandSender, args: List<String>): List<String> {
-        val completions = mutableListOf<String>()
-        if (args.size == 1) {
-            StringUtil.copyPartialMatches(
-                args[0],
-                listOf("all") union Bukkit.getOnlinePlayers().map { player -> player.name },
-                completions
-            )
-            return completions
+    completes {
+        when (args.size) {
+            1 -> listOf("all") + playerNames()
+            2 -> listOf("all") + Jobs.values().map { it.id }
+            else -> emptyList()
         }
+    }
+}
 
-        if (args.size == 2) {
-            StringUtil.copyPartialMatches(
-                args[1],
-                listOf("all") union Jobs.values().map { it.id },
-                completions
-            )
-            return completions
+private fun CommandContext<CommandSender>.resetPlayer(player: Player, jobName: String, allJobs: Boolean) {
+    if (allJobs) {
+        player.runOwned {
+            resetJobs(player, Jobs.values())
+            reply("reset-all-jobs", "player" to PlayerUtils.getSavedDisplayName(player))
         }
+        return
+    }
 
-        return emptyList()
+    val job = Jobs.getByID(jobName) ?: fail("invalid-job")
+
+    if (!player.hasJob(job)) {
+        fail("doesnt-have-job")
+    }
+
+    player.runOwned {
+        player.forceLeaveJob(job)
+        player.resetJob(job)
+
+        replyWithoutPlaceholders(
+            "reset-xp",
+            "player" to PlayerUtils.getSavedDisplayName(player),
+            "job" to job.name
+        )
+    }
+}
+
+private fun CommandContext<CommandSender>.resetAllPlayers(jobs: Collection<Job>, message: String) {
+    forEachSavedProfile(plugin) { uuid ->
+        val player = Bukkit.getOfflinePlayer(uuid)
+
+        player.runOwnedIfOnline { resetJobs(player, jobs) }
+    }.thenRun {
+        plugin.scheduler.global().run { sender.sendMessage(message) }
+    }.exceptionally { error ->
+        plugin.logger.log(Level.SEVERE, "Failed to reset jobs for every player", error)
+        null
+    }
+}
+
+private fun resetJobs(player: OfflinePlayer, jobs: Collection<Job>) {
+    for (job in jobs) {
+        if (player.hasJob(job)) {
+            player.forceLeaveJob(job)
+            player.resetJob(job)
+        }
     }
 }

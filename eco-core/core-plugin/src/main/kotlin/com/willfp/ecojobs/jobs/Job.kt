@@ -1,30 +1,5 @@
 package com.willfp.ecojobs.jobs
 
-import com.willfp.eco.core.cache.EcoCache
-import com.willfp.eco.core.config.interfaces.Config
-import com.willfp.eco.core.data.keys.PersistentDataKey
-import com.willfp.eco.core.data.keys.PersistentDataKeyType
-import com.willfp.eco.core.items.Items
-import com.willfp.eco.core.items.builder.ItemStackBuilder
-import com.willfp.eco.core.leaderboard.Leaderboard
-import com.willfp.eco.core.leaderboard.Leaderboards
-import com.willfp.eco.core.leaderboard.registerStandardPlaceholders
-import com.willfp.eco.core.placeholder.PlayerPlaceholder
-import com.willfp.eco.core.placeholder.PlayerStaticPlaceholder
-import com.willfp.eco.core.placeholder.PlayerlessPlaceholder
-import com.willfp.eco.core.placeholder.RegistrablePlaceholder
-import com.willfp.eco.core.placeholder.context.placeholderContext
-import com.willfp.eco.core.progression.ProgressionPlaceholders
-import com.willfp.eco.core.price.ConfiguredPrice
-import com.willfp.eco.core.price.impl.PriceEconomy
-import com.willfp.eco.core.progression.LevelCurve
-import com.willfp.eco.core.progression.LevelCurves
-import com.willfp.eco.core.registry.Registrable
-import com.willfp.eco.util.NumberUtils
-import com.willfp.eco.util.NumberUtils.evaluateExpression
-import com.willfp.eco.util.formatEco
-import com.willfp.eco.util.toNiceString
-import com.willfp.eco.util.toNumeral
 import com.willfp.ecojobs.api.canJoinJob
 import com.willfp.ecojobs.api.getActiveJobs
 import com.willfp.ecojobs.api.getJobLevel
@@ -35,16 +10,40 @@ import com.willfp.ecojobs.api.getJobXPRequired
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.plugin
 import com.willfp.ecojobs.util.LevelInjectable
-import com.willfp.libreforge.ViolationContext
-import com.willfp.libreforge.conditions.ConditionList
-import com.willfp.libreforge.conditions.Conditions
-import com.willfp.libreforge.counters.Counters
-import com.willfp.libreforge.effects.EffectList
-import com.willfp.libreforge.effects.Effects
-import com.willfp.libreforge.effects.executors.impl.NormalExecutorFactory
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import wiki.ecohub.config.Config
+import wiki.ecohub.config.ViolationContext
+import wiki.ecohub.core.price.ConfiguredPrice
+import wiki.ecohub.core.price.PriceEconomy
+import wiki.ecohub.core.registry.Registrable
+import wiki.ecohub.core.stdlib.toNiceString
+import wiki.ecohub.data.PersistentDataKey
+import wiki.ecohub.data.PersistentDataKeyType
+import wiki.ecohub.data.cache.EcoCache
+import wiki.ecohub.data.playerbase.leaderboard.Leaderboard
+import wiki.ecohub.data.playerbase.leaderboard.Leaderboards
+import wiki.ecohub.data.playerbase.leaderboard.registerStandardPlaceholders
+import wiki.ecohub.game.item.Items
+import wiki.ecohub.game.item.builder.ItemStackBuilder
+import wiki.ecohub.math.NumberUtils
+import wiki.ecohub.math.evaluateExpression
+import wiki.ecohub.modules.progression.LevelCurve
+import wiki.ecohub.modules.progression.LevelCurves
+import wiki.ecohub.modules.progression.ProgressionPlaceholders
+import wiki.ecohub.rules.chain.NormalExecutorFactory
+import wiki.ecohub.rules.condition.ConditionList
+import wiki.ecohub.rules.condition.Conditions
+import wiki.ecohub.rules.counter.Counters
+import wiki.ecohub.rules.effect.EffectList
+import wiki.ecohub.rules.effect.Effects
+import wiki.ecohub.ui.placeholder.RegistrablePlaceholder
+import wiki.ecohub.ui.placeholder.placeholderContext
+import wiki.ecohub.ui.placeholder.type.PlayerPlaceholder
+import wiki.ecohub.ui.placeholder.type.PlayerStaticPlaceholder
+import wiki.ecohub.ui.placeholder.type.PlayerlessPlaceholder
+import wiki.ecohub.ui.text.formatEco
 import java.util.Objects
 import java.util.concurrent.ConcurrentHashMap
 
@@ -119,7 +118,7 @@ class Job(
 
     val leaveGUI = JobLeaveGUI(this)
 
-    private val baseItem: ItemStack = Items.lookup(config.getString("icon")).item
+    private val baseItem: ItemStack = Items.lookup(config.getString("icon")).getItem()
 
     private val effects: EffectList
     private val conditions: ConditionList

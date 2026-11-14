@@ -1,25 +1,25 @@
 package com.willfp.ecojobs.commands
 
-import com.willfp.eco.core.command.impl.Subcommand
-import com.willfp.eco.util.StringUtils
-import com.willfp.eco.util.toNiceString
 import com.willfp.ecojobs.jobs.Jobs
-import com.willfp.ecojobs.plugin
-import com.willfp.ecojobs.runGlobal
+import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
+import wiki.ecohub.core.command.CommandBuilder
+import wiki.ecohub.core.platform.runGlobal
+import wiki.ecohub.core.stdlib.toNiceString
 
-object CommandReload : Subcommand(
-    plugin,
-    "reload",
-    "ecojobs.command.reload",
-    false
+/**
+ * Reloading rebuilds shared registries, so it runs on the global region.
+ */
+internal fun CommandBuilder<CommandSender>.reloadCommand() = subcommand(
+    name = "reload",
+    permission = "ecojobs.command.reload"
 ) {
-    override fun onExecute(sender: CommandSender, args: List<String>) {
-        runGlobal {
-            sender.sendMessage(
-                plugin.langYml.getMessage("reloaded", StringUtils.FormatOption.WITHOUT_PLACEHOLDERS)
-                    .replace("%time%", plugin.reloadWithTime().toNiceString())
-                    .replace("%count%", Jobs.values().size.toString())
+    executes {
+        Bukkit.getServer().runGlobal {
+            replyWithoutPlaceholders(
+                "reloaded",
+                "time" to plugin.reloadWithTime().toNiceString(),
+                "count" to Jobs.values().size.toString()
             )
         }
     }

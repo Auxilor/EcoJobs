@@ -1,34 +1,34 @@
 package com.willfp.ecojobs.jobs
 
-import com.willfp.eco.core.cache.EcoCache
-import com.willfp.eco.core.config.interfaces.Config
-import com.willfp.eco.core.gui.addCustomSlots
-import com.willfp.eco.core.gui.addPageChanger
-import com.willfp.eco.core.gui.component.addComponent
-import com.willfp.eco.core.gui.component.closeButton
-import com.willfp.eco.core.gui.getSlotLocations
-import com.willfp.eco.core.gui.menu
-import com.willfp.eco.core.gui.menu.Menu
-import com.willfp.eco.core.gui.onClick
-import com.willfp.eco.core.gui.page.PageChanger
-import com.willfp.eco.core.gui.setMask
-import com.willfp.eco.core.gui.slot
-import com.willfp.eco.core.items.Items
-import com.willfp.eco.core.items.builder.ItemStackBuilder
-import com.willfp.eco.core.sound.PlayableSound
-import com.willfp.eco.util.formatEco
-import com.willfp.ecojobs.api.getActiveJobs
 import com.willfp.ecojobs.api.canJoinJob
+import com.willfp.ecojobs.api.getActiveJobs
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.joinJob
 import com.willfp.ecojobs.jobs.Jobs.getUnlockedJobs
 import com.willfp.ecojobs.plugin
-import kotlin.math.ceil
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
+import wiki.ecohub.config.Config
+import wiki.ecohub.data.cache.EcoCache
+import wiki.ecohub.game.item.Items
+import wiki.ecohub.game.item.builder.ItemStackBuilder
+import wiki.ecohub.game.sound.PlayableSound
+import wiki.ecohub.modules.menus.addCustomSlots
+import wiki.ecohub.modules.menus.addPageChanger
+import wiki.ecohub.modules.menus.component.addComponent
+import wiki.ecohub.modules.menus.component.closeButton
+import wiki.ecohub.modules.menus.getSlotLocations
+import wiki.ecohub.modules.menus.menu
+import wiki.ecohub.modules.menus.menu.Menu
+import wiki.ecohub.modules.menus.onClick
+import wiki.ecohub.modules.menus.page.PageChanger
+import wiki.ecohub.modules.menus.setMask
+import wiki.ecohub.modules.menus.slot
+import wiki.ecohub.ui.text.formatEco
 import java.time.Duration
+import kotlin.math.ceil
 
 object JobsGUI {
     private val playerInfoIcons = EcoCache.builder<String, ItemStack>()
@@ -66,13 +66,17 @@ object JobsGUI {
         val pageChangeSound = PlayableSound.create(gui.getSubsection("page-change-sound"))
 
         return menu(gui.getInt("rows")) {
-            title = gui.getString("title").formatEco()
+            setTitle(gui.getString("title").formatEco())
 
             setMask(gui)
 
             if (gui.getBoolOrNull("player-info.enabled") != false) {
                 for (location in gui.getSlotLocations("player-info")) {
-                    setSlot(location.row, location.column, slot { player, _ -> getPlayerInfo(gui, category, player) })
+                    setSlot(
+                        row = location.row,
+                        column = location.column,
+                        slot = slot { player, _ -> getPlayerInfo(gui, category, player) }
+                    )
                 }
             }
 
@@ -115,7 +119,7 @@ object JobsGUI {
         val gui = plugin.configYml.getSubsection("gui").clone()
         val overrides = category?.run { config.getSubsectionOrNull("gui") } ?: return gui
         for (key in overrides.getKeys(false)) {
-            gui.set(key, overrides.get(key))
+            gui[key] = overrides[key]
         }
         return gui
     }
@@ -150,7 +154,7 @@ object JobsGUI {
 
         val icon = gui.getString("player-info.icon").replace("%player%", player.name)
 
-        return ItemStackBuilder(playerInfoIcons.get(icon) { Items.lookup(it).item }.clone())
+        return ItemStackBuilder(playerInfoIcons.get(icon) { Items.lookup(it).getItem() }.clone())
             .setDisplayName(name)
             .addLoreLines(lore)
             .build()
