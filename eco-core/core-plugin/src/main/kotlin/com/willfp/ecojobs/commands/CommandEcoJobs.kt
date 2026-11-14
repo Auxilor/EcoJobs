@@ -1,25 +1,11 @@
 package com.willfp.ecojobs.commands
 
-import com.willfp.eco.core.command.impl.PluginCommand
-import com.willfp.ecojobs.plugin
-import org.bukkit.command.CommandSender
+import com.willfp.ecojobs.EcoJobsPlugin
+import wiki.ecohub.core.command.command
 
-object CommandEcoJobs : PluginCommand(
-    plugin,
-    "ecojobs",
-    "ecojobs.command.ecojobs",
-    false
-) {
-    init {
-        this.addSubcommand(CommandReload)
-            .addSubcommand(CommandUnlock)
-            .addSubcommand(CommandGiveXP)
-            .addSubcommand(CommandReset)
-    }
-
-    override fun onExecute(sender: CommandSender, args: List<String>) {
-        sender.sendMessage(
-            plugin.langYml.getMessage("invalid-command")
-        )
-    }
+internal fun EcoJobsPlugin.ecoJobsCommand() = command(name = "ecojobs", permission = "ecojobs.command.ecojobs") {
+    reloadCommand()
+    unlockCommand()
+    giveXPCommand()
+    resetCommand()
 }

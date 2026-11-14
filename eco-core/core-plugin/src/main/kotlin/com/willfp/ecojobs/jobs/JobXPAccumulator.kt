@@ -1,15 +1,15 @@
 package com.willfp.ecojobs.jobs
 
-import com.willfp.eco.core.cache.EcoCache
-import com.willfp.eco.core.integrations.afk.AFKManager
 import com.willfp.ecojobs.api.giveJobExperience
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.plugin
-import com.willfp.libreforge.counters.Accumulator
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
+import wiki.ecohub.core.platform.NumericalPermissions
+import wiki.ecohub.data.cache.EcoCache
+import wiki.ecohub.provider.protection.ExternalAFKService
+import wiki.ecohub.rules.counter.Accumulator
 import java.time.Duration
-import com.willfp.eco.util.NumericalPermissions
 
 class JobXPAccumulator(
     private val job: Job
@@ -23,7 +23,7 @@ class JobXPAccumulator(
             return
         }
 
-        if (plugin.configYml.getBool("jobs.prevent-levelling-while-afk") && AFKManager.isAfk(player)) {
+        if (plugin.configYml.getBool("jobs.prevent-levelling-while-afk") && ExternalAFKService.isAfk(player)) {
             return
         }
 

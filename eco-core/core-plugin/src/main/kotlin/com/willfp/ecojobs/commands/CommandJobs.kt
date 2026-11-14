@@ -1,63 +1,42 @@
 package com.willfp.ecojobs.commands
 
-import com.willfp.eco.core.command.impl.PluginCommand
+import com.willfp.ecojobs.EcoJobsPlugin
 import com.willfp.ecojobs.api.hasJob
 import com.willfp.ecojobs.jobs.Jobs
 import com.willfp.ecojobs.jobs.JobsGUI
-import com.willfp.ecojobs.plugin
 import org.bukkit.entity.Player
-import org.bukkit.util.StringUtil
+import wiki.ecohub.core.command.command
 
-object CommandJobs : PluginCommand(
-    plugin,
-    "jobs",
-    "ecojobs.command.jobs",
-    true
-) {
-    init {
-        this.addSubcommand(CommandJoin)
-            .addSubcommand(CommandLeave)
-            .addSubcommand(CommandTop)
-    }
+/**
+ * Any sender can run `top`; the GUI and the other subcommands need a player.
+ */
+internal fun EcoJobsPlugin.jobsCommand() = command(name = "jobs", permission = "ecojobs.command.jobs") {
+    joinCommand()
+    leaveCommand()
+    topCommand()
 
-    override fun onExecute(player: Player, args: List<String>) {
-        if (args.isEmpty()) {
-            JobsGUI.open(player)
-            return
-        }
-
-        val id = args[0].lowercase()
-        val job = Jobs.getByID(id)
+    executes {
+        val player = sender as? Player ?: fail("not-player")
+        val job = args.firstOrNull()?.let { Jobs.getByID(it.lowercase()) ?: fail("invalid-job") }
 
         if (job == null) {
-            player.sendMessage(plugin.langYml.getMessage("invalid-job"))
-            return
-        }
+            JobsGUI.open(player)
+        } else {
+            if (!player.hasJob(job)) {
+                fail("dont-have-job")
+            }
 
-        if (!player.hasJob(job)) {
-            player.sendMessage(plugin.langYml.getMessage("dont-have-job"))
-            return
+            job.levelGUI.open(player)
         }
-
-        job.levelGUI.open(player)
     }
 
-    override fun tabComplete(player: Player, args: List<String>): List<String> {
-        val completions = mutableListOf<String>()
+    completes {
+        val player = sender as? Player
 
-        if (args.isEmpty()) {
-            return Jobs.values().filter { player.hasJob(it) }.map { it.id }
+        if (player == null || args.size != 1) {
+            emptyList()
+        } else {
+            Jobs.values().filter { player.hasJob(it) }.map { it.id }
         }
-
-        if (args.size == 1) {
-            StringUtil.copyPartialMatches(
-                args[0],
-                Jobs.values().filter { player.hasJob(it) }.map { it.id },
-                completions
-            )
-            return completions
-        }
-
-        return emptyList()
     }
 }

@@ -1,15 +1,15 @@
 package com.willfp.ecojobs.jobs
 
-import com.willfp.eco.core.sound.PlayableSound
 import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
-import com.willfp.ecojobs.plugin
 import com.willfp.ecojobs.libreforge.TriggerLevelUpJob
-import com.willfp.libreforge.levels.LevelUpDispatcher
-import com.willfp.libreforge.toDispatcher
-import com.willfp.libreforge.triggers.TriggerData
+import com.willfp.ecojobs.plugin
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import wiki.ecohub.game.entity.toDispatcher
+import wiki.ecohub.game.sound.PlayableSound
+import wiki.ecohub.modules.progression.LevelUpDispatcher
+import wiki.ecohub.rules.trigger.TriggerData
 
 object JobLevelListener : Listener {
     @EventHandler(priority = EventPriority.MONITOR)

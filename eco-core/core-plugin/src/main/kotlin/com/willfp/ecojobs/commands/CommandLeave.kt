@@ -1,84 +1,44 @@
 package com.willfp.ecojobs.commands
 
-import com.willfp.eco.core.command.impl.Subcommand
 import com.willfp.ecojobs.api.activeJobs
 import com.willfp.ecojobs.api.hasJob
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.leaveJob
 import com.willfp.ecojobs.jobs.Jobs
-import com.willfp.ecojobs.plugin
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
-import org.bukkit.util.StringUtil
+import wiki.ecohub.core.command.CommandBuilder
 
-object CommandLeave : Subcommand(
-    plugin,
-    "leave",
-    "ecojobs.command.leave",
-    true
+internal fun CommandBuilder<CommandSender>.leaveCommand() = playerSubcommand(
+    name = "leave",
+    permission = "ecojobs.command.leave"
 ) {
-    override fun onExecute(player: CommandSender, args: List<String>) {
-        player as Player
+    executes {
+        val id = argument(0, "needs-job")
 
-        if (args.isEmpty()) {
-            player.sendMessage(plugin.langYml.getMessage("needs-job"))
-            return
+        if (sender.activeJobs.isEmpty()) {
+            fail("no-job")
         }
 
-        if (player.activeJobs.isEmpty()) {
-            player.sendMessage(plugin.langYml.getMessage("no-job"))
-            return
+        val job = Jobs.getByID(id)?.takeIf { sender.hasJob(it) } ?: fail("invalid-job")
+
+        if (!sender.hasJobActive(job)) {
+            fail("not-in-job")
         }
 
-        val id = args[0]
+        sender.leaveJob(job)
 
-        val job = Jobs.getByID(id)
-
-        if (job == null || !player.hasJob(job)) {
-            player.sendMessage(plugin.langYml.getMessage("invalid-job"))
-            return
-        }
-
-        if (!player.hasJobActive(job)) {
-            player.sendMessage(plugin.langYml.getMessage("not-in-job"))
-            return
-        }
-
-        player.leaveJob(job)
-
-        if (!player.hasJobActive(job)) {
-            player.sendMessage(
-                plugin.langYml.getMessage("left-job")
-                    .replace("%job%", job.name)
-            )
+        if (sender.hasJobActive(job)) {
+            reply("cant-leave-job", "job" to job.name)
         } else {
-            player.sendMessage(
-                plugin.langYml.getMessage("cant-leave-job")
-                    .replace("%job%", job.name)
-            )
+            reply("left-job", "job" to job.name)
         }
     }
 
-    override fun tabComplete(sender: CommandSender, args: List<String>): List<String> {
-        if (sender !is Player) {
-            return emptyList()
-        }
-
-        val completions = mutableListOf<String>()
-
-        if (args.isEmpty()) {
-            return Jobs.values().filter { sender.hasJobActive(it) }.map { it.id }
-        }
-
+    completes {
         if (args.size == 1) {
-            StringUtil.copyPartialMatches(
-                args[0],
-                Jobs.values().filter { sender.hasJobActive(it) }.map { it.id },
-                completions
-            )
-            return completions
+            Jobs.values().filter { sender.hasJobActive(it) }.map { it.id }
+        } else {
+            emptyList()
         }
-
-        return emptyList()
     }
 }

@@ -1,11 +1,11 @@
 package com.willfp.ecojobs.libreforge
 
 import com.willfp.ecojobs.api.event.PlayerJobLevelUpEvent
-import com.willfp.libreforge.toDispatcher
-import com.willfp.libreforge.triggers.Trigger
-import com.willfp.libreforge.triggers.TriggerData
-import com.willfp.libreforge.triggers.TriggerParameter
 import org.bukkit.event.EventHandler
+import wiki.ecohub.game.entity.toDispatcher
+import wiki.ecohub.rules.trigger.Trigger
+import wiki.ecohub.rules.trigger.TriggerData
+import wiki.ecohub.rules.trigger.TriggerParameter
 
 object TriggerLevelUpJob : Trigger("level_up_job") {
     override val description = "Fires when the player levels up in a job."
