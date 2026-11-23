@@ -1,9 +1,9 @@
 package com.willfp.ecojobs.jobs
 
 import com.willfp.ecojobs.plugin
-import com.willfp.libreforge.Holder
-import com.willfp.libreforge.conditions.ConditionList
-import com.willfp.libreforge.effects.EffectList
+import wiki.ecohub.rules.condition.ConditionList
+import wiki.ecohub.rules.effect.EffectList
+import wiki.ecohub.rules.holder.Holder
 
 class JobLevel(
     val job: Job,

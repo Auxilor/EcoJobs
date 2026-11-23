@@ -3,11 +3,11 @@ package com.willfp.ecojobs.libreforge
 import com.willfp.ecojobs.api.event.PlayerJobExpGainEvent
 import com.willfp.ecojobs.jobs.Job
 import com.willfp.ecojobs.jobs.Jobs
-import com.willfp.libreforge.ArgType
-import com.willfp.libreforge.arguments
-import com.willfp.libreforge.effects.templates.MultiMultiplierEffect
-import com.willfp.libreforge.toDispatcher
 import org.bukkit.event.EventHandler
+import wiki.ecohub.config.ArgType
+import wiki.ecohub.config.arguments
+import wiki.ecohub.game.entity.toDispatcher
+import wiki.ecohub.rules.effect.MultiMultiplierEffect
 
 object EffectJobXpMultiplier : MultiMultiplierEffect<Job>("job_xp_multiplier") {
     override val description = "Multiplies XP earned for one or all EcoJobs jobs while the holder is active."

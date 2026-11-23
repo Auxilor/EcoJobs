@@ -1,28 +1,28 @@
 package com.willfp.ecojobs.jobs
 
-import com.willfp.eco.core.Prerequisite
-import com.willfp.eco.core.gui.addCustomSlots
-import com.willfp.eco.core.gui.addPageChanger
-import com.willfp.eco.core.gui.component.ConfigButton
-import com.willfp.eco.core.gui.component.LevelComponent
-import com.willfp.eco.core.gui.component.LevelState
-import com.willfp.eco.core.gui.component.addComponent
-import com.willfp.eco.core.gui.component.closeButton
-import com.willfp.eco.core.gui.menu
-import com.willfp.eco.core.gui.menu.Menu
-import com.willfp.eco.core.gui.menu.MenuLayer
-import com.willfp.eco.core.gui.page.PageChanger
-import com.willfp.eco.core.gui.setMask
-import com.willfp.eco.core.items.Items
-import com.willfp.eco.core.items.builder.ItemStackBuilder
-import com.willfp.eco.core.sound.PlayableSound
-import com.willfp.eco.util.NumberUtils
-import com.willfp.eco.util.formatEco
 import com.willfp.ecojobs.api.getJobLevel
 import com.willfp.ecojobs.plugin
-import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
+import wiki.ecohub.game.item.Items
+import wiki.ecohub.game.item.builder.ItemStackBuilder
+import wiki.ecohub.game.item.editItemMeta
+import wiki.ecohub.game.sound.PlayableSound
+import wiki.ecohub.math.NumberUtils
+import wiki.ecohub.modules.menus.addCustomSlots
+import wiki.ecohub.modules.menus.addPageChanger
+import wiki.ecohub.modules.menus.component.ConfigButton
+import wiki.ecohub.modules.menus.component.LevelComponent
+import wiki.ecohub.modules.menus.component.LevelState
+import wiki.ecohub.modules.menus.component.addComponent
+import wiki.ecohub.modules.menus.component.closeButton
+import wiki.ecohub.modules.menus.menu
+import wiki.ecohub.modules.menus.menu.Menu
+import wiki.ecohub.modules.menus.menu.MenuLayer
+import wiki.ecohub.modules.menus.page.PageChanger
+import wiki.ecohub.modules.menus.setMask
+import wiki.ecohub.ui.text.formatEco
 
 class JobLevelGUI(
     private val job: Job
@@ -54,14 +54,10 @@ class JobLevelGUI(
                         )
                     )
                     .build()
-                    .also {
+                    .also { item ->
                         if (plugin.configYml.getBool("level-gui.progression-slots.level-as-amount")) {
-                            if (Prerequisite.HAS_PAPER.isMet) {
-                                it.setData(DataComponentTypes.MAX_STACK_SIZE, 99)
-                                it.amount = level.coerceIn(1, 99)
-                            } else {
-                                it.amount = level.coerceIn(1, 64)
-                            }
+                            item.editItemMeta<ItemMeta> { meta -> meta.setMaxStackSize(99) }
+                            item.amount = level.coerceIn(1, 99)
                         }
                     }
             }
@@ -76,7 +72,7 @@ class JobLevelGUI(
             .replace("%job%", job.name)
 
         menu = menu(plugin.configYml.getInt("level-gui.rows")) {
-            title = baseTitle.formatEco()
+            setTitle(baseTitle.formatEco())
 
             maxPages(component.pages)
 

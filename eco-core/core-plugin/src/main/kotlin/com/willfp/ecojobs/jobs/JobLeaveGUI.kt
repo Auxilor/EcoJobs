@@ -1,33 +1,35 @@
 package com.willfp.ecojobs.jobs
 
-import com.willfp.eco.core.gui.getSlotLocations
-import com.willfp.eco.core.gui.menu
-import com.willfp.eco.core.gui.onLeftClick
-import com.willfp.eco.core.gui.setMask
-import com.willfp.eco.core.gui.slot
-import com.willfp.eco.core.items.Items
-import com.willfp.eco.core.items.builder.ItemStackBuilder
-import com.willfp.eco.util.formatEco
 import com.willfp.ecojobs.api.hasJobActive
 import com.willfp.ecojobs.api.leaveJob
 import com.willfp.ecojobs.plugin
 import org.bukkit.entity.Player
+import wiki.ecohub.game.item.Items
+import wiki.ecohub.game.item.builder.ItemStackBuilder
+import wiki.ecohub.modules.menus.getSlotLocations
+import wiki.ecohub.modules.menus.menu
+import wiki.ecohub.modules.menus.onLeftClick
+import wiki.ecohub.modules.menus.setMask
+import wiki.ecohub.modules.menus.slot
+import wiki.ecohub.ui.text.formatEco
 
 class JobLeaveGUI(
     job: Job
 ) {
     private val menu = menu(plugin.configYml.getInt("leave-gui.rows")) {
-        title = (job.title ?: plugin.configYml.getString("leave-gui.title"))
-            .replace("%job%", job.name)
-            .formatEco()
+        setTitle(
+            (job.title ?: plugin.configYml.getString("leave-gui.title"))
+                .replace("%job%", job.name)
+                .formatEco()
+        )
 
         setMask(plugin.configYml, "leave-gui")
 
         for (location in plugin.configYml.getSlotLocations("leave-gui.cancel")) {
             setSlot(
-                location.row,
-                location.column,
-                slot({ player, _ ->
+                row = location.row,
+                column = location.column,
+                slot = slot({ player, _ ->
                     ItemStackBuilder(Items.lookup(plugin.configYml.getString("leave-gui.cancel.item")))
                         .setDisplayName(plugin.configYml.getString("leave-gui.cancel.name").replace("%job%", job.name))
                         .addLoreLines(
@@ -44,9 +46,9 @@ class JobLeaveGUI(
 
         for (location in plugin.configYml.getSlotLocations("leave-gui.confirm")) {
             setSlot(
-                location.row,
-                location.column,
-                slot({ player, _ ->
+                row = location.row,
+                column = location.column,
+                slot = slot({ player, _ ->
                     ItemStackBuilder(Items.lookup(plugin.configYml.getString("leave-gui.confirm.item")))
                         .setDisplayName(plugin.configYml.getString("leave-gui.confirm.name").replace("%job%", job.name))
                         .addLoreLines(
